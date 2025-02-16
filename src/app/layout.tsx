@@ -2,7 +2,6 @@
 
 // import type {Metadata} from "next";
 import {Geist, Geist_Mono} from "next/font/google";
-import "./globals.css";
 import {presetGpnDefault, Theme, ThemePreset,} from "@consta/uikit/Theme";
 import {LayoutExampleBig} from "@/ui/Header/Header";
 import React from "react";
@@ -10,6 +9,8 @@ import {TravelMenu} from "@/ui/Menu/Menu";
 import '@consta/themes/Theme_color_highlightsGreenDefault';
 import {Layout} from '@consta/uikit/Layout';
 import {Grid, GridItem} from "@consta/uikit/Grid";
+import "./globals.css";
+import './lib/zIndexes.css'
 
 const geistSans = Geist({
     variable: "--font-geist-sans",

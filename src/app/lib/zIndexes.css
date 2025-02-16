@@ -1,0 +1,6 @@
+:root {
+    --zIndex-calendarItem: 1;
+    --zIndex-select: 100;
+    --zIndex-modal: 99;
+    --zIndex-dateSelect: 99;
+}

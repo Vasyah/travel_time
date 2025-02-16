@@ -1,34 +1,34 @@
-.container {
-    box-shadow: var(--shadow-group);
-    border-radius: var(--control-radius);
-    margin-bottom: 0.75rem;
-    padding: 0 var(--space-l);
-}
+/*.container {*/
+/*    box-shadow: var(--shadow-group);*/
+/*    border-radius: var(--control-radius);*/
+/*    margin-bottom: 0.75rem;*/
+/*    padding: 0 var(--space-l);*/
+/*}*/
 
-.hotelIcon {
-    /*padding-bottom: var(--space-l);*/
-}
+/*.hotelIcon {*/
+/*    !*padding-bottom: var(--space-l);*!*/
+/*}*/
 
-.hotelInfo {
-    display: flex;
-    align-items: end;
-    min-height: 100%;
-    gap: 1rem;
-    padding-bottom: var(--space-l);
-}
+/*.hotelInfo {*/
+/*    display: flex;*/
+/*    align-items: end;*/
+/*    min-height: 100%;*/
+/*    gap: 1rem;*/
+/*    padding-bottom: var(--space-l);*/
+/*}*/
 
-.title {
-    transform-origin: bottom left;
-    min-width: 200px;
-    transform: rotate(-90deg);
-    color: var(--color-typo-success);
-    padding-left: 0.5rem;
-    margin-top: 1rem;
-}
+/*.title {*/
+/*    transform-origin: bottom left;*/
+/*    min-width: 200px;*/
+/*    transform: rotate(-90deg);*/
+/*    color: var(--color-typo-success);*/
+/*    padding-left: 0.5rem;*/
+/*    margin-top: 1rem;*/
+/*}*/
 
-.stars {
-    margin-right: 1rem;
-    transform-origin: bottom left;
-    /*transform: rotate(45deg);*/
-    /*display: flex;*/
-}
+/*.stars {*/
+/*    margin-right: 1rem;*/
+/*    transform-origin: bottom left;*/
+/*    !*transform: rotate(45deg);*!*/
+/*    !*display: flex;*!*/
+/*}*/

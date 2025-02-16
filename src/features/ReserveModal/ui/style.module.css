@@ -1,0 +1,19 @@
+.sidebarOverlay {
+    z-index: 90 !important;
+}
+
+.modal {
+    z-index: var(--zIndex-modal);
+    max-width: 480px;
+    max-height: 640px;
+    padding: 2.5rem 2rem;
+}
+
+.title {
+    color: var(--color-typo-brand);
+    margin-bottom: 1rem;
+}
+
+.dropdown {
+    z-index: var(--zIndex-select);
+}
