@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import moment from "moment";
 import Timeline, {Id} from "react-calendar-timeline";
 import {generateFakeData} from "../lib/generate-fake-data";
@@ -11,6 +11,7 @@ import hotelImage from '../hotel.svg';
 import star from '../star.svg';
 import cx from './style.module.css'
 import {ReserveModal} from "@/features/ReserveModal/ui/ReserveModal";
+import {fetchHotelWithRoomsAndReserves, getAllHotels, Hotel} from "@/shared/api/hotels/hotels";
 
 const keys = {
     groupIdKey: "id",
@@ -26,18 +27,29 @@ const keys = {
 };
 
 
-export interface Hotel {
-    title: string,
-    id: string
-}
-
 export type CurrentReserveType = { room: { id: Id, title: string }, time: number, hotel: Hotel } | null;
 
 export interface CalendarProps {
-    hotel: { title: string, id: string };
+    hotel: Hotel;
 }
 
-export const CustomTimeline = ({hotel}: CalendarProps) => {
+export const CustomTimeline = ({hotel,}: CalendarProps) => {
+
+    const [hotelWithRooms, setHotelWithRooms] = useState<Hotel | null>()
+
+    useEffect(() => {
+            fetchHotelWithRoomsAndReserves(hotel.id).then((hotel) => {
+                if (hotel) {
+                    setHotelWithRooms(hotel)
+                    console.log('Отель с номерами и бронированиями:', hotel);
+                } else {
+                    console.log('Отель не найден.');
+                }
+            });
+        }
+        // Пример использования
+        , []
+    )
     const {groups: fakeGroups, items} = generateFakeData();
     // convert every 2 groups out of 3 to nodes, leaving the first as the root
     const newFakeGroups = fakeGroups.map((group) => {
@@ -52,50 +64,11 @@ export const CustomTimeline = ({hotel}: CalendarProps) => {
         });
     });
     const [groups, setGroups] = useState(newFakeGroups);
-    const [openGroups, setOpenGroups] = useState({});
     const defaultTimeStart = moment().startOf("day").toDate();
     const defaultTimeEnd = moment().startOf("day").add(2, "month").toDate();
     const [isHotelReserve, setIsHotelReserve] = useState(false);
     const [currentReserve, setCurrentReserve] = useState<CurrentReserveType>(null);
 
-    const toggleGroup = (id: string) => {
-        setOpenGroups({
-            ...openGroups,
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-expect-error
-            [id]: !openGroups[id],
-        });
-
-    };
-
-
-    const getMark = (group: { id: string, title: string, rightTitle: string, bgColor: string } & {
-        root: boolean
-        parent: number | null
-    }) => {
-
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-expect-error
-        return openGroups[parseInt(group?.id)] ? "[-]" : "[+]"
-
-    }
-// hide (filter) the groups that are closed, for the rest, patch their "title" and add some callbacks or padding
-    const newGroups = groups
-        // .filter((g) => g.root || openGroups[g?.parent ?? '0')
-        .map((group) => {
-            return Object.assign({}, group, {
-                title: group.root ? (
-                    <div
-                        // onClick={() => toggleGroup(parseInt(group.id))}
-                        style={{cursor: "pointer"}}
-                    >
-                        {group.title}
-                    </div>
-                ) : (
-                    <div style={{paddingLeft: 20}}>{group.title}</div>
-                ),
-            });
-        });
 
     const WEEK = 7 * 24 * 60 * 60 * 1000;
     const THREE_MONTHS = 24 * 60 * 60 * 1000 * 30 * 12;
@@ -110,6 +83,37 @@ export const CustomTimeline = ({hotel}: CalendarProps) => {
         setIsHotelReserve(false)
     };
 
+    // обработать ситуацию, когда отель ещё пустой
+    if (!hotel) {
+        return <div>Пустой...перезаряжаюсь</div>
+    }
+
+    // const hotelRooms = hotelWithRooms?.rooms.map(({id, title}) => ({
+    //     id, title
+    // })) ?? [];
+    //
+    // let hotelReserves: {
+    //     id: string
+    //     group: string
+    //     end: number
+    //     start: number
+    //     title: string | undefined
+    // }[] = []
+    //
+    // hotelWithRooms?.rooms.forEach(({reserves}) => {
+    //     const reservesTmp = reserves.map(({id, room_id, end, start, title}) => ({
+    //         id,
+    //         group: room_id,
+    //         end: end + Math.floor(Math.random() * 1000000000),
+    //         start,
+    //         title
+    //     }));
+    //
+    //     hotelReserves = hotelReserves.concat(reservesTmp)
+    // })
+    //
+    // console.log({hotelRooms, hotelReserves});
+    // console.log({items, fakeGroups})
     return (
         <Grid cols={12} className={cx.container}>
             <GridItem col={2}>
@@ -144,37 +148,37 @@ export const CustomTimeline = ({hotel}: CalendarProps) => {
                 </div>
             </GridItem>
             <GridItem col={10}>
-                <Timeline
-                    className={'travel-timeline'}
-                    groups={newGroups}
-                    items={items}
-                    keys={keys}
-                    sidebarWidth={280}
-                    canMove
-                    canResize="both"
-                    canSelect
-                    onItemSelect={(itemId, e, time) => console.log(itemId, e, time)}
-                    // itemsSorted
-                    itemTouchSendsClick={true}
-                    stackItems
-                    itemHeightRatio={0.75}
-                    // showCursorLine
-                    defaultTimeStart={defaultTimeStart.getTime()}
-                    defaultTimeEnd={defaultTimeEnd.getTime()}
-                    minZoom={WEEK}
-                    maxZoom={THREE_MONTHS}
-                    onCanvasDoubleClick={(groupId, time, e) => {
-                        const currentGroup = groups.find(group => group.id === groupId);
-                        setIsHotelReserve(true)
-                        setCurrentReserve({room: {id: groupId, title: currentGroup?.title}, time, hotel})
-                    }}
-                >
+                {/*<Timeline*/}
+                {/*    className={'travel-timeline'}*/}
+                {/*    groups={hotelRooms}*/}
+                {/*    items={hotelReserves}*/}
+                {/*    keys={keys}*/}
+                {/*    sidebarWidth={280}*/}
+                {/*    canMove*/}
+                {/*    canResize="both"*/}
+                {/*    canSelect*/}
+                {/*    onItemSelect={(itemId, e, time) => console.log(itemId, e, time)}*/}
+                {/*    // itemsSorted*/}
+                {/*    itemTouchSendsClick={true}*/}
+                {/*    stackItems*/}
+                {/*    itemHeightRatio={0.75}*/}
+                {/*    // showCursorLine*/}
+                {/*    defaultTimeStart={defaultTimeStart.getTime()}*/}
+                {/*    defaultTimeEnd={defaultTimeEnd.getTime()}*/}
+                {/*    minZoom={WEEK}*/}
+                {/*    maxZoom={THREE_MONTHS}*/}
+                {/*    onCanvasDoubleClick={(groupId, time, e) => {*/}
+                {/*        const currentGroup = groups.find(group => group.id === groupId);*/}
+                {/*        setIsHotelReserve(true)*/}
+                {/*        setCurrentReserve({room: {id: groupId, title: currentGroup?.title}, time, hotel})*/}
+                {/*    }}*/}
+                {/*>*/}
 
-                    {/*<TimelineHeaders className="sticky">*/}
-                    {/*    <DateHeader unit="primaryHeader"/>*/}
-                    {/*    <DateHeader/>*/}
-                    {/*</TimelineHeaders>*/}
-                </Timeline
+                {/*    /!*<TimelineHeaders className="sticky">*!/*/}
+                {/*    /!*    <DateHeader unit="primaryHeader"/>*!/*/}
+                {/*    /!*    <DateHeader/>*!/*/}
+                {/*    /!*</TimelineHeaders>*!/*/}
+                {/*</Timeline*/}
                 ></GridItem>
             {isHotelReserve && <ReserveModal isOpen={isHotelReserve} onClose={onClose}
                                              onAccept={onAccept} currentReserve={currentReserve}

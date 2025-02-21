@@ -1,6 +1,5 @@
 import React, {FC, useState} from 'react'
 import {Button} from "@consta/uikit/Button";
-import {Layout} from "@consta/uikit/Layout";
 import {Select} from "@consta/uikit/Select";
 import {DatePicker} from "@consta/uikit/DatePicker";
 import {IconCalendar} from "@consta/icons/IconCalendar";
@@ -54,17 +53,20 @@ export const SearchFeature: FC<SearchFeatureProps> = (props: SearchFeatureProps)
             <Select items={categories} value={category} onChange={setCategory}
                     placeholder={'Категория'}/>
             <DatePicker
-                style={{zIndex: 90}}
+                style={{
+                    zIndex: 90,
+                    minWidth: 300
+                }}
                 type="date-range"
                 value={value}
                 onChange={setValue}
                 leftSide={[IconCalendar, IconCalendar]}
                 placeholder={['Заезд', 'Выезд']}
-                dateTimeView={'slider'}
+                dateTimeView={'classic'}
             />
             <Select items={guests} value={guest} onChange={setGuests} placeholder={'Гости'}/>
             <Button label={'Найти'}/>
         </FieldGroup>
     );
 }
-
+// нужно будет делать адаптер под данные для calendar

@@ -1,4 +1,4 @@
-import React, {FC, useEffect, useState} from 'react'
+import React, {FC, useState} from 'react'
 import {Modal} from "@consta/uikit/Modal";
 import {Text} from "@consta/uikit/Text";
 import {Button} from "@consta/uikit/Button";
@@ -16,7 +16,7 @@ export interface HotelReserveProps {
     isOpen: boolean;
     onClose: () => void;
     onAccept: (args?: any) => void;
-    currentReserve: CurrentReserveType
+    currentReserve?: CurrentReserveType
 }
 
 const hotels: Item[] = [
@@ -64,16 +64,14 @@ type Inputs = {
     comment: string
 }
 
-export const HotelModal: FC<HotelReserveProps> = ({
-                                                      isOpen = false,
-                                                      onAccept,
-                                                      onClose,
-                                                      currentReserve
-                                                  }: HotelReserveProps) => {
+export const ReserveModal: FC<HotelReserveProps> = ({
+                                                        isOpen = false,
+                                                        onAccept,
+                                                        onClose,
+                                                        currentReserve
+                                                    }: HotelReserveProps) => {
 
     const [value, setValue] = useState<[Date?, Date?] | null>(currentReserve?.time ? [new Date(currentReserve?.time), undefined] : null);
-    const [category, setCategory] = useState<Item | null>();
-    const [guest, setGuests] = useState<Item | null>();
 
     const {
         control,
