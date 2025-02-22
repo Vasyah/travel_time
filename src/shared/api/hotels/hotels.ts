@@ -19,7 +19,7 @@ export type RoomDTO = {
     hotel_id: string;
     title: string; // Название номера
     price: number; // Цена за ночь
-    quantity: number; // Количество номеров данного типа
+    quantity: number; // Вместимость
     image_title: string  // Название изображения
     image_path: string; // Путь к изображению
     comment?: string; // Комментарий к номеру
@@ -52,7 +52,7 @@ export type HotelDTO = {
 };
 
 export type Hotel = Omit<HotelDTO, "id">;
-
+export type HotelForRoom = Pick<HotelDTO, 'id' | 'title'>
 // Тип Hotel
 export type HotelRooms = {
     id: string; // Уникальный идентификатор отеля
@@ -86,6 +86,11 @@ export async function getAllHotels(): Promise<Hotel[]> {
         console.error('Ошибка при получении отелей:', error);
         throw error;
     }
+}
+
+export async function getAllHotelsForRoom(): Promise<HotelForRoom[]> {
+    const response = await supabase.from('hotels').select('id, title');
+    return response.data as HotelForRoom[]; // Возвращаем массив отелей
 }
 
 const hotelWithRoomsAndServesQuery = supabase.from('hotels').select(`
@@ -177,7 +182,7 @@ export async function insertItem<Type>(tableName: string, data: Type, options?: 
             .insert(data, options)
         return {responseData, error};
     } catch (error) {
-        console.error(error);
+        console.error('im here', error);
 
         throw error;
     }
@@ -189,15 +194,15 @@ export async function insertItem<Type>(tableName: string, data: Type, options?: 
 export const createHotelApi = async (hotel: Hotel) => {
     const {responseData} = await insertItem<Hotel>('hotels', hotel)
 
-    if (responseData) {
-        console.log(responseData);
-    }
+    return responseData
 }
 
 export const createRoomApi = async (room: Room) => {
-    const {responseData} = await insertItem<Room>('room', room)
-
-    if (responseData) {
-        console.log(responseData);
+    try {
+        const {responseData} = await insertItem<Room>('rooms', room)
+        return responseData
+    } catch (error) {
+        throw error
     }
+
 }

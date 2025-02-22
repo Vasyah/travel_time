@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from "react";
 import moment from "moment";
-import Timeline, {Id} from "react-calendar-timeline";
-import {generateFakeData} from "../lib/generate-fake-data";
+import {Id} from "react-calendar-timeline";
 import 'react-calendar-timeline/style.css'
 import './calendar.css'
 import {Grid, GridItem} from "@consta/uikit/Grid";
@@ -10,7 +9,7 @@ import {Text} from "@consta/uikit/Text";
 import hotelImage from '../hotel.svg';
 import star from '../star.svg';
 import cx from './style.module.css'
-import {ReserveModal} from "@/features/ReserveModal/ui/ReserveModal";
+import {ReserveInfo} from "@/features/ReserveInfo/ui/ReserveInfo";
 import {fetchHotelWithRoomsAndReserves, getAllHotels, Hotel} from "@/shared/api/hotels/hotels";
 
 const keys = {
@@ -50,22 +49,7 @@ export const CustomTimeline = ({hotel,}: CalendarProps) => {
         // Пример использования
         , []
     )
-    const {groups: fakeGroups, items} = generateFakeData();
-    // convert every 2 groups out of 3 to nodes, leaving the first as the root
-    const newFakeGroups = fakeGroups.map((group) => {
-        const isRoot = (parseInt(group.id) - 1) % 3 === 0;
-        const parent = isRoot
-            ? null
-            : Math.floor((parseInt(group.id) - 1) / 3) * 3 + 1;
 
-        return Object.assign({}, group, {
-            root: isRoot,
-            parent: parent,
-        });
-    });
-    const [groups, setGroups] = useState(newFakeGroups);
-    const defaultTimeStart = moment().startOf("day").toDate();
-    const defaultTimeEnd = moment().startOf("day").add(2, "month").toDate();
     const [isHotelReserve, setIsHotelReserve] = useState(false);
     const [currentReserve, setCurrentReserve] = useState<CurrentReserveType>(null);
 
@@ -180,8 +164,8 @@ export const CustomTimeline = ({hotel,}: CalendarProps) => {
                 {/*    /!*</TimelineHeaders>*!/*/}
                 {/*</Timeline*/}
                 ></GridItem>
-            {isHotelReserve && <ReserveModal isOpen={isHotelReserve} onClose={onClose}
-                                             onAccept={onAccept} currentReserve={currentReserve}
+            {isHotelReserve && <ReserveInfo isOpen={isHotelReserve} onClose={onClose}
+                                            onAccept={onAccept} currentReserve={currentReserve}
             />}
         </Grid>
     )

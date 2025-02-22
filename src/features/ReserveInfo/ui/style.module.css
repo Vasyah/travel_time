@@ -5,7 +5,7 @@
 .modal {
     z-index: var(--zIndex-modal);
     max-width: 480px;
-    max-height: 640px;
+    max-height: var(--travel-form-height);
     padding: 2.5rem 2rem;
 }
 

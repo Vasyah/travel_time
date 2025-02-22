@@ -1,0 +1,26 @@
+.card {
+    min-height: 180px;
+    position: relative;
+    padding-top: 1.25rem;
+    max-width: 384px;
+
+}
+
+.container {
+    display: flex;
+    gap: 51px
+}
+
+.image {
+    position: absolute;
+    left: 0;
+    top: 20px;
+}
+
+.count {
+    margin-top: 1.25rem;
+}
+
+.button {
+    margin-top: 2rem;
+}

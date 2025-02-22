@@ -1,11 +1,8 @@
-import React, {CSSProperties, FC, useCallback, useEffect, useState} from 'react'
+import React, {ComponentProps, CSSProperties, FC, useCallback, useEffect, useState} from 'react'
 import {Button} from "@consta/uikit/Button";
-import {
-    ButtonProps
-} from "@consta/uikit/__internal__/src/components/EventInterceptor/propsHandlers/useButtonEventHandler";
 
 
-export interface TravelButtonProps extends ButtonProps {
+export interface TravelButtonProps extends ComponentProps<typeof Button> {
     style?: CSSProperties;
 }
 

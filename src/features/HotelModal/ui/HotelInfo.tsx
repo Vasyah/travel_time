@@ -1,21 +1,19 @@
-import React, {FC, useCallback, useEffect, useState} from 'react'
+import React, {FC, useCallback} from 'react'
 import {Modal} from "@consta/uikit/Modal";
 import {Text} from "@consta/uikit/Text";
-import {Button} from "@consta/uikit/Button";
-import cx from '@/features/ReserveModal/ui/style.module.css'
-import {FieldGroup} from "@consta/uikit/FieldGroup";
+import cx from './style.module.css'
 import {TextField} from "@consta/uikit/TextField";
 import {Select} from "@consta/uikit/Select";
-import {IconCalendar} from "@consta/icons/IconCalendar";
-import {DatePicker} from "@consta/uikit/DatePicker";
-import Item from "react-calendar-timeline/dist/lib/items/Item";
 import {type CurrentReserveType} from "@/features/Scheduler/ui/Calendar";
 import {Controller, useForm} from "react-hook-form";
-import {Hotel, HotelForm} from "@/shared/api/hotels/hotels";
+import {Hotel} from "@/shared/api/hotels/hotels";
 import {Grid, GridItem} from "@consta/uikit/Grid";
 import {TravelButton} from "@/shared/ui/Button/Button";
+import {FORM_SIZE} from "@/shared/lib/const";
+import {types} from "@/features/HotelModal/lib/const";
+import {FormTitle} from "@/shared/ui/FormTitle/FormTitle";
 
-export interface HotelReserveProps {
+export interface HotelInfoProps {
     isOpen: boolean;
     onClose: () => void;
     onAccept: (args?: any) => void;
@@ -23,41 +21,16 @@ export interface HotelReserveProps {
     isLoading?: boolean;
 }
 
-const types: Item[] = [
-    {
-        label: 'Отели',
-        id: 1,
-    },
-    {
-        label: 'Гостевые Дома',
-        id: 2,
-    },
-    {
-        label: 'Домики',
-        id: 3,
-    },
-    {
-        label: 'Квартиры',
-        id: "4",
-    },
-    {
-        label: 'Дом Под Ключ',
-        id: "5",
-    },
-];
-
-const FORM_SIZE = 'm';
-
 export type HotelForm = Hotel & { type: { label: string, id: string } };
 
-export const HotelModal: FC<HotelReserveProps> = ({
-                                                      isOpen = false,
-                                                      onAccept,
-                                                      onClose,
-                                                      currentReserve,
-                                                      isLoading = false,
-                                                  }:
-                                                  HotelReserveProps
+export const HotelInfo: FC<HotelInfoProps> = ({
+                                                  isOpen = false,
+                                                  onAccept,
+                                                  onClose,
+                                                  currentReserve,
+                                                  isLoading = false,
+                                              }:
+                                              HotelInfoProps
     ) => {
 
         const {
@@ -67,7 +40,7 @@ export const HotelModal: FC<HotelReserveProps> = ({
             handleSubmit,
             watch,
             formState: {errors}
-        } = useForm<HotelForm>({defaultValues: {rating: 5}})
+        } = useForm<HotelForm>({defaultValues: {rating: 5, telegram_url: 'https://t.me/'}})
 
 
         // количество ночей - считаем по выбранной дате
@@ -93,15 +66,9 @@ export const HotelModal: FC<HotelReserveProps> = ({
                 onClickOutside={onClose}
                 onEsc={onClose}
             >
-                <Text
-                    as="p"
-                    size="2xl"
-                    view="primary"
-                    weight="semibold"
-                    className={cx.title}
-                >
+                <FormTitle>
                     Добавление отеля
-                </Text>
+                </FormTitle>
 
                 <TextField
                     {...register('title')}

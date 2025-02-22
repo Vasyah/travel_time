@@ -2,7 +2,7 @@ import React, {FC, useState} from 'react'
 import {Modal} from "@consta/uikit/Modal";
 import {Text} from "@consta/uikit/Text";
 import {Button} from "@consta/uikit/Button";
-import cx from '@/features/ReserveModal/ui/style.module.css'
+import cx from '@/features/ReserveInfo/ui/style.module.css'
 import {FieldGroup} from "@consta/uikit/FieldGroup";
 import {TextField} from "@consta/uikit/TextField";
 import {Select} from "@consta/uikit/Select";
@@ -64,12 +64,12 @@ type Inputs = {
     comment: string
 }
 
-export const ReserveModal: FC<HotelReserveProps> = ({
-                                                        isOpen = false,
-                                                        onAccept,
-                                                        onClose,
-                                                        currentReserve
-                                                    }: HotelReserveProps) => {
+export const ReserveInfo: FC<HotelReserveProps> = ({
+                                                       isOpen = false,
+                                                       onAccept,
+                                                       onClose,
+                                                       currentReserve
+                                                   }: HotelReserveProps) => {
 
     const [value, setValue] = useState<[Date?, Date?] | null>(currentReserve?.time ? [new Date(currentReserve?.time), undefined] : null);
 

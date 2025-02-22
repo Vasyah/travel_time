@@ -13,7 +13,8 @@ import './lib/zIndexes.css'
 import {Layout} from "@consta/uikit/Layout";
 import {SearchFeature} from "@/features/Search/ui/Search";
 import {Text} from "@consta/uikit/Text";
-import {QueryClient, QueryClientProvider, useQueryClient} from "@tanstack/react-query";
+import {QueryClientProvider} from "@tanstack/react-query";
+import {queryClient} from "@/app/config/reactQuery";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -43,7 +44,6 @@ const preset: ThemePreset = {
     shadow: 'gpnDefault', // указывается значение модификатора _shadow
 };
 
-const queryClient = new QueryClient()
 
 export default function RootLayout({
                                        children,
