@@ -6,7 +6,7 @@ import {ReserveInfo} from "@/features/ReserveInfo/ui/ReserveInfo";
 import {Card} from "@consta/uikit/Card";
 import {Grid, GridItem} from "@consta/uikit/Grid";
 import Image from 'next/image'
-import {createHotelApi, createRoomApi, Hotel, Room} from "@/shared/api/hotels/hotels";
+import {Hotel, useCreateHotel} from "@/shared/api/hotel/hotel";
 import building from './building.svg'
 import bed from './bed.svg'
 import key from './key.svg'
@@ -15,8 +15,10 @@ import {Button} from "@consta/uikit/Button";
 import {ToastContainer, toast, Bounce, ToastOptions} from 'react-toastify';
 import {useMutation} from "@tanstack/react-query";
 import {RoomInfo} from "@/features/RoomInfo/ui/RoomInfo";
-import {QUERY_KEYS, queryClient} from "@/app/config/reactQuery";
 import cx from './page.module.css'
+import {createRoomApi} from "@/shared/api";
+import {Room, useCreateRoom} from "@/shared/api/room/room";
+import {Reserve, useCreateReserve} from "@/shared/api/reserve/reserve";
 
 const toastOptions: ToastOptions = {
     autoClose: 3000,
@@ -43,14 +45,7 @@ export default function Main() {
         isPending: isHotelLoading,
         isSuccess: isHotelLoaded,
         mutate: createHotel
-    } = useMutation({
-        mutationFn: (hotel: Hotel) => {
-            return createHotelApi(hotel)
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({queryKey: QUERY_KEYS.hotelsForRoom})
-        },
-    })
+    } = useCreateHotel()
 
     const {
         status,
@@ -58,10 +53,14 @@ export default function Main() {
         isSuccess: isRoomLoaded,
         mutate: createRoom,
         error: roomError
-    } = useMutation({
-        mutationFn: createRoomApi,
-    })
+    } = useCreateRoom()
 
+    const {
+        isPending: isReserveLoading,
+        isSuccess: isReserveLoaded,
+        mutate: createReserve,
+        error: reserveError
+    } = useCreateReserve()
 
     useEffect(() => {
 
@@ -119,8 +118,9 @@ export default function Main() {
         console.log('Создаю ROOM', room)
     }, [])
 
-    const onReserveCreate = useCallback((hotel: Hotel) => {
+    const onReserveCreate = useCallback((reserve: Reserve) => {
         console.log('создаю Reserve')
+        createReserve(reserve)
     }, [])
 
 
@@ -149,6 +149,7 @@ export default function Main() {
                     onClose={() => setIsReserveOpen(false)}
                     onAccept={onReserveCreate}
                     currentReserve={null}
+                    isLoading={isReserveLoading}
                 />
             }
 

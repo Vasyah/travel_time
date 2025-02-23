@@ -6,6 +6,6 @@ export enum PagesEnum {
 
 export const routes = {
     [PagesEnum.MAIN]: '/',
-    [PagesEnum.HOTELS]: '/hotels',
+    [PagesEnum.HOTELS]: '/hotel',
     [PagesEnum.RESERVATION]: '/reservation',
 }

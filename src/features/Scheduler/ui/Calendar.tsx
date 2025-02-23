@@ -1,6 +1,4 @@
 import React, {useEffect, useState} from "react";
-import moment from "moment";
-import {Id} from "react-calendar-timeline";
 import 'react-calendar-timeline/style.css'
 import './calendar.css'
 import {Grid, GridItem} from "@consta/uikit/Grid";
@@ -10,7 +8,9 @@ import hotelImage from '../hotel.svg';
 import star from '../star.svg';
 import cx from './style.module.css'
 import {ReserveInfo} from "@/features/ReserveInfo/ui/ReserveInfo";
-import {fetchHotelWithRoomsAndReserves, getAllHotels, Hotel} from "@/shared/api/hotels/hotels";
+import {fetchHotelWithRoomsAndReserves, Hotel, HotelDTO} from "@/shared/api/hotel/hotel";
+import {CurrentReserveType} from "@/shared/api/reserve/reserve";
+import {useGetRoomsWithReservesByHotel} from "@/shared/api/room/room";
 
 const keys = {
     groupIdKey: "id",
@@ -26,29 +26,14 @@ const keys = {
 };
 
 
-export type CurrentReserveType = { room: { id: Id, title: string }, time: number, hotel: Hotel } | null;
-
 export interface CalendarProps {
-    hotel: Hotel;
+    hotel: HotelDTO;
 }
 
-export const CustomTimeline = ({hotel,}: CalendarProps) => {
-
+export const Calendar = ({hotel,}: CalendarProps) => {
+    const {data, isPending} = useGetRoomsWithReservesByHotel(hotel.id)
     const [hotelWithRooms, setHotelWithRooms] = useState<Hotel | null>()
 
-    useEffect(() => {
-            fetchHotelWithRoomsAndReserves(hotel.id).then((hotel) => {
-                if (hotel) {
-                    setHotelWithRooms(hotel)
-                    console.log('Отель с номерами и бронированиями:', hotel);
-                } else {
-                    console.log('Отель не найден.');
-                }
-            });
-        }
-        // Пример использования
-        , []
-    )
 
     const [isHotelReserve, setIsHotelReserve] = useState(false);
     const [currentReserve, setCurrentReserve] = useState<CurrentReserveType>(null);
@@ -72,32 +57,6 @@ export const CustomTimeline = ({hotel,}: CalendarProps) => {
         return <div>Пустой...перезаряжаюсь</div>
     }
 
-    // const hotelRooms = hotelWithRooms?.rooms.map(({id, title}) => ({
-    //     id, title
-    // })) ?? [];
-    //
-    // let hotelReserves: {
-    //     id: string
-    //     group: string
-    //     end: number
-    //     start: number
-    //     title: string | undefined
-    // }[] = []
-    //
-    // hotelWithRooms?.rooms.forEach(({reserves}) => {
-    //     const reservesTmp = reserves.map(({id, room_id, end, start, title}) => ({
-    //         id,
-    //         group: room_id,
-    //         end: end + Math.floor(Math.random() * 1000000000),
-    //         start,
-    //         title
-    //     }));
-    //
-    //     hotelReserves = hotelReserves.concat(reservesTmp)
-    // })
-    //
-    // console.log({hotelRooms, hotelReserves});
-    // console.log({items, fakeGroups})
     return (
         <Grid cols={12} className={cx.container}>
             <GridItem col={2}>
@@ -163,9 +122,10 @@ export const CustomTimeline = ({hotel,}: CalendarProps) => {
                 {/*    /!*    <DateHeader/>*!/*/}
                 {/*    /!*</TimelineHeaders>*!/*/}
                 {/*</Timeline*/}
-                ></GridItem>
+                {/*>*/}
+            </GridItem>
             {isHotelReserve && <ReserveInfo isOpen={isHotelReserve} onClose={onClose}
-                                            onAccept={onAccept} currentReserve={currentReserve}
+                                            onAccept={onAccept} currentReserve={currentReserve} isLoading={false}
             />}
         </Grid>
     )

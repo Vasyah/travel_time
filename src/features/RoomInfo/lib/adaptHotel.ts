@@ -1,4 +1,8 @@
-import {HotelForRoom} from "@/shared/api/hotels/hotels";
+import {HotelForRoom} from "@/shared/api/hotel/hotel";
 import {RoomForm} from "@/features/RoomInfo/ui/RoomInfo";
+import {TravelOption} from "@/shared/api/reserve/reserve";
 
-export const adaptHotelToForm = (hotel: HotelForRoom): RoomForm['hotel_id'] => ({id: hotel.id, label: hotel.title})
+export const adaptToOption = (item: { id: string, title: string }): TravelOption => ({
+    id: item.id,
+    label: item.title
+})

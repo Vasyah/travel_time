@@ -3,20 +3,25 @@ import {Modal} from "@consta/uikit/Modal";
 import cx from './style.module.css'
 import {TextField} from "@consta/uikit/TextField";
 import {Select} from "@consta/uikit/Select";
-import Item from "react-calendar-timeline/dist/lib/items/Item";
 import {type CurrentReserveType} from "@/features/Scheduler/ui/Calendar";
 import {Controller, useForm} from "react-hook-form";
 import {FormButtons} from "@/shared/ui/FormButtons/FormButtons";
-import {getAllHotelsForRoom, Hotel, HotelDTO, HotelForRoom, Room} from "@/shared/api/hotels/hotels";
+import {
+    getAllHotelsForRoom,
+    Hotel,
+    HotelDTO,
+    HotelForRoom,
+    Room,
+    RoomForm,
+    useGetHotelsForRoom
+} from "@/shared/api/hotel/hotel";
 import {FormTitle} from "@/shared/ui/FormTitle/FormTitle";
 import {FORM_GAP_SIZE, FORM_SIZE} from "@/shared/lib/const";
 import {Grid, GridItem} from "@consta/uikit/Grid";
 import {DragNDropField} from "@consta/uikit/DragNDropField";
 import {Button} from "@consta/uikit/Button";
 import {Text} from "@consta/uikit/Text";
-import {useQuery} from "@tanstack/react-query";
-import {adaptHotelToForm} from "@/features/RoomInfo/lib/adaptHotel";
-import {QUERY_KEYS} from "@/app/config/reactQuery";
+import {adaptToOption} from "@/features/RoomInfo/lib/adaptHotel";
 
 export interface RoomInfoProps {
     isOpen: boolean;
@@ -26,7 +31,6 @@ export interface RoomInfoProps {
     isLoading?: boolean;
 }
 
-export type RoomForm = Omit<Room, 'hotel_id'> & { hotel_id: { label: string, id: string } };
 
 export const RoomInfo: FC<RoomInfoProps> = ({
                                                 isOpen = false,
@@ -35,17 +39,14 @@ export const RoomInfo: FC<RoomInfoProps> = ({
                                                 currentReserve,
                                                 isLoading = false,
                                             }: RoomInfoProps) => {
-        const {data: hotels, isPending} = useQuery({
-            queryKey: QUERY_KEYS.hotelsForRoom,
-            queryFn: getAllHotelsForRoom,
-        })
+        const {data: hotels, isPending} = useGetHotelsForRoom()
 
 
         const loading = isLoading || isPending
 
-    
+
         const hotelOptions = useMemo(() => {
-            const hotelsTmp = hotels?.map(adaptHotelToForm)
+            const hotelsTmp = hotels?.map(adaptToOption)
             return hotelsTmp ?? []
         }, [hotels])
 
@@ -56,7 +57,8 @@ export const RoomInfo: FC<RoomInfoProps> = ({
             formState: {errors},
         } = useForm<RoomForm>({
             defaultValues: {
-                quantity: 3
+                quantity: 3,
+                price: 0
             }
         })
 
@@ -111,8 +113,25 @@ export const RoomInfo: FC<RoomInfoProps> = ({
                 />
                 <Grid cols={3} gap={FORM_GAP_SIZE}>
                     <GridItem col={2}>
+                        <Controller
+                            name="hotel_id"
+                            control={control}
+                            rules={{required: true}}
+                            render={({field}) =>
+                                <Select
+                                    {...field}
+                                    items={hotelOptions}
+                                    placeholder={'Выберите из списка'}
+                                    label={"Название отеля"} required size={FORM_SIZE}
+                                    dropdownClassName={cx.dropdown}
+                                    className={cx.fields}
+                                    disabled={loading}
+                                />
+                            }
+                        />
+
                         <TextField
-                            {...register('price')}
+                            {...register('price', {valueAsNumber: true})}
                             placeholder="Введите стоимость"
                             label="Стоимость номера"
                             required
@@ -123,7 +142,7 @@ export const RoomInfo: FC<RoomInfoProps> = ({
                     </GridItem>
                     <GridItem>
                         <TextField
-                            {...register('quantity')}
+                            {...register('quantity', {valueAsNumber: true})}
                             placeholder="Введите число"
                             label="Вместимость"
                             required

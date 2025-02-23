@@ -6,7 +6,7 @@ import {TextField} from "@consta/uikit/TextField";
 import {Select} from "@consta/uikit/Select";
 import {type CurrentReserveType} from "@/features/Scheduler/ui/Calendar";
 import {Controller, useForm} from "react-hook-form";
-import {Hotel} from "@/shared/api/hotels/hotels";
+import {Hotel} from "@/shared/api/hotel/hotel";
 import {Grid, GridItem} from "@consta/uikit/Grid";
 import {TravelButton} from "@/shared/ui/Button/Button";
 import {FORM_SIZE} from "@/shared/lib/const";
