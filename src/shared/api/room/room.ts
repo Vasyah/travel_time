@@ -1,4 +1,4 @@
-import {Reserve} from "@/shared/api/reserve/reserve";
+import {Reserve, ReserveDTO} from "@/shared/api/reserve/reserve";
 import {useMutation, useQuery} from "@tanstack/react-query";
 import {QUERY_KEYS, queryClient} from "@/app/config/reactQuery";
 import supabase from "@/app/config/supabase";
@@ -25,7 +25,7 @@ export type RoomReserves = {
     image_title: string  // Название изображения
     image_path: string; // Путь к изображению
     comment?: string; // Комментарий к номеру
-    reserves: Reserve[]; // Список бронирований для этого номера
+    reserves: ReserveDTO[]; // Список бронирований для этого номера
 };
 export type Room = Omit<RoomDTO, "id">;
 
@@ -38,30 +38,18 @@ export async function getRoomsWithReservesByHotel(hotel_id?: string) {
     const response = await supabase.from(TABLE_NAMES.ROOMS).select(
         `
         id,
-        hotel_id,
         title,
-        price,
-        quantity,
-        image_title,
-        image_path,
-        comment,
         reserves(
             id,
-            room_id,
             start,
-            end,
-            guest,
-            prepayment,
-            price,
-            quantity
-            phone,
-            comment
+            end
         )
 )
     `)
         .filter('hotel_id', "eq", hotel_id);
     return response.data as RoomReserves[]; // Возвращаем массив отелей
 }
+
 
 export const createRoomApi = async (room: Room) => {
     try {
@@ -83,7 +71,7 @@ export const useGetRoomsByHotel = (hotel_id?: string) => {
 
 export const useGetRoomsWithReservesByHotel = (hotel_id?: string) => {
     return useQuery({
-        queryKey: QUERY_KEYS.roomsWithReservesByHotel,
+        queryKey: [...QUERY_KEYS.roomsWithReservesByHotel, hotel_id],
         queryFn: () => getRoomsWithReservesByHotel(hotel_id),
     })
 }

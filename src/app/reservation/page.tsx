@@ -10,9 +10,8 @@ export default function Home() {
 
     return (
         <div>
-
             <Text size="2xl" weight={'semibold'} view={"success"} style={{marginBottom: '2.25rem'}}>Все отели</Text>
-            {hotels?.map((hotel) => <Calendar hotel={hotel} key={hotel.id}/>)}
+            {hotels?.slice(0, 2)?.map((hotel) => <Calendar hotel={hotel} key={hotel.id}/>)}
         </div>
     );
 }

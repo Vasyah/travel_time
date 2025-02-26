@@ -37,6 +37,8 @@ export const ReserveInfo: FC<ReserveInfoProps> = ({
 
     const {data: hotels, isPending: isHotelsLoading, status: hotelsStatus} = useGetHotelsForRoom()
 
+    // console.log(moment.unix(currentReserve?.time).toDate())
+    const currentTime = currentReserve?.time ? moment.unix(currentReserve?.time).toDate() : moment().toDate()
 
     const {
         control,
@@ -45,7 +47,7 @@ export const ReserveInfo: FC<ReserveInfoProps> = ({
     } = useForm<ReserveForm>({
         defaultValues:
             {
-                date: [moment().toDate(), moment().toDate()],
+                date: [moment().toDate(), moment().add('day', 1).toDate()],
                 hotel_id: {id: currentReserve?.hotel.id, label: currentReserve?.hotel.title},
                 room_id: {id: currentReserve?.room.id, label: currentReserve?.room.title}
             }
@@ -64,25 +66,11 @@ export const ReserveInfo: FC<ReserveInfoProps> = ({
     const hotelOptions = useMemo(() => {
         const hotelsTmp = hotels?.map(adaptToOption)
 
-        if (currentReserve?.hotel?.id) {
-            hotelsTmp?.push({
-                id: currentReserve?.hotel.id,
-                label: currentReserve?.hotel.title
-            })
-        }
-
         return hotelsTmp ?? []
     }, [hotels])
 
     const roomOptions = useMemo(() => {
         const hotelsTmp = rooms?.map(adaptToOption)
-
-        if (currentReserve?.room?.id) {
-            hotelsTmp?.push({
-                id: currentReserve?.room.id,
-                label: currentReserve?.room.title
-            })
-        }
 
         return hotelsTmp ?? []
     }, [rooms])
@@ -136,12 +124,6 @@ export const ReserveInfo: FC<ReserveInfoProps> = ({
         onAccept(data)
     }
 
-    const convertToDate = ([start, end]: [Date?: number, Date?: number]) => {
-
-        if (start) {
-
-        }
-    }
 
     return (
         <Modal
@@ -194,7 +176,7 @@ export const ReserveInfo: FC<ReserveInfoProps> = ({
                     label={"Название отеля"} required size={FORM_SIZE}
                     dropdownClassName={cx.dropdown}
                     className={cx.fields}
-                    disabled={loading}
+                    disabled={loading || !!currentReserve?.hotel?.id}
                 />}
             />
             <Controller
@@ -206,7 +188,7 @@ export const ReserveInfo: FC<ReserveInfoProps> = ({
                             placeholder={'Выберите из списка'}
                             label={"Номер"} required size={FORM_SIZE}
                             dropdownClassName={cx.dropdown}
-                            isLoading={isHotelsLoading || isRoomsLoading}
+                            isLoading={isHotelsLoading || isRoomsLoading || !!currentReserve?.room?.id}
                     />
                 }
             />
@@ -235,6 +217,7 @@ export const ReserveInfo: FC<ReserveInfoProps> = ({
                     placeholder="Введите число"
                     label="Количество человек"
                     required
+                    type={'number'}
                 />
             </FieldGroup>
             <TextField

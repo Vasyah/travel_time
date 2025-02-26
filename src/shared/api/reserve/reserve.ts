@@ -1,6 +1,6 @@
 import {Hotel, insertItem} from "@/shared/api/hotel/hotel";
 import {TABLE_NAMES} from "@/shared/api/const";
-import {useMutation} from "@tanstack/react-query";
+import {MutationOptions, useMutation} from "@tanstack/react-query";
 import {createRoomApi} from "@/shared/api";
 
 export type ReserveDTO = {
@@ -41,8 +41,9 @@ export const createReserveApi = async (reserve: Reserve) => {
     return responseData
 }
 
-export const useCreateReserve = () => {
+export const useCreateReserve = (onSuccess: () => void) => {
     return useMutation({
         mutationFn: createReserveApi,
+        onSuccess,
     })
 }
