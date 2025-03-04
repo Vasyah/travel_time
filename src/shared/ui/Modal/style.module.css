@@ -1,0 +1,36 @@
+.sidebarOverlay {
+    z-index: 90 !important;
+}
+
+.modal {
+    position: relative;
+    z-index: var(--zIndex-modal);
+    max-width: var(--modal-max-width);
+    max-height: var(--travel-form-height);
+    padding: 2.5rem 2rem;
+}
+
+.modalLoading {
+    overflow: hidden;
+}
+
+.loading {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+
+}
+
+.loader {
+    width: 50px;
+    height: 50px;
+    z-index: 999;
+}

@@ -8,13 +8,15 @@ export interface ReserveTotalProps {
     price: number
     prepayment?: number
     Prepayment: ReactNode
+    className?: string
 }
 
 export const ReserveTotal: FC<ReserveTotalProps> = ({
                                                         date,
                                                         prepayment = 0,
                                                         price = 0,
-                                                        Prepayment
+                                                        Prepayment,
+                                                        className,
                                                     }: ReserveTotalProps) => {
 
     const totalDays = useMemo(() => {
@@ -30,12 +32,11 @@ export const ReserveTotal: FC<ReserveTotalProps> = ({
 
     const totalPrice = useMemo(() => totalDays * price, [totalDays, price])
     const remainPrice = useMemo(() => totalPrice - prepayment, [totalPrice, prepayment])
-    console.log(totalPrice, prepayment)
     const postFix = 'руб.'
+
     return (
         <>
-
-            <Grid cols={2}>
+            <Grid cols={2} className={className}>
                 <GridItem col={1}><Text view={'success'} size={'xl'}>Итого</Text></GridItem>
                 <GridItem col={1}><Text view={'success'} size={'xl'}>{totalPrice} {postFix}</Text></GridItem>
                 <GridItem col={1}> <Text>Количество ночей</Text></GridItem>

@@ -12,29 +12,14 @@ import bed from './bed.svg'
 import key from './key.svg'
 import {HotelInfo} from "@/features/HotelModal/ui/HotelInfo";
 import {Button} from "@consta/uikit/Button";
-import {ToastContainer, toast, Bounce, ToastOptions} from 'react-toastify';
-import {useMutation} from "@tanstack/react-query";
+import {ToastContainer} from 'react-toastify';
 import {RoomInfo} from "@/features/RoomInfo/ui/RoomInfo";
 import cx from './page.module.css'
-import {createRoomApi} from "@/shared/api";
 import {Room, useCreateRoom} from "@/shared/api/room/room";
 import {Reserve, useCreateReserve} from "@/shared/api/reserve/reserve";
+import {showToast} from "@/shared/ui/Toast/Toast";
 
-const toastOptions: ToastOptions = {
-    autoClose: 3000,
-    pauseOnHover: true,
-    theme: "light",
-    transition: Bounce,
-    type: 'success',
-}
 
-const toastErrorOptions: ToastOptions = {
-    autoClose: 3000,
-    pauseOnHover: true,
-    theme: "light",
-    transition: Bounce,
-    type: 'error',
-}
 export default function Main() {
     const [isHotelOpen, setIsHotelOpen] = useState<boolean>(false);
     const [isRoomOpen, setIsRoomOpen] = useState<boolean>(false)
@@ -65,29 +50,43 @@ export default function Main() {
     useEffect(() => {
 
         if (isHotelLoaded) {
-            toast('Отель добавлен', toastOptions)
+            showToast('Отель добавлен')
             setIsHotelOpen(false);
         }
 
     }, [isHotelLoaded])
 
     useEffect(() => {
-
         console.log({status, isRoomLoaded})
         if (status === 'error') {
-            toast(`Ошибка при добавлении отеля ${roomError}`, toastErrorOptions)
+            showToast(`Ошибка при добавлении отеля ${roomError}`, 'error')
             setIsHotelOpen(false);
 
             return;
         }
 
         if (isRoomLoaded) {
-            toast('Номер успешно добавлен', toastOptions)
+            showToast('Номер успешно добавлен')
             setIsHotelOpen(false);
         }
 
     }, [status])
 
+    useEffect(() => {
+        console.log({status, isRoomLoaded})
+        if (status === 'error') {
+            showToast(`Ошибка при добавлении отеля ${roomError}`, 'error')
+            setIsHotelOpen(false);
+
+            return;
+        }
+
+        if (isRoomLoaded) {
+            showToast('Номер успешно добавлен')
+            setIsHotelOpen(false);
+        }
+
+    }, [status])
     const cards = [{
         id: nanoid(),
         title: 'Отелей всего в базе',
@@ -155,17 +154,17 @@ export default function Main() {
 
 
             <Text size="2xl" weight={'semibold'} view={"success"} style={{marginBottom: '2.25rem'}}>Все отели</Text>
-            <Grid cols={3} colGap={'m'}>
+            <Grid cols={2} colGap={'m'} rowGap={'m'} style={{maxWidth: '1280px'}}>
                 {
                     cards.map(({count, btn, image, title, id}) => {
                             return (
-                                <GridItem>
-                                    <Card key={id}
-                                          shadow
-                                          title={title}
-                                          horizontalSpace={'2xl'}
-                                          verticalSpace={'2xl'}
-                                          className={cx.card}
+                                <GridItem key={id} row={1}>
+                                    <Card
+                                        shadow
+                                        title={title}
+                                        horizontalSpace={'2xl'}
+                                        verticalSpace={'2xl'}
+                                        className={cx.card}
                                     >
 
                                         <div className={cx.image}>{image}</div>

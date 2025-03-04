@@ -1,6 +1,6 @@
 import Item from "react-calendar-timeline/dist/lib/items/Item";
 
-export const types: Item[] = [
+export const HOTEL_TYPES: Item[] = [
     {
         label: 'Отели',
         id: 1,

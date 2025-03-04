@@ -1,7 +1,10 @@
-import {Hotel, insertItem} from "@/shared/api/hotel/hotel";
+import {Hotel, HotelDTO, insertItem} from "@/shared/api/hotel/hotel";
 import {TABLE_NAMES} from "@/shared/api/const";
 import {MutationOptions, useMutation} from "@tanstack/react-query";
 import {createRoomApi} from "@/shared/api";
+import {RoomDTO} from "@/shared/api/room/room";
+import supabase from "@/app/config/supabase";
+import {showToast} from "@/shared/ui/Toast/Toast";
 
 export type ReserveDTO = {
     id: string; // Уникальный идентификатор брони
@@ -30,10 +33,10 @@ export type ReserveForm = Omit<ReserveDTO, "id" | "start" | "end" | "room_id"> &
     room_id: TravelOption
 };
 
-export type CurrentReserveType =
-    { room: { id: string, title: string }, time: number, hotel: { id: string, title: string } }
-    | null;
+export type Nullable<Type> = Type | null
 
+export type CurrentReserveType =
+    { room: RoomDTO, hotel: HotelDTO, reserve: ReserveDTO }
 
 export const createReserveApi = async (reserve: Reserve) => {
     const {responseData} = await insertItem<Reserve>(TABLE_NAMES.RESERVES, reserve)
@@ -41,7 +44,25 @@ export const createReserveApi = async (reserve: Reserve) => {
     return responseData
 }
 
-export const useCreateReserve = (onSuccess: () => void) => {
+export const updateReserveApi = async ({id, ...reserve}: ReserveDTO) => {
+    try {
+        await supabase.from('reserves')
+            .update(reserve)
+            .eq('id', id)
+
+    } catch (error) {
+        console.error(error)
+        showToast('Ошибка при обновлении брони', 'error')
+    }
+}
+export const useUpdateReserve = (onSuccess?: () => void) => {
+    return useMutation({
+        mutationFn: updateReserveApi,
+        onSuccess,
+    })
+}
+
+export const useCreateReserve = (onSuccess?: () => void) => {
     return useMutation({
         mutationFn: createReserveApi,
         onSuccess,

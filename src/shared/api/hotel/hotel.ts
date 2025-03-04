@@ -1,5 +1,4 @@
 import supabase from "@/app/config/supabase";
-import {QueryData} from "@supabase/supabase-js";
 import {useMutation, useQuery} from "@tanstack/react-query";
 import {QUERY_KEYS, queryClient} from "@/app/config/reactQuery";
 import {Room} from "@/shared/api/room/room";
@@ -44,85 +43,8 @@ export async function getAllHotelsForRoom(): Promise<HotelForRoom[]> {
     return response.data as HotelForRoom[]; // Возвращаем массив отелей
 }
 
-const hotelWithRoomsAndServesQuery = supabase.from('hotels').select(`
-        id,
-        title,
-        type,
-        rating,
-        address,
-        telegram_url,
-        phone,
-        description,
-        rooms(id,
-              hotel_id,
-              title,
-              price,
-              quantity,
-              image_title,
-              image_path,
-              comment,
-              reserves(id,
-                    room_id,
-                    start,
-                    end,
-                    guest,
-                    phone,
-                    comment
-                )
-        )
-        `);
 
-type HotelsWithRoomsAndReserves = QueryData<typeof hotelWithRoomsAndServesQuery>
-
-export async function getHotelsWithRoomsAndeServes(): Promise<HotelsWithRoomsAndReserves> {
-    try {
-        const {data} = await hotelWithRoomsAndServesQuery;
-        return data as HotelsWithRoomsAndReserves; // Возвращаем массив отелей
-    } catch (error) {
-        console.error('Ошибка при получении отелей:', error);
-        throw error;
-    }
-}
-
-// export async function fetchHotelWithRoomsAndReserves(hotelId: string): Promise<Hotel | null> {
-//     try {
-//         // Шаг 1: Получить отель по ID
-//         const hotelResponse = supabase.from(`hotel?id=eq.${hotelId}`).select(`
-//         id,
-//         title,
-//         type,
-//         rating,
-//         address,
-//         telegram_url,
-//         phone,
-//         description,
-//         rooms(id,
-//               hotel_id,
-//               title,
-//               price,
-//               quantity,
-//               image_title,
-//               image_path,
-//               comment,
-//               reserves(id,
-//                     room_id,
-//                     start,
-//                     end,
-//                     guest,
-//                     phone,
-//                     comment
-//                 )
-//         )
-//         `);
-//         const {data} = await hotelWithRoomsAndServesQuery;
-//         return data as Hotel
-//
-//         // return hotel;
-//     } catch (error) {
-//         console.error('Ошибка при получении данных отеля:', error);
-//         throw error;
-//     }
-// }
+// const hotelWithRoomsAndServesQuery = supabase.from('hotels').select(`*, rooms(*, reserves(*))`);
 
 export async function insertItem<Type>(tableName: string, data: Type, options?: {
     count?: "exact" | "planned" | "estimated"
@@ -171,3 +93,19 @@ export const useCreateHotel = () => {
         },
     })
 }
+
+export async function getHotelsWithFreeRooms(start_time: number, end_time: number) {
+    try {
+        const {data, error} = await supabase.rpc('get_hotels_with_free_rooms_in_period', {
+            start_time,
+            end_time,
+        });
+
+        if (error) throw error;
+        return data ?? [];
+    } catch (error) {
+        console.error('Ошибка при получении отелей с свободными номерами:', error?.message);
+        throw error;
+    }
+}
+

@@ -1,5 +1,4 @@
 import React, {FC, useCallback} from 'react'
-import {Modal} from "@consta/uikit/Modal";
 import {Text} from "@consta/uikit/Text";
 import cx from './style.module.css'
 import {TextField} from "@consta/uikit/TextField";
@@ -10,8 +9,9 @@ import {Hotel} from "@/shared/api/hotel/hotel";
 import {Grid, GridItem} from "@consta/uikit/Grid";
 import {TravelButton} from "@/shared/ui/Button/Button";
 import {FORM_SIZE} from "@/shared/lib/const";
-import {types} from "@/features/HotelModal/lib/const";
+import {HOTEL_TYPES} from "@/features/HotelModal/lib/const";
 import {FormTitle} from "@/shared/ui/FormTitle/FormTitle";
+import {Modal} from "@/shared/ui/Modal/Modal";
 
 export interface HotelInfoProps {
     isOpen: boolean;
@@ -60,11 +60,10 @@ export const HotelInfo: FC<HotelInfoProps> = ({
         return (
             <Modal
                 hasOverlay
-                className={cx.modal}
-                rootClassName={cx.sidebarOverlay}
                 isOpen={isOpen}
                 onClickOutside={onClose}
                 onEsc={onClose}
+                loading={isLoading}
             >
                 <FormTitle>
                     Добавление отеля
@@ -87,7 +86,7 @@ export const HotelInfo: FC<HotelInfoProps> = ({
                             control={control}
                             rules={{required: true}}
                             render={({field}) => <Select
-                                {...field} items={types}
+                                {...field} items={HOTEL_TYPES}
                                 placeholder={'Выберите из списка'}
                                 label={"Тип"}
                                 required

@@ -1,5 +1,4 @@
 import React, {FC, useCallback, useMemo} from 'react'
-import {Modal} from "@consta/uikit/Modal";
 import cx from './style.module.css'
 import {TextField} from "@consta/uikit/TextField";
 import {Select} from "@consta/uikit/Select";
@@ -7,10 +6,6 @@ import {type CurrentReserveType} from "@/features/Scheduler/ui/Calendar";
 import {Controller, useForm} from "react-hook-form";
 import {FormButtons} from "@/shared/ui/FormButtons/FormButtons";
 import {
-    getAllHotelsForRoom,
-    Hotel,
-    HotelDTO,
-    HotelForRoom,
     Room,
     RoomForm,
     useGetHotelsForRoom
@@ -22,6 +17,7 @@ import {DragNDropField} from "@consta/uikit/DragNDropField";
 import {Button} from "@consta/uikit/Button";
 import {Text} from "@consta/uikit/Text";
 import {adaptToOption} from "@/features/RoomInfo/lib/adaptHotel";
+import {Modal} from "@/shared/ui/Modal/Modal";
 
 export interface RoomInfoProps {
     isOpen: boolean;
@@ -77,14 +73,13 @@ export const RoomInfo: FC<RoomInfoProps> = ({
         return (
             <Modal
                 hasOverlay
-                className={cx.modal}
-                rootClassName={cx.sidebarOverlay}
                 isOpen={isOpen}
                 onClickOutside={onClose}
                 onEsc={onClose}
+                loading={loading}
             >
                 <FormTitle>
-                    Бронирование
+                    Добавление номера
                 </FormTitle>
                 <Controller
                     name="hotel_id"
@@ -113,23 +108,6 @@ export const RoomInfo: FC<RoomInfoProps> = ({
                 />
                 <Grid cols={3} gap={FORM_GAP_SIZE}>
                     <GridItem col={2}>
-                        <Controller
-                            name="hotel_id"
-                            control={control}
-                            rules={{required: true}}
-                            render={({field}) =>
-                                <Select
-                                    {...field}
-                                    items={hotelOptions}
-                                    placeholder={'Выберите из списка'}
-                                    label={"Название отеля"} required size={FORM_SIZE}
-                                    dropdownClassName={cx.dropdown}
-                                    className={cx.fields}
-                                    disabled={loading}
-                                />
-                            }
-                        />
-
                         <TextField
                             {...register('price', {valueAsNumber: true})}
                             placeholder="Введите стоимость"

@@ -1,5 +1,4 @@
-import React, {FC, useCallback, useEffect, useMemo, useState} from 'react'
-import {Modal} from "@consta/uikit/Modal";
+import React, {FC, useEffect, useMemo} from 'react'
 import {Text} from "@consta/uikit/Text";
 import cx from '@/features/ReserveInfo/ui/style.module.css'
 import {FieldGroup} from "@consta/uikit/FieldGroup";
@@ -8,22 +7,23 @@ import {Select} from "@consta/uikit/Select";
 import {IconCalendar} from "@consta/icons/IconCalendar";
 import {DatePicker} from "@consta/uikit/DatePicker";
 import {Controller, useForm} from "react-hook-form";
-import {Loader} from "@consta/uikit/Loader";
 import {FORM_SIZE} from "@/shared/lib/const";
-import {type CurrentReserveType, Reserve, ReserveForm, useCreateReserve} from "@/shared/api/reserve/reserve";
+import {type CurrentReserveType, Nullable, Reserve, ReserveDTO, ReserveForm} from "@/shared/api/reserve/reserve";
 import {useGetHotelsForRoom} from "@/shared/api/hotel/hotel";
 import {useGetRoomsByHotel} from "@/shared/api/room/room";
 import {adaptToOption} from "@/features/RoomInfo/lib/adaptHotel";
 import {FormButtons} from "@/shared/ui/FormButtons/FormButtons";
-import {toast} from "react-toastify";
 import moment from "moment";
 import {ReserveTotal} from "@/features/ReserveInfo/ui/ReserveTotal";
+import {Modal} from "@/shared/ui/Modal/Modal";
+import {FormTitle} from "@/shared/ui/FormTitle/FormTitle";
+import {showToast} from "@/shared/ui/Toast/Toast";
 
 export interface ReserveInfoProps {
     isOpen: boolean;
     onClose: () => void;
-    onAccept: (reserve: Reserve) => void;
-    currentReserve?: CurrentReserveType
+    onAccept: (reserve: Reserve | ReserveDTO) => void;
+    currentReserve: Nullable<CurrentReserveType>
     isLoading: boolean
 }
 
@@ -37,20 +37,38 @@ export const ReserveInfo: FC<ReserveInfoProps> = ({
 
     const {data: hotels, isPending: isHotelsLoading, status: hotelsStatus} = useGetHotelsForRoom()
 
-    // console.log(moment.unix(currentReserve?.time).toDate())
-    const currentTime = currentReserve?.time ? moment.unix(currentReserve?.time).toDate() : moment().toDate()
+    const getDefaultValues = ({
+                                  reserve: {start, end, quantity, price, comment, guest, phone, prepayment},
+                                  room,
+                                  hotel
+                              }: CurrentReserveType): ReserveForm => {
+        const currentDate: [Date, Date] = [new Date(start), new Date(end)]
 
+        return {
+            date: currentDate,
+            hotel_id: adaptToOption({
+                id: hotel?.id,
+                title: hotel?.title
+            }),
+            room_id: adaptToOption({
+                id: room?.id,
+                title: room?.title
+            }),
+            price,
+            prepayment,
+            guest,
+            phone,
+            comment,
+            quantity
+        }
+
+    }
     const {
         control,
         register,
         watch,
     } = useForm<ReserveForm>({
-        defaultValues:
-            {
-                date: [moment().toDate(), moment().add('day', 1).toDate()],
-                hotel_id: {id: currentReserve?.hotel.id, label: currentReserve?.hotel.title},
-                room_id: {id: currentReserve?.room.id, label: currentReserve?.room.title}
-            }
+        defaultValues: currentReserve ? getDefaultValues(currentReserve) : undefined
     })
 
     const formData = watch()
@@ -62,6 +80,7 @@ export const ReserveInfo: FC<ReserveInfoProps> = ({
         refetch: fetchRoomsByHotel,
         status: roomsStatus
     } = useGetRoomsByHotel(formData?.hotel_id?.id)
+
 
     const hotelOptions = useMemo(() => {
         const hotelsTmp = hotels?.map(adaptToOption)
@@ -77,7 +96,6 @@ export const ReserveInfo: FC<ReserveInfoProps> = ({
 
 
     useEffect(() => {
-        console.log('im here')
         if (hotelsStatus === 'success' && !!formData.hotel_id) {
             fetchRoomsByHotel()
         }
@@ -114,36 +132,29 @@ export const ReserveInfo: FC<ReserveInfoProps> = ({
 
     const onAcceptForm = () => {
         if (!formData?.date?.[0] || !formData?.date?.[1]) {
-            toast('Ошибка при создании брони, проверьте даты', {type: 'error'})
+            showToast('Ошибка при создании брони, проверьте даты', "error")
             return
         }
+
         const data = deserializeData(formData)
         console.log({formData, data})
-
-
-        onAccept(data)
+        if (currentReserve) {
+            onAccept(currentReserve ? {...data, id: currentReserve?.reserve?.id} : data)
+        }
     }
 
 
     return (
         <Modal
             hasOverlay
-            className={cx.modal}
-            rootClassName={cx.sidebarOverlay}
             isOpen={isOpen}
             onClickOutside={onClose}
             onEsc={onClose}
+            loading={loading}
         >
-            {loading && <Loader type="circle"/>}
-            <Text
-                as="p"
-                size="3xl"
-                view="primary"
-                weight="semibold"
-                className={cx.title}
-            >
+            <FormTitle>
                 Бронирование
-            </Text>
+            </FormTitle>
 
             <Controller
                 name="date"
@@ -151,6 +162,7 @@ export const ReserveInfo: FC<ReserveInfoProps> = ({
                 rules={{required: true}}
                 render={({field}) =>
                     <DatePicker
+                        required
                         value={field.value}
                         onChange={e => field.onChange(e)}
                         style={{zIndex: 90}}
@@ -168,16 +180,16 @@ export const ReserveInfo: FC<ReserveInfoProps> = ({
                 name="hotel_id"
                 control={control}
                 rules={{required: true}}
-                render={({field}) => <
-                    Select
-                    {...field}
-                    items={hotelOptions}
-                    placeholder={'Выберите из списка'}
-                    label={"Название отеля"} required size={FORM_SIZE}
-                    dropdownClassName={cx.dropdown}
-                    className={cx.fields}
-                    disabled={loading || !!currentReserve?.hotel?.id}
-                />}
+                render={({field}) =>
+                    <Select
+                        {...field}
+                        items={hotelOptions}
+                        placeholder={'Выберите из списка'}
+                        label={"Название отеля"} required size={FORM_SIZE}
+                        dropdownClassName={cx.dropdown}
+                        className={cx.fields}
+                        disabled={loading || !!currentReserve?.hotel?.id}
+                    />}
             />
             <Controller
                 name="room_id"
@@ -188,7 +200,10 @@ export const ReserveInfo: FC<ReserveInfoProps> = ({
                             placeholder={'Выберите из списка'}
                             label={"Номер"} required size={FORM_SIZE}
                             dropdownClassName={cx.dropdown}
-                            isLoading={isHotelsLoading || isRoomsLoading || !!currentReserve?.room?.id}
+                            className={cx.fields}
+                            isLoading={isHotelsLoading || isRoomsLoading}
+                            disabled={!!currentReserve}
+
                     />
                 }
             />
@@ -220,33 +235,51 @@ export const ReserveInfo: FC<ReserveInfoProps> = ({
                     type={'number'}
                 />
             </FieldGroup>
-            <TextField
-                {...register('guest')}
-                placeholder="Введите ФИО"
-                label="ФИО гостя"
-                required
-                size={FORM_SIZE}
+            <Controller
+                name="guest"
+                rules={{required: true}}
+                control={control}
+                render={({field}) => <TextField
+                    {...field}
+                    placeholder="Введите ФИО"
+                    label="ФИО гостя"
+                    required
+                    size={FORM_SIZE}
+                />}
+            />
+            <Controller
+                name="phone"
+                rules={{required: true}}
+                control={control}
+                render={({field}) => <TextField
+                    {...field}
+                    placeholder="+7 (...)"
+                    required
+                    label="Номер гостя"
+                    type={'phone'}
+                    size={FORM_SIZE}
+                />}
+            />
 
-            />
-            <TextField
-                {...register('phone')}
-                placeholder="+7 (...)"
-                label="Номер гостя"
-                required
-                type={'phone'}
-                size={FORM_SIZE}
+            <Controller
+                name="comment"
+                control={control}
+                render={({field}) => <TextField
+                    {...field}
+                    className={cx.fields}
+                    label="Комментарии"
+                    type="textarea"
+                    value={field?.value}
+                    onChange={field?.onChange}
+                    cols={200}
+                    rows={3}
+                    placeholder="Введите комментарий"
+                    size={FORM_SIZE}
+                />}
             />
 
-            <TextField
-                {...register('comment')}
-                label="Комментарии"
-                type="textarea"
-                cols={200}
-                rows={3}
-                placeholder="Введите комментарий"
-                size={FORM_SIZE}
-            />
             <ReserveTotal date={formData.date} price={formData.price} prepayment={formData.prepayment}
+                          className={cx.fields}
                           Prepayment={<Controller
                               name="prepayment"
                               control={control}
@@ -260,9 +293,9 @@ export const ReserveInfo: FC<ReserveInfoProps> = ({
                                       className={cx.fields}
                                       disabled={loading}
                                       view={'clear'}
-                                      value={String(field.value ?? '0')}
+                                      value={field?.value}
                                       onChange={field.onChange}
-                                      // type={'number'}
+                                      type={'number'}
                                       rightSide={'руб.'}
                                   />
                               }

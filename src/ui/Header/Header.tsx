@@ -77,8 +77,8 @@ const notifications: NotificationsListDefaultItem[] = [
 
 const RowCenterRight = () => (
     <div>
-        <Notifications items={notifications}/>
-        <TileMenu items={tiles}/>
+        {/*<Notifications items={notifications}/>*/}
+        {/*<TileMenu items={tiles}/>*/}
         <User
             className={cnMixSpace({mL: 'xs'})}
             avatarUrl="https://avatars.githubusercontent.com/u/13190808?v=4"
@@ -104,7 +104,7 @@ export const LayoutExampleBig = () => {
             //   }}
             rowCenter={{
                 left: <Image src={logo.src} alt={'Лого'} width={130} height={65}/>,
-                center: <TextField rightSide={IconSearchStroked} placeholder='Я чёто там ищу'/>,
+                // center: <TextField rightSide={IconSearchStroked} placeholder='Я чёто там ищу'/>,
                 right: <RowCenterRight/>,
             }}
             placeholder={undefined}

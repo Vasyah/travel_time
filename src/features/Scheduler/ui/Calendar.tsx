@@ -8,11 +8,22 @@ import hotelImage from '../hotel.svg';
 import star from '../star.svg';
 import cx from './style.module.css'
 import {ReserveInfo} from "@/features/ReserveInfo/ui/ReserveInfo";
-import {fetchHotelWithRoomsAndReserves, Hotel, HotelDTO} from "@/shared/api/hotel/hotel";
-import {CurrentReserveType, Reserve, useCreateReserve} from "@/shared/api/reserve/reserve";
+import {HotelDTO} from "@/shared/api/hotel/hotel";
+import {
+    CurrentReserveType,
+    Nullable,
+    Reserve,
+    ReserveDTO,
+    useCreateReserve,
+    useUpdateReserve
+} from "@/shared/api/reserve/reserve";
 import {useGetRoomsWithReservesByHotel} from "@/shared/api/room/room";
 import {Timeline} from "react-calendar-timeline";
 import moment from "moment";
+import {useQueryClient} from "@tanstack/react-query";
+import {QUERY_KEYS} from "@/app/config/reactQuery";
+import {Tooltip} from "antd";
+import {getDateFromUnix} from "@/shared/lib/date";
 
 const keys = {
     groupIdKey: "id",
@@ -32,18 +43,11 @@ export interface CalendarProps {
     hotel: HotelDTO;
 }
 
-const hotelReserves: {
-    id: string
-    group: string
-    end: number
-    start: number
-    title: string | undefined
-}[] = []
-
-export const Calendar = ({hotel,}: CalendarProps) => {
+export const Calendar = ({hotel}: CalendarProps) => {
     const {data, isPending} = useGetRoomsWithReservesByHotel(hotel.id)
-    const [isHotelReserve, setIsHotelReserve] = useState(false);
-    const [currentReserve, setCurrentReserve] = useState<CurrentReserveType>(null);
+    const [currentReserve, setCurrentReserve] = useState<Nullable<CurrentReserveType>>(null);
+
+    const queryClient = useQueryClient();
 
     const {
         isPending: isReserveLoading,
@@ -51,22 +55,38 @@ export const Calendar = ({hotel,}: CalendarProps) => {
         mutate: createReserve,
         error: reserveError,
     } = useCreateReserve(() => {
+        queryClient.invalidateQueries({queryKey: [...QUERY_KEYS.roomsWithReservesByHotel, hotel.id]})
         setCurrentReserve(null)
-        setIsHotelReserve(false)
     })
 
+    const {
+        // isPending: isReserveUpdating,
+        // isSuccess: isReserveUpdating,
+        mutateAsync: updateReserve,
+    } = useUpdateReserve(() => {
+        queryClient.invalidateQueries({queryKey: [...QUERY_KEYS.roomsWithReservesByHotel, hotel.id]})
+        setCurrentReserve(null)
+    })
 
+    useEffect(() => {
+        // console.log({isPending})
+    }, [isPending])
     const WEEK = 7 * 24 * 60 * 60 * 1000;
     const THREE_MONTHS = 24 * 60 * 60 * 1000 * 30 * 12;
 
-    const onReserveCreate = useCallback(async (reserve: Reserve) => {
-        console.log('Calendar создание брони', {reserve, currentReserve})
+    const onReserveCreate = async (reserve: Reserve) => {
+
+        if (currentReserve) {
+            console.log('Пытаюсь обновить запись')
+            await updateReserve(reserve as ReserveDTO)
+
+            return
+        }
 
         createReserve(reserve)
-    }, [])
+    }
     const onClose = () => {
         setCurrentReserve(null)
-        setIsHotelReserve(false)
     };
 
     // обработать ситуацию, когда отель ещё пустой
@@ -75,32 +95,69 @@ export const Calendar = ({hotel,}: CalendarProps) => {
     }
 
 
-    const hotelRooms = data?.map(({id, title}) => ({
-        id, title
+    const hotelRooms = data?.map(({reserves, id, title, ...room}) => ({
+        id, title: `${title}`, ...room
     })) ?? [];
     //
-    let hotelReserves: {
-        id: string
-        group: string
-        end: number
-        start: number
-        title: string | undefined
-    }[] = []
+    let hotelReserves: Array<ReserveDTO & { group: string }> = []
 
     data?.forEach(({id: room_id, reserves}) => {
-        const reservesTmp = reserves.map(({id, end, start, title}) => ({
-            id,
+        const reservesTmp = reserves.map(({end, start, ...reserve}) => ({
             group: room_id,
-            end: end,
-            start,
-            title
+            end: getDateFromUnix(end),
+            start: getDateFromUnix(start),
+            ...reserve
         }));
 
         hotelReserves = hotelReserves.concat(reservesTmp)
     })
 
-    console.log({hotelRooms, hotelReserves});
-    // console.log({items, fakeGroups})
+    const onSetCurrentReserve = (reserve: Reserve) => {
+
+    }
+
+    const itemRenderer = ({
+                              item,
+                              itemContext,
+                              getItemProps,
+                              getResizeProps
+                          }) => {
+        const {left: leftResizeProps, right: rightResizeProps} = getResizeProps()
+
+        const onItemClick = (reserve: ReserveDTO, hotel: HotelDTO) => {
+            const room = hotelRooms.find(room => room.id === reserve?.room_id);
+
+            if (room) {
+                setCurrentReserve({room, reserve, hotel})
+            }
+        }
+
+        return (
+            <div {...getItemProps(item.itemProps)} onDoubleClick={() => {
+                onItemClick(item, hotel)
+                console.log('Ваще-та я кликнул сюда', item)
+            }}>
+                {itemContext.useResizeHandle ? <div {...leftResizeProps} /> : ''}
+                <Tooltip
+                    title={<Grid><p>Гость: {item.guest}</p>
+                        <p>Номер: {item?.phone}</p>
+                        <p>Предоплата: {item?.prepayment}</p>
+                        <p>:{item.price}</p>
+                    </Grid>}>
+                    <div
+                        className="rct-item-content"
+                        style={{maxHeight: `${itemContext.dimensions.height}`}}
+
+                    >
+                        {item?.guest} {item?.phone}
+                    </div>
+                </Tooltip>
+
+                {itemContext.useResizeHandle ? <div {...rightResizeProps} /> : ''}
+            </div>
+        )
+    }
+
     return (
         <Grid cols={12} className={cx.container}>
             <GridItem col={2}>
@@ -138,27 +195,32 @@ export const Calendar = ({hotel,}: CalendarProps) => {
                 <Timeline
                     className={'travel-timeline'}
                     groups={hotelRooms}
+
                     items={hotelReserves}
                     keys={keys}
                     sidebarWidth={280}
                     canMove
                     canResize="both"
                     canSelect
-                    onItemSelect={(itemId, e, time) => console.log(itemId, e, time)}
+                    // onItemSelect={(itemId, e, time) => console.log(itemId, e, time)}
                     // itemsSorted
                     itemTouchSendsClick={true}
                     stackItems
                     itemHeightRatio={0.75}
-                    // showCursorLine
-                    defaultTimeStart={moment().add(-12, 'hour')}
-                    defaultTimeEnd={moment().add(12, 'hour')}
+                    showCursorLine
+                    defaultTimeStart={moment()}
+                    defaultTimeEnd={moment().add(2, 'month')}
                     minZoom={WEEK}
                     maxZoom={THREE_MONTHS}
                     onCanvasDoubleClick={(groupId, time, e) => {
-                        const currentGroup = hotelRooms.find(group => group.id === groupId);
-                        setIsHotelReserve(true)
-                        setCurrentReserve({room: {id: groupId, title: currentGroup?.title}, time, hotel})
+                        const room = hotelRooms.find(group => group.id === groupId);
+                        const reserve = hotelReserves.find(group => group.id === groupId);
+                        // setIsHotelReserve(true)
+                        if (room && reserve) {
+                            setCurrentReserve({room, reserve, hotel})
+                        }
                     }}
+                    itemRenderer={itemRenderer}
                 >
 
                     {/*<TimelineHeaders className="sticky">*/}
@@ -168,8 +230,9 @@ export const Calendar = ({hotel,}: CalendarProps) => {
                 </Timeline
                 >
             </GridItem>
-            {isHotelReserve && <ReserveInfo isOpen={isHotelReserve} onClose={onClose}
-                                            onAccept={onReserveCreate} currentReserve={currentReserve} isLoading={false}
+            {!!currentReserve && <ReserveInfo isOpen={!!currentReserve} onClose={onClose}
+                                              onAccept={onReserveCreate} currentReserve={currentReserve}
+                                              isLoading={false}
             />}
         </Grid>
     )

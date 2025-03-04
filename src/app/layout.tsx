@@ -1,6 +1,5 @@
 'use client'
 
-// import type {Metadata} from "next";
 import {Geist, Geist_Mono} from "next/font/google";
 import {Theme, ThemePreset,} from "@consta/uikit/Theme";
 import {LayoutExampleBig} from "@/ui/Header/Header";
@@ -15,6 +14,7 @@ import {SearchFeature} from "@/features/Search/ui/Search";
 import {Text} from "@consta/uikit/Text";
 import {QueryClientProvider} from "@tanstack/react-query";
 import {queryClient} from "@/app/config/reactQuery";
+import {attachLogger} from "effector-logger";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -44,6 +44,7 @@ const preset: ThemePreset = {
     shadow: 'gpnDefault', // указывается значение модификатора _shadow
 };
 
+// attachLogger();
 
 export default function RootLayout({
                                        children,

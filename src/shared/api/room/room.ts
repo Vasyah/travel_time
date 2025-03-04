@@ -1,8 +1,8 @@
-import {Reserve, ReserveDTO} from "@/shared/api/reserve/reserve";
+import {ReserveDTO} from "@/shared/api/reserve/reserve";
 import {useMutation, useQuery} from "@tanstack/react-query";
-import {QUERY_KEYS, queryClient} from "@/app/config/reactQuery";
+import {QUERY_KEYS} from "@/app/config/reactQuery";
 import supabase from "@/app/config/supabase";
-import {createHotelApi, Hotel, insertItem} from "@/shared/api/hotel/hotel";
+import {insertItem} from "@/shared/api/hotel/hotel";
 import {TABLE_NAMES} from "@/shared/api/const";
 
 export type RoomDTO = {
@@ -39,11 +39,7 @@ export async function getRoomsWithReservesByHotel(hotel_id?: string) {
         `
         id,
         title,
-        reserves(
-            id,
-            start,
-            end
-        )
+        reserves(*)
 )
     `)
         .filter('hotel_id', "eq", hotel_id);
