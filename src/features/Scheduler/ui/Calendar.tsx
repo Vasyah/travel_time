@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from "react";
+import React, {useState} from "react";
 import 'react-calendar-timeline/style.css'
 import './calendar.css'
 import {Grid, GridItem} from "@consta/uikit/Grid";
@@ -24,6 +24,7 @@ import {useQueryClient} from "@tanstack/react-query";
 import {QUERY_KEYS} from "@/app/config/reactQuery";
 import {Tooltip} from "antd";
 import {getDateFromUnix} from "@/shared/lib/date";
+import {FullWidthLoader} from "@/shared/ui/Loader/Loader";
 
 const keys = {
     groupIdKey: "id",
@@ -44,15 +45,14 @@ export interface CalendarProps {
 }
 
 export const Calendar = ({hotel}: CalendarProps) => {
-    const {data, isPending} = useGetRoomsWithReservesByHotel(hotel.id)
+    const {data, isFetching: isRoomLoading} = useGetRoomsWithReservesByHotel(hotel.id)
     const [currentReserve, setCurrentReserve] = useState<Nullable<CurrentReserveType>>(null);
 
     const queryClient = useQueryClient();
 
     const {
         isPending: isReserveLoading,
-        isSuccess: isReserveLoaded,
-        mutate: createReserve,
+        mutateAsync: createReserve,
         error: reserveError,
     } = useCreateReserve(() => {
         queryClient.invalidateQueries({queryKey: [...QUERY_KEYS.roomsWithReservesByHotel, hotel.id]})
@@ -60,40 +60,32 @@ export const Calendar = ({hotel}: CalendarProps) => {
     })
 
     const {
-        // isPending: isReserveUpdating,
-        // isSuccess: isReserveUpdating,
+        isPending: isReserveUpdating,
         mutateAsync: updateReserve,
     } = useUpdateReserve(() => {
         queryClient.invalidateQueries({queryKey: [...QUERY_KEYS.roomsWithReservesByHotel, hotel.id]})
         setCurrentReserve(null)
     })
 
-    useEffect(() => {
-        // console.log({isPending})
-    }, [isPending])
     const WEEK = 7 * 24 * 60 * 60 * 1000;
     const THREE_MONTHS = 24 * 60 * 60 * 1000 * 30 * 12;
 
-    const onReserveCreate = async (reserve: Reserve) => {
+    const onReserveAccept = async (reserve: Reserve) => {
 
-        if (currentReserve) {
+        const isEdit = currentReserve?.reserve
+
+        if (isEdit) {
             console.log('Пытаюсь обновить запись')
             await updateReserve(reserve as ReserveDTO)
 
             return
         }
 
-        createReserve(reserve)
+        await createReserve(reserve)
     }
     const onClose = () => {
         setCurrentReserve(null)
     };
-
-    // обработать ситуацию, когда отель ещё пустой
-    if (!hotel) {
-        return <div>Пустой...перезаряжаюсь</div>
-    }
-
 
     const hotelRooms = data?.map(({reserves, id, title, ...room}) => ({
         id, title: `${title}`, ...room
@@ -111,10 +103,6 @@ export const Calendar = ({hotel}: CalendarProps) => {
 
         hotelReserves = hotelReserves.concat(reservesTmp)
     })
-
-    const onSetCurrentReserve = (reserve: Reserve) => {
-
-    }
 
     const itemRenderer = ({
                               item,
@@ -158,8 +146,11 @@ export const Calendar = ({hotel}: CalendarProps) => {
         )
     }
 
+    const isLoading = isRoomLoading
+    const reserveLoading = isReserveLoading || isReserveUpdating
     return (
         <Grid cols={12} className={cx.container}>
+            {isLoading && <FullWidthLoader/>}
             <GridItem col={2}>
                 <div className={cx.hotelInfo}>
                     {/*<Grid cols={4} yAlign={'bottom'}>*/}
@@ -213,11 +204,11 @@ export const Calendar = ({hotel}: CalendarProps) => {
                     minZoom={WEEK}
                     maxZoom={THREE_MONTHS}
                     onCanvasDoubleClick={(groupId, time, e) => {
-                        const room = hotelRooms.find(group => group.id === groupId);
-                        const reserve = hotelReserves.find(group => group.id === groupId);
+                        const room = hotelRooms?.find(group => group.id === groupId);
                         // setIsHotelReserve(true)
-                        if (room && reserve) {
-                            setCurrentReserve({room, reserve, hotel})
+                        console.log(room, groupId, time, e);
+                        if (room) {
+                            setCurrentReserve({room, hotel})
                         }
                     }}
                     itemRenderer={itemRenderer}
@@ -231,8 +222,8 @@ export const Calendar = ({hotel}: CalendarProps) => {
                 >
             </GridItem>
             {!!currentReserve && <ReserveInfo isOpen={!!currentReserve} onClose={onClose}
-                                              onAccept={onReserveCreate} currentReserve={currentReserve}
-                                              isLoading={false}
+                                              onAccept={onReserveAccept} currentReserve={currentReserve}
+                                              isLoading={reserveLoading}
             />}
         </Grid>
     )

@@ -1,6 +1,4 @@
-import Item from "react-calendar-timeline/dist/lib/items/Item";
-
-export const HOTEL_TYPES: Item[] = [
+export const HOTEL_TYPES: { id: number, label: string }[] = [
     {
         label: 'Отели',
         id: 1,
@@ -15,10 +13,10 @@ export const HOTEL_TYPES: Item[] = [
     },
     {
         label: 'Квартиры',
-        id: "4",
+        id: 4,
     },
     {
         label: 'Дом Под Ключ',
-        id: "5",
+        id: 5,
     },
 ];

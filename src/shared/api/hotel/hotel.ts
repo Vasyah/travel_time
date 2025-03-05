@@ -4,6 +4,7 @@ import {QUERY_KEYS, queryClient} from "@/app/config/reactQuery";
 import {Room} from "@/shared/api/room/room";
 import {TravelOption} from "@/shared/api/reserve/reserve";
 import {TABLE_NAMES} from "@/shared/api/const";
+import {QueryData} from "@supabase/supabase-js";
 
 
 // Тип Hotel
@@ -27,6 +28,7 @@ export type RoomForm = Omit<Room, 'hotel_id'> & {
 //для формы Room и Reserve
 export type HotelForRoom = Pick<HotelDTO, 'id' | 'title'>
 
+const hotelWithRoomsAndServesQuery = supabase.from('hotels').select(`*, rooms(*, reserves(*))`);
 
 export async function getAllHotels(): Promise<HotelDTO[]> {
     try {
@@ -43,8 +45,14 @@ export async function getAllHotelsForRoom(): Promise<HotelForRoom[]> {
     return response.data as HotelForRoom[]; // Возвращаем массив отелей
 }
 
+export async function getAllCounts() {
+    const {data, error} = await supabase.rpc('get_hotel_room_reserve_counts');
 
-// const hotelWithRoomsAndServesQuery = supabase.from('hotels').select(`*, rooms(*, reserves(*))`);
+    if (error) throw error;
+
+    return data as { hotel_count: number, room_count: number, reserve_count: number }[]; // Возвращаем массив отелей
+}
+
 
 export async function insertItem<Type>(tableName: string, data: Type, options?: {
     count?: "exact" | "planned" | "estimated"
@@ -63,7 +71,6 @@ export async function insertItem<Type>(tableName: string, data: Type, options?: 
 
 }
 
-
 export const createHotelApi = async (hotel: Hotel) => {
     const {responseData} = await insertItem<Hotel>(TABLE_NAMES.HOTELS, hotel)
 
@@ -76,6 +83,13 @@ export const useGetAllHotels = () => {
         queryFn: getAllHotels,
     })
 }
+
+export const useGetAllCounts = () => {
+    return useQuery({
+        queryKey: QUERY_KEYS.allCounts,
+        queryFn: getAllCounts,
+    })
+}
 export const useGetHotelsForRoom = () => {
     return useQuery({
         queryKey: QUERY_KEYS.hotelsForRoom,
@@ -83,14 +97,12 @@ export const useGetHotelsForRoom = () => {
     })
 }
 
-export const useCreateHotel = () => {
+export const useCreateHotel = (onSuccess: () => void, onError?: (e: Error) => void) => {
     return useMutation({
         mutationFn: (hotel: Hotel) => {
             return createHotelApi(hotel)
         },
-        onSuccess: () => {
-            queryClient.invalidateQueries({queryKey: QUERY_KEYS.hotelsForRoom})
-        },
+        onSuccess, onError
     })
 }
 

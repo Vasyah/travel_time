@@ -8,6 +8,7 @@ export const QUERY_KEYS = {
     hotelsForRoom: ['hotelsForRoom'],
     createReserve: 'createReserve',
     updateReserve: 'updateReserve',
+    allCounts: ['hotels', 'counts']
 
 }
 

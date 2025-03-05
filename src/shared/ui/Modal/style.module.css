@@ -1,5 +1,6 @@
 .sidebarOverlay {
     z-index: 90 !important;
+    pointer-events: none;
 }
 
 .modal {
@@ -7,7 +8,7 @@
     z-index: var(--zIndex-modal);
     max-width: var(--modal-max-width);
     max-height: var(--travel-form-height);
-    padding: 2.5rem 2rem;
+    padding: 2rem 2rem 1.5rem;
 }
 
 .modalLoading {
@@ -25,8 +26,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-
-
 }
 
 .loader {

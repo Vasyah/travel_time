@@ -45,13 +45,15 @@ export const SearchFeature: FC<SearchFeatureProps> = (props: SearchFeatureProps)
     return (
         <FieldGroup form="default" size="m">
             <Select style={{
-                minWidth: 200
+                minWidth: 200,
+                maxWidth: '200px',
             }} items={HOTEL_TYPES} value={category} onChange={setCategory}
                     placeholder={'Категория'}/>
             <DatePicker
                 style={{
                     zIndex: 90,
-                    minWidth: 400
+                    maxWidth: '378px'
+                    // minWidth: 400
                 }}
                 type="date-range"
                 value={date}
@@ -62,7 +64,7 @@ export const SearchFeature: FC<SearchFeatureProps> = (props: SearchFeatureProps)
                 withClearButton
             />
             <TextField value={quantity} onChange={(value) => setQuantity(value)}
-                       placeholder={'Гости'} type={'number'} withClearButton
+                       placeholder={'Гости'} type={'number'} withClearButton style={{maxWidth: '144px'}}
             />
             <Button label={'Найти'} onClick={onSearch}/>
         </FieldGroup>

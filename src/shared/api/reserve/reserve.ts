@@ -5,6 +5,7 @@ import {createRoomApi} from "@/shared/api";
 import {RoomDTO} from "@/shared/api/room/room";
 import supabase from "@/app/config/supabase";
 import {showToast} from "@/shared/ui/Toast/Toast";
+import {QUERY_KEYS, queryClient} from "@/app/config/reactQuery";
 
 export type ReserveDTO = {
     id: string; // Уникальный идентификатор брони
@@ -36,7 +37,7 @@ export type ReserveForm = Omit<ReserveDTO, "id" | "start" | "end" | "room_id"> &
 export type Nullable<Type> = Type | null
 
 export type CurrentReserveType =
-    { room: RoomDTO, hotel: HotelDTO, reserve: ReserveDTO }
+    { room: RoomDTO, hotel: HotelDTO, reserve?: ReserveDTO }
 
 export const createReserveApi = async (reserve: Reserve) => {
     const {responseData} = await insertItem<Reserve>(TABLE_NAMES.RESERVES, reserve)
@@ -55,16 +56,16 @@ export const updateReserveApi = async ({id, ...reserve}: ReserveDTO) => {
         showToast('Ошибка при обновлении брони', 'error')
     }
 }
-export const useUpdateReserve = (onSuccess?: () => void) => {
+export const useUpdateReserve = (onSuccess?: () => void, onError?: (e: Error) => void) => {
     return useMutation({
         mutationFn: updateReserveApi,
-        onSuccess,
+        onSuccess, onError
     })
 }
 
-export const useCreateReserve = (onSuccess?: () => void) => {
+export const useCreateReserve = (onSuccess?: () => void, onError?: (e: Error) => void) => {
     return useMutation({
         mutationFn: createReserveApi,
-        onSuccess,
+        onSuccess, onError,
     })
 }

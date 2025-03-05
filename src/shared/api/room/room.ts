@@ -1,6 +1,6 @@
 import {ReserveDTO} from "@/shared/api/reserve/reserve";
-import {useMutation, useQuery} from "@tanstack/react-query";
-import {QUERY_KEYS} from "@/app/config/reactQuery";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
+import {QUERY_KEYS, queryClient} from "@/app/config/reactQuery";
 import supabase from "@/app/config/supabase";
 import {insertItem} from "@/shared/api/hotel/hotel";
 import {TABLE_NAMES} from "@/shared/api/const";
@@ -71,9 +71,10 @@ export const useGetRoomsWithReservesByHotel = (hotel_id?: string) => {
         queryFn: () => getRoomsWithReservesByHotel(hotel_id),
     })
 }
-export const useCreateRoom = () => {
+export const useCreateRoom = (onSuccess: () => void, onError?: (e: Error) => void) => {
     return useMutation({
         mutationFn: createRoomApi,
+        onSuccess, onError
     })
 }
 

@@ -18,6 +18,10 @@ import {ReserveTotal} from "@/features/ReserveInfo/ui/ReserveTotal";
 import {Modal} from "@/shared/ui/Modal/Modal";
 import {FormTitle} from "@/shared/ui/FormTitle/FormTitle";
 import {showToast} from "@/shared/ui/Toast/Toast";
+import {FaWhatsapp} from "react-icons/fa";
+import {IoLogoWhatsapp} from "react-icons/io";
+import {createWhatsappLink} from "@/shared/lib/links";
+import {LinkIcon} from "@/shared/ui/LinkIcon/LinkIcon";
 
 export interface ReserveInfoProps {
     isOpen: boolean;
@@ -38,14 +42,27 @@ export const ReserveInfo: FC<ReserveInfoProps> = ({
     const {data: hotels, isPending: isHotelsLoading, status: hotelsStatus} = useGetHotelsForRoom()
 
     const getDefaultValues = ({
-                                  reserve: {start, end, quantity, price, comment, guest, phone, prepayment},
+                                  reserve,
                                   room,
                                   hotel
-                              }: CurrentReserveType): ReserveForm => {
-        const currentDate: [Date, Date] = [new Date(start), new Date(end)]
+                              }: CurrentReserveType): Partial<ReserveForm> => {
 
-        return {
-            date: currentDate,
+
+        const getReserveDefaults = ({start, end, price, prepayment, guest, phone, comment, quantity}: ReserveDTO) => {
+            const currentDate: [Date, Date] = start && end ? [new Date(start), new Date(end)] : [new Date(), new Date()]
+            return {
+                date: currentDate,
+                price,
+                prepayment,
+                guest,
+                phone,
+                comment,
+                quantity
+            }
+        }
+
+        let defaults = {
+            date: [moment().toDate(), moment().add(1, 'days').toDate()],
             hotel_id: adaptToOption({
                 id: hotel?.id,
                 title: hotel?.title
@@ -53,22 +70,23 @@ export const ReserveInfo: FC<ReserveInfoProps> = ({
             room_id: adaptToOption({
                 id: room?.id,
                 title: room?.title
-            }),
-            price,
-            prepayment,
-            guest,
-            phone,
-            comment,
-            quantity
+            })
         }
 
+        if (!!reserve) {
+            defaults = {...defaults, ...getReserveDefaults(reserve)}
+        }
+
+        return defaults
+
     }
+
     const {
         control,
         register,
         watch,
     } = useForm<ReserveForm>({
-        defaultValues: currentReserve ? getDefaultValues(currentReserve) : undefined
+        defaultValues: currentReserve?.reserve ? getDefaultValues(currentReserve) : undefined
     })
 
     const formData = watch()
@@ -137,10 +155,7 @@ export const ReserveInfo: FC<ReserveInfoProps> = ({
         }
 
         const data = deserializeData(formData)
-        console.log({formData, data})
-        if (currentReserve) {
-            onAccept(currentReserve ? {...data, id: currentReserve?.reserve?.id} : data)
-        }
+        onAccept(currentReserve ? {...data, id: currentReserve?.reserve?.id} : data)
     }
 
 
@@ -227,6 +242,8 @@ export const ReserveInfo: FC<ReserveInfoProps> = ({
                         />
                     }
                 />
+                {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+                {/*// @ts-expect-error*/}
                 <TextField
                     {...register('quantity')}
                     placeholder="Введите число"
@@ -258,6 +275,10 @@ export const ReserveInfo: FC<ReserveInfoProps> = ({
                     label="Номер гостя"
                     type={'phone'}
                     size={FORM_SIZE}
+                    rightSide={() => formData?.phone ? <LinkIcon icon={<IoLogoWhatsapp
+                        color="#5BD066"
+                        size={'24px'}
+                    />} link={createWhatsappLink(formData?.phone, 'Добрый день')}/> : null}
                 />}
             />
 
@@ -278,7 +299,7 @@ export const ReserveInfo: FC<ReserveInfoProps> = ({
                 />}
             />
 
-            <ReserveTotal date={formData.date} price={formData.price} prepayment={formData.prepayment}
+            <ReserveTotal date={formData?.date} price={formData.price} prepayment={formData.prepayment}
                           className={cx.fields}
                           Prepayment={<Controller
                               name="prepayment"

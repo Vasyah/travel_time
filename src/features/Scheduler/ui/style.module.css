@@ -1,9 +1,10 @@
-/*.container {*/
-/*    box-shadow: var(--shadow-group);*/
-/*    border-radius: var(--control-radius);*/
-/*    margin-bottom: 0.75rem;*/
-/*    padding: 0 var(--space-l);*/
-/*}*/
+.container {
+    box-shadow: var(--shadow-group);
+    border-radius: var(--control-radius);
+    margin-bottom: 0.75rem;
+    padding: 0 var(--space-l);
+    position: relative;
+}
 
 /*.hotelIcon {*/
 /*    !*padding-bottom: var(--space-l);*!*/

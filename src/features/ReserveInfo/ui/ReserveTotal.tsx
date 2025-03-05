@@ -20,9 +20,8 @@ export const ReserveTotal: FC<ReserveTotalProps> = ({
                                                     }: ReserveTotalProps) => {
 
     const totalDays = useMemo(() => {
-        const [start, end] = date
-
-        if (start && end) {
+        if (date?.[0] && date?.[1]) {
+            const [start, end] = date
             return moment(end).hour(12).diff(moment(start).hour(11), 'days')
         }
 

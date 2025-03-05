@@ -1,0 +1,29 @@
+.layout {
+    margin-top: 136px;
+}
+
+.link {
+    padding: 1rem;
+    text-decoration: none;
+    color: #7C918F;
+
+    &:hover {
+        transition: all .25s ease-in-out;
+        background-color: var(--color-bg-success);
+        color: var(--color-bg-default) !important;
+
+        svg {
+            fill: var(--color-bg-default);
+        }
+    }
+}
+
+.active {
+    color: var(--color-bg-success);
+
+    .container svg {
+        fill: var(--color-bg-success);
+        color: var(--color-bg-success);
+    }
+}
+

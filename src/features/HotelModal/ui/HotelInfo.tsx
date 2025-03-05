@@ -3,7 +3,6 @@ import {Text} from "@consta/uikit/Text";
 import cx from './style.module.css'
 import {TextField} from "@consta/uikit/TextField";
 import {Select} from "@consta/uikit/Select";
-import {type CurrentReserveType} from "@/features/Scheduler/ui/Calendar";
 import {Controller, useForm} from "react-hook-form";
 import {Hotel} from "@/shared/api/hotel/hotel";
 import {Grid, GridItem} from "@consta/uikit/Grid";
@@ -12,6 +11,10 @@ import {FORM_SIZE} from "@/shared/lib/const";
 import {HOTEL_TYPES} from "@/features/HotelModal/lib/const";
 import {FormTitle} from "@/shared/ui/FormTitle/FormTitle";
 import {Modal} from "@/shared/ui/Modal/Modal";
+import {CurrentReserveType} from "@/shared/api/reserve/reserve";
+import {LinkIcon} from "@/shared/ui/LinkIcon/LinkIcon";
+import {createTelegramLink} from "@/shared/lib/links";
+import {FaTelegram} from "react-icons/fa";
 
 export interface HotelInfoProps {
     isOpen: boolean;
@@ -42,20 +45,21 @@ export const HotelInfo: FC<HotelInfoProps> = ({
             formState: {errors}
         } = useForm<HotelForm>({defaultValues: {rating: 5, telegram_url: 'https://t.me/'}})
 
-
+        const formData = watch()
         // количество ночей - считаем по выбранной дате
         // предоплата - сумма указанная вручную
         // итоговая сумма - сумма * количество ночей - предоплата
 
-        const serializeData = (data: HotelForm): Hotel => {
+        const deserializeData = (data: HotelForm): Hotel => {
             return {...data, type: data.type.label}
         }
         const onAcceptForm = useCallback(() => {
 
-            const serializedData = serializeData(getValues())
+            const serializedData = deserializeData(formData)
 
             onAccept(serializedData)
-        }, []);
+        }, [formData]);
+
 
         return (
             <Modal
@@ -68,7 +72,8 @@ export const HotelInfo: FC<HotelInfoProps> = ({
                 <FormTitle>
                     Добавление отеля
                 </FormTitle>
-
+                {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+                {/*// @ts-expect-error*/}
                 <TextField
                     {...register('title')}
                     placeholder="Введите название"
@@ -99,10 +104,12 @@ export const HotelInfo: FC<HotelInfoProps> = ({
                         />
                     </GridItem>
                     <GridItem col={2}>
+                        {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+                        {/*// @ts-expect-error*/}
                         <TextField
                             {...register('rating')}
                             placeholder="Введите число"
-                            label="Рейтинг"
+                            label="Кол-во звёзд"
                             type="number"
                             required
                             size={FORM_SIZE}
@@ -111,6 +118,8 @@ export const HotelInfo: FC<HotelInfoProps> = ({
                         />
                     </GridItem>
                 </Grid>
+                {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+                {/*// @ts-expect-error*/}
                 <TextField
                     {...register('address')}
                     placeholder="Введите адрес"
@@ -120,14 +129,24 @@ export const HotelInfo: FC<HotelInfoProps> = ({
                     disabled={isLoading}
                     className={cx.fields}
                 />
-                <TextField
-                    {...register('telegram_url')}
-                    placeholder="Вставьте ссылку"
-                    label="Ссылка на отель в Telegram"
-                    size={FORM_SIZE}
-                    disabled={isLoading}
-                    className={cx.fields}
+                <Controller
+                    name="telegram_url"
+                    control={control}
+                    render={({field}) => <TextField
+                        {...field}
+                        placeholder="Вставьте ссылку"
+                        label="Ссылка на отель в Telegram"
+                        size={FORM_SIZE}
+                        disabled={isLoading}
+                        className={cx.fields}
+                        rightSide={() => formData?.telegram_url ? <LinkIcon icon={<FaTelegram
+                            color="2AABEE"
+                            size={'24px'}
+                        />} link={formData?.telegram_url}/> : null}
+                    />}
                 />
+                {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+                {/*// @ts-expect-error*/}
                 <TextField
                     {...register('phone')}
                     placeholder="+7 (...)"
@@ -138,6 +157,8 @@ export const HotelInfo: FC<HotelInfoProps> = ({
                     disabled={isLoading}
                     className={cx.fields}
                 />
+                {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+                {/*// @ts-expect-error*/}
                 <TextField
                     {...register('description')}
                     label="Комментарии"
@@ -149,7 +170,6 @@ export const HotelInfo: FC<HotelInfoProps> = ({
                     disabled={isLoading}
                     className={cx.fields}
                 />
-                <Text> Количество номеров: 12312 Отображаем только для редактирования</Text>
                 <Grid cols={2}>
                     <GridItem>
                         <TravelButton

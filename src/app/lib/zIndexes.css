@@ -1,7 +1,9 @@
 :root {
     --zIndex-calendarItem: 1;
-    --zIndex-select: 100;
-    --zIndex-modal: 99;
-    --zIndex-dateSelect: 99;
-    --zIndex-loader: 101;
+    --zIndex-select: 1000;
+    --zIndex-dateSelect: 990;
+    --zIndex-container: 1000;
+    --zIndex-loader: calc(var(--zIndex-container) + 1);
+    --zIndex-modal: calc(var(--zIndex-loader) + 1);
+    --zIndex-calendar: 100;
 }

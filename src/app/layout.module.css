@@ -1,0 +1,19 @@
+.dateContainer {
+    position: relative;
+}
+
+.date {
+    position: absolute;
+    left: 0;
+    /*padding: 1rem;*/
+    background-color: #fff;
+    border-radius: 0.5rem;
+    z-index: var(--zIndex-calendar);
+    visibility: hidden;
+    opacity: 0;
+}
+
+.open {
+    opacity: 1;
+    visibility: visible;
+}

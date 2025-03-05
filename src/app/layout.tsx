@@ -3,18 +3,21 @@
 import {Geist, Geist_Mono} from "next/font/google";
 import {Theme, ThemePreset,} from "@consta/uikit/Theme";
 import {LayoutExampleBig} from "@/ui/Header/Header";
-import React from "react";
-import {TravelMenu} from "@/ui/Menu/Menu";
+import React, {useState} from "react";
+import {TravelMenu} from "@/shared/ui/Menu/Menu";
 import '@consta/themes/Theme_color_highlightsGreenDefault';
 import {Grid, GridItem} from "@consta/uikit/Grid";
 import "./globals.css";
 import './lib/zIndexes.css'
-import {Layout} from "@consta/uikit/Layout";
 import {SearchFeature} from "@/features/Search/ui/Search";
 import {Text} from "@consta/uikit/Text";
 import {QueryClientProvider} from "@tanstack/react-query";
 import {queryClient} from "@/app/config/reactQuery";
-import {attachLogger} from "effector-logger";
+import {ReactQueryDevtools} from '@tanstack/react-query-devtools'
+import {FaCaretDown} from "react-icons/fa";
+import moment from "moment";
+import {DateTime} from "@consta/uikit/DateTime";
+import cx from './layout.module.css'
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -44,13 +47,12 @@ const preset: ThemePreset = {
     shadow: 'gpnDefault', // указывается значение модификатора _shadow
 };
 
-// attachLogger();
-
 export default function RootLayout({
                                        children,
                                    }: Readonly<{
     children: React.ReactNode;
 }>) {
+    const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
     return (
         <html lang="en">
@@ -63,20 +65,29 @@ export default function RootLayout({
                         <TravelMenu/>
                     </GridItem>
                     <GridItem col={22} style={{padding: '0 2.5rem'}}>
-                        <Layout>
-                            <Layout flex={3} style={{margin: '2.5rem 0'}}>
+                        <Grid cols={11} gap={'l'}>
+                            <GridItem col={7} style={{margin: '2.5rem 0'}}>
                                 <SearchFeature/>
-                            </Layout>
-                            <Layout flex={2} direction={'column'} style={{margin: '1.5rem 0'}}>
-                                <Text size="2xl" view={"success"}>Сегодня</Text>
-                                <Text size="3xl" view={"success"}>Ср, 17 января 2020 г.</Text>
-                            </Layout>
-                        </Layout>
+                            </GridItem>
+                            <GridItem col={4} direction={'column'} style={{margin: '1.5rem 0'}}>
+                                <Text size="xl" view={"success"}>Сегодня</Text>
+                                <div onClick={() => setIsCalendarOpen(prev => !prev)}><Text size="2xl"
+                                                                                            view={"success"}
+                                                                                            cursor={'pointer'}
+                                                                                            className={cx.dateContainer}
+                                >{moment().locale('ru').format('ddd, MMMM D YYYY')}<FaCaretDown
+                                    size={14}/>
+                                    <DateTime type="date" className={`${cx.date} ${isCalendarOpen ? cx.open : ''}`}/>
+                                </Text></div>
+
+                            </GridItem>
+                        </Grid>
                         {children}
                     </GridItem>
 
                 </Grid>
             </Theme>
+            <ReactQueryDevtools/>
         </QueryClientProvider>
         </body>
         </html>
