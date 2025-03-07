@@ -18,7 +18,7 @@ import {Room, useCreateRoom} from "@/shared/api/room/room";
 import {Reserve, useCreateReserve} from "@/shared/api/reserve/reserve";
 import {showToast} from "@/shared/ui/Toast/Toast";
 import {FullWidthLoader} from "@/shared/ui/Loader/Loader";
-import {QUERY_KEYS, queryClient} from "@/app/config/reactQuery";
+import {QUERY_KEYS, queryClient} from "@/shared/config/reactQuery";
 import {Flex} from "antd";
 
 
@@ -128,7 +128,6 @@ export default function Main() {
                     isOpen={isRoomOpen}
                     onClose={() => setIsRoomOpen(false)}
                     onAccept={onRoomCreate}
-                    currentReserve={null}
                     isLoading={isRoomLoading}
                 />
             }
@@ -152,8 +151,6 @@ export default function Main() {
                                     key={id}
                                     shadow
                                     title={title}
-                                    // horizontalSpace={'2xl'}
-                                    // verticalSpace={'2xl'}
                                     className={cx.card}
                                 >
 

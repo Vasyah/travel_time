@@ -19,9 +19,8 @@ import {
 } from "@/shared/api/reserve/reserve";
 import {useGetRoomsWithReservesByHotel} from "@/shared/api/room/room";
 import {Timeline} from "react-calendar-timeline";
-import moment from "moment";
 import {useQueryClient} from "@tanstack/react-query";
-import {QUERY_KEYS} from "@/app/config/reactQuery";
+import {QUERY_KEYS} from "@/shared/config/reactQuery";
 import {Tooltip} from "antd";
 import {getDateFromUnix} from "@/shared/lib/date";
 import {FullWidthLoader} from "@/shared/ui/Loader/Loader";
@@ -101,15 +100,14 @@ export const Calendar = ({hotel}: CalendarProps) => {
             ...reserve
         }));
 
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
         hotelReserves = hotelReserves.concat(reservesTmp)
     })
 
-    const itemRenderer = ({
-                              item,
-                              itemContext,
-                              getItemProps,
-                              getResizeProps
-                          }) => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    const itemRenderer = ({item, itemContext, getItemProps, getResizeProps}) => {
         const {left: leftResizeProps, right: rightResizeProps} = getResizeProps()
 
         const onItemClick = (reserve: ReserveDTO, hotel: HotelDTO) => {
@@ -198,9 +196,8 @@ export const Calendar = ({hotel}: CalendarProps) => {
                     itemTouchSendsClick={true}
                     stackItems
                     itemHeightRatio={0.75}
-                    showCursorLine
-                    defaultTimeStart={moment()}
-                    defaultTimeEnd={moment().add(2, 'month')}
+                    // defaultTimeStart={moment().unix()}
+                    // defaultTimeEnd={moment().add(2, 'month').unix()}
                     minZoom={WEEK}
                     maxZoom={THREE_MONTHS}
                     onCanvasDoubleClick={(groupId, time, e) => {

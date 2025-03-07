@@ -18,7 +18,6 @@ import {ReserveTotal} from "@/features/ReserveInfo/ui/ReserveTotal";
 import {Modal} from "@/shared/ui/Modal/Modal";
 import {FormTitle} from "@/shared/ui/FormTitle/FormTitle";
 import {showToast} from "@/shared/ui/Toast/Toast";
-import {FaWhatsapp} from "react-icons/fa";
 import {IoLogoWhatsapp} from "react-icons/io";
 import {createWhatsappLink} from "@/shared/lib/links";
 import {LinkIcon} from "@/shared/ui/LinkIcon/LinkIcon";
@@ -53,7 +52,7 @@ export const ReserveInfo: FC<ReserveInfoProps> = ({
             return {
                 date: currentDate,
                 price,
-                prepayment,
+                prepayment: prepayment ? String(prepayment) : String(0),
                 guest,
                 phone,
                 comment,
@@ -62,7 +61,7 @@ export const ReserveInfo: FC<ReserveInfoProps> = ({
         }
 
         let defaults = {
-            date: [moment().toDate(), moment().add(1, 'days').toDate()],
+            date: [moment().toDate(), moment().add(1, 'days').toDate()] as [Date, Date],
             hotel_id: adaptToOption({
                 id: hotel?.id,
                 title: hotel?.title
@@ -85,6 +84,7 @@ export const ReserveInfo: FC<ReserveInfoProps> = ({
         control,
         register,
         watch,
+
     } = useForm<ReserveForm>({
         defaultValues: currentReserve?.reserve ? getDefaultValues(currentReserve) : undefined
     })
@@ -239,6 +239,7 @@ export const ReserveInfo: FC<ReserveInfoProps> = ({
                             value={String(field.value)}
                             onChange={field.onChange}
                             type="number"
+                            incrementButtons={false}
                         />
                     }
                 />
@@ -248,6 +249,7 @@ export const ReserveInfo: FC<ReserveInfoProps> = ({
                     {...register('quantity')}
                     placeholder="Введите число"
                     label="Количество человек"
+                    incrementButtons={false}
                     required
                     type={'number'}
                 />
@@ -314,9 +316,10 @@ export const ReserveInfo: FC<ReserveInfoProps> = ({
                                       className={cx.fields}
                                       disabled={loading}
                                       view={'clear'}
-                                      value={field?.value}
+                                      value={String(field?.value)}
                                       onChange={field.onChange}
                                       type={'number'}
+                                      incrementButtons={false}
                                       rightSide={'руб.'}
                                   />
                               }

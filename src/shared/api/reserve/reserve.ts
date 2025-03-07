@@ -3,9 +3,9 @@ import {TABLE_NAMES} from "@/shared/api/const";
 import {MutationOptions, useMutation} from "@tanstack/react-query";
 import {createRoomApi} from "@/shared/api";
 import {RoomDTO} from "@/shared/api/room/room";
-import supabase from "@/app/config/supabase";
+import supabase from "@/shared/config/supabase";
 import {showToast} from "@/shared/ui/Toast/Toast";
-import {QUERY_KEYS, queryClient} from "@/app/config/reactQuery";
+import {QUERY_KEYS, queryClient} from "@/shared/config/reactQuery";
 
 export type ReserveDTO = {
     id: string; // Уникальный идентификатор брони
@@ -29,7 +29,7 @@ export type TravelOption = {
 export type Reserve = Omit<ReserveDTO, "id">;
 //для формы
 export type ReserveForm = Omit<ReserveDTO, "id" | "start" | "end" | "room_id"> & {
-    date: [Date?, Date?],
+    date: [Date, Date],
     hotel_id: TravelOption,
     room_id: TravelOption
 };

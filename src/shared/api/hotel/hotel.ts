@@ -1,10 +1,10 @@
-import supabase from "@/app/config/supabase";
+import supabase from "@/shared/config/supabase";
 import {useMutation, useQuery} from "@tanstack/react-query";
-import {QUERY_KEYS, queryClient} from "@/app/config/reactQuery";
+import {QUERY_KEYS} from "@/shared/config/reactQuery";
 import {Room} from "@/shared/api/room/room";
 import {TravelOption} from "@/shared/api/reserve/reserve";
 import {TABLE_NAMES} from "@/shared/api/const";
-import {QueryData} from "@supabase/supabase-js";
+import {PostgrestError} from "@supabase/supabase-js";
 
 
 // Тип Hotel
@@ -116,6 +116,8 @@ export async function getHotelsWithFreeRooms(start_time: number, end_time: numbe
         if (error) throw error;
         return data ?? [];
     } catch (error) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
         console.error('Ошибка при получении отелей с свободными номерами:', error?.message);
         throw error;
     }

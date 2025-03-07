@@ -12,7 +12,7 @@
         background-color: var(--color-bg-success);
         color: var(--color-bg-default) !important;
 
-        svg {
+        .container div svg {
             fill: var(--color-bg-default);
         }
     }

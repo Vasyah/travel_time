@@ -2,11 +2,9 @@ import React, {FC, useCallback, useMemo} from 'react'
 import cx from './style.module.css'
 import {TextField} from "@consta/uikit/TextField";
 import {Select} from "@consta/uikit/Select";
-import {type CurrentReserveType} from "@/features/Scheduler/ui/Calendar";
 import {Controller, useForm} from "react-hook-form";
 import {FormButtons} from "@/shared/ui/FormButtons/FormButtons";
 import {
-    Room,
     RoomForm,
     useGetHotelsForRoom
 } from "@/shared/api/hotel/hotel";
@@ -18,6 +16,8 @@ import {Button} from "@consta/uikit/Button";
 import {Text} from "@consta/uikit/Text";
 import {adaptToOption} from "@/features/RoomInfo/lib/adaptHotel";
 import {Modal} from "@/shared/ui/Modal/Modal";
+import {CurrentReserveType} from "@/shared/api/reserve/reserve";
+import {Room} from "@/shared/api/room/room";
 
 export interface RoomInfoProps {
     isOpen: boolean;
@@ -97,38 +97,62 @@ export const RoomInfo: FC<RoomInfoProps> = ({
                     />}
                 />
 
-                <TextField
-                    {...register('title')}
-                    placeholder="Введите название"
-                    label="Название номера"
-                    required
-                    size={FORM_SIZE}
-                    className={cx.fields}
-                    disabled={loading}
+                <Controller
+                    name="title"
+                    control={control}
+                    rules={{required: true}}
+                    render={({field}) => <TextField
+                        {...field}
+                        placeholder="Введите название"
+                        label="Название номера"
+                        required
+                        size={FORM_SIZE}
+                        className={cx.fields}
+                        disabled={loading}
+                    />}
                 />
+
+
                 <Grid cols={3} gap={FORM_GAP_SIZE}>
                     <GridItem col={2}>
-                        <TextField
-                            {...register('price', {valueAsNumber: true})}
-                            placeholder="Введите стоимость"
-                            label="Стоимость номера"
-                            required
-                            size={FORM_SIZE}
-                            className={cx.fields}
-                            disabled={loading}
+                        <Controller
+                            name="price"
+                            control={control}
+                            rules={{required: true}}
+                            render={({field}) => <TextField
+                                {...field}
+                                value={String(field?.value)}
+                                placeholder="Введите стоимость"
+                                label="Стоимость номера"
+                                required
+                                size={FORM_SIZE}
+                                className={cx.fields}
+                                disabled={loading}
+                                type="number"
+                                incrementButtons={false}
+                            />}
                         />
+
                     </GridItem>
                     <GridItem>
-                        <TextField
-                            {...register('quantity', {valueAsNumber: true})}
-                            placeholder="Введите число"
-                            label="Вместимость"
-                            required
-                            type="number"
-                            size={FORM_SIZE}
-                            className={cx.fields}
-                            disabled={loading}
+                        <Controller
+                            name="quantity"
+                            control={control}
+                            rules={{required: true}}
+                            render={({field}) => <TextField
+                                {...field}
+                                placeholder="Введите число"
+                                label="Вместимость"
+                                required
+                                value={String(field?.value)}
+                                size={FORM_SIZE}
+                                className={cx.fields}
+                                disabled={loading}
+                                type="number"
+                                incrementButtons={false}
+                            />}
                         />
+
 
                     </GridItem>
                 </Grid>
@@ -143,14 +167,22 @@ export const RoomInfo: FC<RoomInfoProps> = ({
                         </>
                     )}
                 </DragNDropField>
-                <TextField
-                    {...register('comment')} label="Комментарии" type="textarea" cols={200}
-                    rows={3}
-                    placeholder="Введите комментарий"
-                    size={FORM_SIZE}
-                    className={cx.fields}
-                    disabled={loading}
+                <Controller
+                    name="comment"
+                    control={control}
+                    rules={{required: true}}
+                    render={({field}) => <TextField
+                        {...field}
+                        label="Комментарии"
+                        type="textarea" cols={200}
+                        rows={3}
+                        placeholder="Введите комментарий"
+                        size={FORM_SIZE}
+                        className={cx.fields}
+                        disabled={loading}
+                    />}
                 />
+
                 <FormButtons isLoading={loading} onAccept={onAcceptForm} onClose={onClose}/>
 
             </Modal>

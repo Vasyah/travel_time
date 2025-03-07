@@ -1,7 +1,7 @@
 import {ReserveDTO} from "@/shared/api/reserve/reserve";
-import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
-import {QUERY_KEYS, queryClient} from "@/app/config/reactQuery";
-import supabase from "@/app/config/supabase";
+import {useMutation, useQuery} from "@tanstack/react-query";
+import {QUERY_KEYS} from "@/shared/config/reactQuery";
+import supabase from "@/shared/config/supabase";
 import {insertItem} from "@/shared/api/hotel/hotel";
 import {TABLE_NAMES} from "@/shared/api/const";
 
@@ -43,7 +43,7 @@ export async function getRoomsWithReservesByHotel(hotel_id?: string) {
 )
     `)
         .filter('hotel_id', "eq", hotel_id);
-    return response.data as RoomReserves[]; // Возвращаем массив отелей
+    return response.data as unknown as RoomReserves[]; // Возвращаем массив отелей
 }
 
 

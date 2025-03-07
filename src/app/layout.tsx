@@ -8,11 +8,11 @@ import {TravelMenu} from "@/shared/ui/Menu/Menu";
 import '@consta/themes/Theme_color_highlightsGreenDefault';
 import {Grid, GridItem} from "@consta/uikit/Grid";
 import "./globals.css";
-import './lib/zIndexes.css'
+import '@/features/lib/zIndexes.css'
 import {SearchFeature} from "@/features/Search/ui/Search";
 import {Text} from "@consta/uikit/Text";
 import {QueryClientProvider} from "@tanstack/react-query";
-import {queryClient} from "@/app/config/reactQuery";
+import {queryClient} from "@/shared/config/reactQuery";
 import {ReactQueryDevtools} from '@tanstack/react-query-devtools'
 import {FaCaretDown} from "react-icons/fa";
 import moment from "moment";
