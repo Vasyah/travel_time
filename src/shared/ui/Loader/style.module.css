@@ -5,7 +5,7 @@
 }
 
 .container {
-    z-index: var(--zIndex-container);
+    z-index: var(--zIndex-fullWidthcontainer);
     position: absolute;
     left: 0;
     top: 0;

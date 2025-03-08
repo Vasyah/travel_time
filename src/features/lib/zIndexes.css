@@ -2,8 +2,10 @@
     --zIndex-calendarItem: 1;
     --zIndex-select: 1000;
     --zIndex-dateSelect: 990;
-    --zIndex-container: 1000;
-    --zIndex-loader: calc(var(--zIndex-container) + 1);
-    --zIndex-modal: calc(var(--zIndex-loader) + 1);
+    /* контейнер лоудера без модального окна*/
+    --zIndex-fullWidthcontainer: 200;
+    --zIndex-modal: calc(var(--zIndex-fullWidthcontainer) + 1);
+    --zIndex-loader: calc(var(--zIndex-modal) + 1);
+    --zIndex-FullWidthmodal: calc(var(--zIndex-loader) - 1);
     --zIndex-calendar: 100;
 }

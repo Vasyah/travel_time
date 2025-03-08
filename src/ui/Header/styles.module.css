@@ -1,5 +1,11 @@
 .header {
-    .che--LayoutRow {
-        height: 80px !important;
+    .che--Layout {
+        .che--LayoutRow {
+            --header-height: 80px !important;
+            min-height: 80px;
+            height: 80px !important;
+        }
+
+
     }
 }

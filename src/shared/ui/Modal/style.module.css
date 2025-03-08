@@ -1,5 +1,5 @@
 .sidebarOverlay {
-    z-index: 90 !important;
+    z-index: var(--zIndex-modal) !important;
     pointer-events: none;
 }
 
@@ -12,7 +12,7 @@
 }
 
 .modalLoading {
-    overflow: hidden;
+    /*overflow: hidden;*/
 }
 
 .loading {

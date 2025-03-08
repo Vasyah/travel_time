@@ -1,7 +1,8 @@
 import React, {ComponentProps, CSSProperties, FC, useEffect} from 'react'
 import {Modal as ModalConsta} from "@consta/uikit/Modal";
-import cx from './style.module.css'
+import st from './style.module.css'
 import {Loader} from "@/shared/ui/Loader/Loader";
+import cn from 'classnames'
 
 export interface ModalProps extends ComponentProps<typeof ModalConsta> {
     style?: CSSProperties;
@@ -11,9 +12,9 @@ export interface ModalProps extends ComponentProps<typeof ModalConsta> {
 
 export const Modal: FC<ModalProps> = ({children, loading = false, ...props}) => {
         const {isOpen} = props
+
         useEffect(() => {
             if (isOpen) {
-                console.log(isOpen)
                 document.body.style.overflow = 'hidden'
             }
 
@@ -21,11 +22,12 @@ export const Modal: FC<ModalProps> = ({children, loading = false, ...props}) => 
                 document.body.style.overflow = ''
             }
         }, [isOpen]);
+
         return (
-            <ModalConsta  {...props} rootClassName={cx.sidebarOverlay}
-                          className={`${cx.modal} ${loading ? cx.modalLoading : ''}`}>
+            <ModalConsta  {...props} rootClassName={st.sidebarOverlay}
+                          className={cn(st.modal, {[st.modalLoading]: loading, [st.opened]: isOpen})}>
                 {children}
-                {loading && <div className={cx.loading}><Loader/></div>}
+                {loading && <div className={st.loading}><Loader/></div>}
             </ModalConsta>
         );
     }

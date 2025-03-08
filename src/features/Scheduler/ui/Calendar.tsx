@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useCallback, useMemo, useState} from "react";
 import 'react-calendar-timeline/style.css'
 import './calendar.css'
 import {Grid, GridItem} from "@consta/uikit/Grid";
@@ -17,13 +17,22 @@ import {
     useCreateReserve,
     useUpdateReserve
 } from "@/shared/api/reserve/reserve";
-import {useGetRoomsWithReservesByHotel} from "@/shared/api/room/room";
-import {Timeline} from "react-calendar-timeline";
+import {Room, useCreateRoom, useGetRoomsWithReservesByHotel} from "@/shared/api/room/room";
+import {DateHeader, SidebarHeader, Timeline, TimelineHeaders} from "react-calendar-timeline";
 import {useQueryClient} from "@tanstack/react-query";
-import {QUERY_KEYS} from "@/shared/config/reactQuery";
-import {Tooltip} from "antd";
+import {QUERY_KEYS, queryClient} from "@/shared/config/reactQuery";
+import {Flex, Tooltip} from "antd";
 import {getDateFromUnix} from "@/shared/lib/date";
 import {FullWidthLoader} from "@/shared/ui/Loader/Loader";
+import moment from "moment";
+import {FaTelegram} from "react-icons/fa";
+import {LinkIcon} from "@/shared/ui/LinkIcon/LinkIcon";
+import {CiSquarePlus} from "react-icons/ci";
+import {Button} from "antd";
+import {MdSort} from "react-icons/md";
+import {BiSortDown, BiSortUp} from "react-icons/bi";
+import {RoomInfo} from "@/features/RoomInfo/ui/RoomInfo";
+import {showToast} from "@/shared/ui/Toast/Toast";
 
 const keys = {
     groupIdKey: "id",
@@ -43,19 +52,29 @@ export interface CalendarProps {
     hotel: HotelDTO;
 }
 
+const DAY = 24 * 60 * 60 * 1000
+const WEEK = DAY * 7;
+// const THREE_MONTHS = DAY * 30 * 12;
+const THREE_MONTHS = 5 * 365.24 * 86400 * 1000;
+
 export const Calendar = ({hotel}: CalendarProps) => {
+    const {rating} = hotel
+    const queryClient = useQueryClient();
     const {data, isFetching: isRoomLoading} = useGetRoomsWithReservesByHotel(hotel.id)
     const [currentReserve, setCurrentReserve] = useState<Nullable<CurrentReserveType>>(null);
+    const [isRoomOpen, setIsRoomOpen] = useState<boolean>(false)
+    const [isReserveOpen, setIsReserveOpen] = useState<boolean>(false)
+    const [sort, setSort] = useState<'asc' | 'desc'>('asc')
 
-    const queryClient = useQueryClient();
 
     const {
-        isPending: isReserveLoading,
+        isPending: isReserveCreating,
         mutateAsync: createReserve,
         error: reserveError,
     } = useCreateReserve(() => {
         queryClient.invalidateQueries({queryKey: [...QUERY_KEYS.roomsWithReservesByHotel, hotel.id]})
         setCurrentReserve(null)
+        setIsReserveOpen(false)
     })
 
     const {
@@ -64,11 +83,28 @@ export const Calendar = ({hotel}: CalendarProps) => {
     } = useUpdateReserve(() => {
         queryClient.invalidateQueries({queryKey: [...QUERY_KEYS.roomsWithReservesByHotel, hotel.id]})
         setCurrentReserve(null)
+        setIsReserveOpen(false)
     })
 
-    const WEEK = 7 * 24 * 60 * 60 * 1000;
-    const THREE_MONTHS = 24 * 60 * 60 * 1000 * 30 * 12;
+    const {
+        isPending: isRoomCreating,
+        mutate: createRoom,
+        error: roomError
+    } = useCreateRoom(() => {
+        queryClient.invalidateQueries({queryKey: [...QUERY_KEYS.roomsWithReservesByHotel, hotel.id]})
+        queryClient.invalidateQueries({queryKey: QUERY_KEYS.roomsByHotel})
+        setCurrentReserve(null)
+        setIsRoomOpen(false);
+        showToast('Номер успешно добавлен')
+    }, (e) => {
+        showToast(`Ошибка при добавлении номера ${e}`, 'error')
+    })
 
+
+    const onRoomCreate = useCallback((room: Room) => {
+        createRoom(room)
+        console.log('Создаю ROOM', room)
+    }, [])
     const onReserveAccept = async (reserve: Reserve) => {
 
         const isEdit = currentReserve?.reserve
@@ -83,12 +119,29 @@ export const Calendar = ({hotel}: CalendarProps) => {
         await createReserve(reserve)
     }
     const onClose = () => {
+        // queryClient.invalidateQueries({queryKey: [QUERY_KEYS.hotelsForRoom]})
+        // queryClient.invalidateQueries({queryKey: [QUERY_KEYS.roomsByHotel]})
+        setIsReserveOpen(false)
         setCurrentReserve(null)
     };
 
-    const hotelRooms = data?.map(({reserves, id, title, ...room}) => ({
-        id, title: `${title}`, ...room
-    })) ?? [];
+    const hotelRooms = useMemo(() => {
+
+        let rooms = data?.map(({reserves, id, title, ...room}) => ({
+            id, title: `${title}`, ...room
+        })) ?? []
+
+        rooms = rooms.sort((a, b) => {
+            if (sort === 'asc') {
+                return a.title.localeCompare(b.title, undefined, {caseFirst: "upper"})
+            } else {
+                return b.title.localeCompare(b.title, undefined, {caseFirst: "upper", sensitivity: 'case'})
+            }
+
+        })
+
+        return rooms;
+    }, [data, sort])
     //
     let hotelReserves: Array<ReserveDTO & { group: string }> = []
 
@@ -115,6 +168,7 @@ export const Calendar = ({hotel}: CalendarProps) => {
 
             if (room) {
                 setCurrentReserve({room, reserve, hotel})
+                setIsReserveOpen(true)
             }
         }
 
@@ -131,7 +185,7 @@ export const Calendar = ({hotel}: CalendarProps) => {
                         <p>:{item.price}</p>
                     </Grid>}>
                     <div
-                        className="rct-item-content"
+                        className={`${cx.calendarItem} rct-item-content`}
                         style={{maxHeight: `${itemContext.dimensions.height}`}}
 
                     >
@@ -144,60 +198,65 @@ export const Calendar = ({hotel}: CalendarProps) => {
         )
     }
 
-    const isLoading = isRoomLoading
-    const reserveLoading = isReserveLoading || isReserveUpdating
-    return (
-        <Grid cols={12} className={cx.container}>
-            {isLoading && <FullWidthLoader/>}
-            <GridItem col={2}>
-                <div className={cx.hotelInfo}>
-                    {/*<Grid cols={4} yAlign={'bottom'}>*/}
-                    {/*    <GridItem col={2}>*/}
-                    <Image className={cx.hotelIcon} src={hotelImage.src} alt={"Изображение отеля"} width={90}
-                           height={240}/>
-                    {/*</GridItem>*/}
-                    {/*<GridItem col={1}>*/}
+    const isLoading = isRoomLoading || isRoomCreating
+    const reserveLoading = isReserveCreating || isReserveUpdating
+    const stars = Array.from(Array(rating))
 
-                    <div className={cx.stars}>
-                        <Image src={star.src} alt={"Звезда отеля"} width={24}
-                               height={24}/>
-                        <Image src={star.src} alt={"Звезда отеля"} width={24}
-                               height={24}/>
-                        <Image src={star.src} alt={"Звезда отеля"}
-                               width={24}
-                               height={24}/>
-                        <Image src={star.src} alt={"Звезда отеля"}
-                               width={24}
-                               height={24}/>
-                        <Image src={star.src} alt={"Звезда отеля"}
-                               width={24}
-                               height={24}/></div>
-                    {/*</GridItem>*/}
-                    {/*<GridItem col={1}>*/}
-                    <div><Text className={cx.title} transform={"uppercase"} weight={"medium"}>{hotel.title}</Text>
-                    </div>
-                    {/*</GridItem>*/}
-                    {/*</Grid>*/}
+    const defaultTimeStart = moment()
+        .startOf("day")
+        .toDate();
+
+    const defaultTimeEnd = moment()
+        .startOf("day")
+        .add(1, "day")
+        .toDate();
+
+    return (
+        <Flex gap={'middle'} className={cx.container}>
+            {isLoading && <FullWidthLoader/>}
+            <div className={cx.hotelInfo}>
+                <Image className={cx.hotelIcon} src={hotelImage.src} alt={"Изображение отеля"} width={157}
+                       height={164}/>
+                <div className={cx.stars}>
+                    {stars?.map((_, index) => {
+                            return <Image src={star.src} alt={"Звезда отеля"}
+                                          width={24}
+                                          height={24} key={index}/>
+                        }
+                    )}
                 </div>
-            </GridItem>
-            <GridItem col={10}>
+                <div className={cx.hotelDescription}>
+                    <Text className={cx.title} transform={"uppercase"} weight={"semibold"}
+                          size={'xl'}>{hotel.title}
+                    </Text>
+                    <div>
+                        {hotel?.telegram_url && <LinkIcon icon={<FaTelegram
+                            color="2AABEE"
+                            size={'24px'}
+                        />} link={hotel?.telegram_url}/>}
+                    </div>
+                </div>
+                {/*</GridItem>*/}
+                {/*</Grid>*/}
+            </div>
+            <div>
                 <Timeline
+                    sidebarContent={<div>THAT A CONTENT</div>}
                     className={'travel-timeline'}
                     groups={hotelRooms}
-
                     items={hotelReserves}
                     keys={keys}
-                    sidebarWidth={280}
+                    sidebarWidth={230}
                     canMove
                     canResize="both"
                     canSelect
                     // onItemSelect={(itemId, e, time) => console.log(itemId, e, time)}
                     // itemsSorted
                     itemTouchSendsClick={true}
-                    stackItems
+                    stackItems={false}
                     itemHeightRatio={0.75}
-                    // defaultTimeStart={moment().unix()}
-                    // defaultTimeEnd={moment().add(2, 'month').unix()}
+                    defaultTimeStart={defaultTimeStart}
+                    defaultTimeEnd={defaultTimeEnd}
                     minZoom={WEEK}
                     maxZoom={THREE_MONTHS}
                     onCanvasDoubleClick={(groupId, time, e) => {
@@ -206,23 +265,52 @@ export const Calendar = ({hotel}: CalendarProps) => {
                         console.log(room, groupId, time, e);
                         if (room) {
                             setCurrentReserve({room, hotel})
+                            setIsReserveOpen(true);
                         }
                     }}
                     itemRenderer={itemRenderer}
                 >
+         
+                    {/*<TimelineHeaders>*/}
+                    {/*    <SidebarHeader>*/}
+                    {/*        {({getRootProps}) => {*/}
+                    {/*            return <div {...getRootProps()} className={cx.calendarHeader}>*/}
+                    {/*                <Button icon={<CiSquarePlus size={24}/>} type={'link'}*/}
+                    {/*                        onClick={() => {*/}
+                    {/*                            setCurrentReserve({hotel: hotel})*/}
+                    {/*                            setIsRoomOpen(true)*/}
+                    {/*                        }}/>*/}
+                    {/*                {sort === 'asc' ? <Button icon={<BiSortDown size={24}/>} type={'link'}*/}
+                    {/*                                          title={'В алфавитном порядке А-Я'} onClick={() => {*/}
+                    {/*                        setSort('desc')*/}
+                    {/*                    }}/> :*/}
+                    {/*                    <Button icon={<BiSortUp size={24}/>} type={'link'}*/}
+                    {/*                            title={'В алфавитном порядке А-Я'} onClick={() => {*/}
+                    {/*                        setSort('asc')*/}
+                    {/*                    }}/>}*/}
 
-                    {/*<TimelineHeaders className="sticky">*/}
+                    {/*            </div>*/}
+                    {/*        }}*/}
+                    {/*    </SidebarHeader>*/}
                     {/*    <DateHeader unit="primaryHeader"/>*/}
                     {/*    <DateHeader/>*/}
                     {/*</TimelineHeaders>*/}
                 </Timeline
                 >
-            </GridItem>
-            {!!currentReserve && <ReserveInfo isOpen={!!currentReserve} onClose={onClose}
-                                              onAccept={onReserveAccept} currentReserve={currentReserve}
-                                              isLoading={reserveLoading}
-            />}
-        </Grid>
+            </div>
+            <RoomInfo
+                isOpen={isRoomOpen}
+                onClose={() => setIsRoomOpen(false)}
+                onAccept={onRoomCreate}
+                isLoading={isRoomCreating}
+                currentReserve={currentReserve}
+            />
+
+            <ReserveInfo isOpen={isReserveOpen} onClose={onClose}
+                         onAccept={onReserveAccept} currentReserve={currentReserve}
+                         isLoading={reserveLoading}
+            />
+        </Flex>
     )
 }
 

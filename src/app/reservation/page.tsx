@@ -12,7 +12,7 @@ import {useUnit} from "effector-react/compat";
 import {$hotelsFilter} from "@/shared/models/hotels";
 
 export default function Home() {
-    const {isPending, error, data: hotels, refetch} = useGetAllHotels()
+    const {isLoading, error, data: hotels, refetch} = useGetAllHotels()
     const filter = useUnit($hotelsFilter)
     // если добавили фильтр, то загрузить только отели в которых есть свободные места
 
@@ -28,9 +28,10 @@ export default function Home() {
         }
     }, [filter])
 
-    if (isPending) {
+    if (isLoading) {
         return <div className={cx.loaderContainer}><Loader/></div>
     }
+
     return (
         <div>
             <code>{JSON.stringify(filter)}</code>

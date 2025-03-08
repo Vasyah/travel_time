@@ -18,6 +18,7 @@ import {FaCaretDown} from "react-icons/fa";
 import moment from "moment";
 import {DateTime} from "@consta/uikit/DateTime";
 import cx from './layout.module.css'
+import {ConfigProvider} from "antd";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -57,38 +58,57 @@ export default function RootLayout({
     return (
         <html lang="en">
         <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <QueryClientProvider client={queryClient}>
-            <Theme preset={preset}>
-                <LayoutExampleBig/>
-                <Grid cols={24} style={{minHeight: `calc(100vh - 64px)`,}}>
-                    <GridItem col={2} style={{borderRight: '1px solid var(--color-bg-border)'}}>
-                        <TravelMenu/>
-                    </GridItem>
-                    <GridItem col={22} style={{padding: '0 2.5rem'}}>
-                        <Grid cols={11} gap={'l'}>
-                            <GridItem col={7} style={{margin: '2.5rem 0'}}>
-                                <SearchFeature/>
-                            </GridItem>
-                            <GridItem col={4} direction={'column'} style={{margin: '1.5rem 0'}}>
-                                <Text size="xl" view={"success"}>Сегодня</Text>
-                                <div onClick={() => setIsCalendarOpen(prev => !prev)}><Text size="2xl"
-                                                                                            view={"success"}
-                                                                                            cursor={'pointer'}
-                                                                                            className={cx.dateContainer}
-                                >{moment().locale('ru').format('ddd, MMMM D YYYY')}<FaCaretDown
-                                    size={14}/>
-                                    <DateTime type="date" className={`${cx.date} ${isCalendarOpen ? cx.open : ''}`}/>
-                                </Text></div>
+        <ConfigProvider
+            theme={{
+                token: {
+                    // Seed Token
+                    colorLink: '#00b96b',
+                    colorPrimary: '#00b96b',
+                    borderRadius: 2,
 
-                            </GridItem>
-                        </Grid>
-                        {children}
-                    </GridItem>
+                    // Alias Token
+                    colorBgContainer: '#f6ffed',
+                },
+            }}
+        >
+            <QueryClientProvider client={queryClient}>
+                <Theme preset={preset}>
+                    <LayoutExampleBig/>
+                    <Grid cols={24} style={{minHeight: `calc(100vh - 64px)`,}}>
+                        <GridItem col={2} style={{
+                            borderRight: '1px solid var(--color-bg-border)',
+                            minWidth: '120px',
+                            maxWidth: '120px'
+                        }}>
+                            <TravelMenu/>
+                        </GridItem>
+                        <GridItem col={22} style={{padding: '0 2.5rem'}}>
+                            <Grid cols={11} gap={'l'}>
+                                <GridItem col={7} style={{margin: '2.5rem 0'}}>
+                                    <SearchFeature/>
+                                </GridItem>
+                                <GridItem col={4} direction={'column'} style={{margin: '1.5rem 0'}}>
+                                    <Text size="xl" view={"success"}>Сегодня</Text>
+                                    <div onClick={() => setIsCalendarOpen(prev => !prev)}><Text size="2xl"
+                                                                                                view={"success"}
+                                                                                                cursor={'pointer'}
+                                                                                                className={cx.dateContainer}
+                                    >{moment().locale('ru').format('ddd, MMMM D YYYY')}<FaCaretDown
+                                        size={14}/>
+                                        <DateTime type="date"
+                                                  className={`${cx.date} ${isCalendarOpen ? cx.open : ''}`}/>
+                                    </Text></div>
 
-                </Grid>
-            </Theme>
-            <ReactQueryDevtools/>
-        </QueryClientProvider>
+                                </GridItem>
+                            </Grid>
+                            {children}
+                        </GridItem>
+
+                    </Grid>
+                </Theme>
+                <ReactQueryDevtools/>
+            </QueryClientProvider>
+        </ConfigProvider>
         </body>
         </html>
     );

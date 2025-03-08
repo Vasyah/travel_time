@@ -4,32 +4,40 @@
     margin-bottom: 0.75rem;
     padding: 0 var(--space-l);
     position: relative;
+    /*max-height: 280px;*/
 }
 
-/*.hotelIcon {*/
-/*    !*padding-bottom: var(--space-l);*!*/
-/*}*/
+.hotelIcon {
+    border-radius: var(--control-radius);
+    /*padding-bottom: var(--space-l);*/
+}
 
-/*.hotelInfo {*/
-/*    display: flex;*/
-/*    align-items: end;*/
-/*    min-height: 100%;*/
-/*    gap: 1rem;*/
-/*    padding-bottom: var(--space-l);*/
-/*}*/
+.hotelInfo {
+    margin-top: 1.5rem;
+    max-width: 180px;
+    margin-bottom: 1.5rem;
+}
 
-/*.title {*/
-/*    transform-origin: bottom left;*/
-/*    min-width: 200px;*/
-/*    transform: rotate(-90deg);*/
-/*    color: var(--color-typo-success);*/
-/*    padding-left: 0.5rem;*/
-/*    margin-top: 1rem;*/
-/*}*/
+.hotelDescription {
+    margin-top: 1rem;
+    display: flex;
+    gap: 0.5rem;
+}
 
-/*.stars {*/
-/*    margin-right: 1rem;*/
-/*    transform-origin: bottom left;*/
-/*    !*transform: rotate(45deg);*!*/
-/*    !*display: flex;*!*/
-/*}*/
+.title {
+    color: var(--color-typo-success);
+    padding-left: 0.5rem;
+    max-width: 160px;
+}
+
+.rct-sidebar-row {
+    min-height: 44px !important;
+    max-height: 44px !important;
+}
+
+.calendarHeader {
+    display: flex;
+    justify-content: end;
+    margin-left: auto;
+    padding-right: 0.5rem;
+}

@@ -118,17 +118,20 @@ export const HotelInfo: FC<HotelInfoProps> = ({
                         />
                     </GridItem>
                 </Grid>
-                {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
-                {/*// @ts-expect-error*/}
-                <TextField
-                    {...register('address')}
-                    placeholder="Введите адрес"
-                    label="Местоположение"
-                    required
-                    size={FORM_SIZE}
-                    disabled={isLoading}
-                    className={cx.fields}
+                <Controller
+                    name="address"
+                    control={control}
+                    render={({field}) => <TextField
+                        {...field}
+                        placeholder="Введите адрес"
+                        label="Местоположение"
+                        required
+                        size={FORM_SIZE}
+                        disabled={isLoading}
+                        className={cx.fields}
+                    />}
                 />
+
                 <Controller
                     name="telegram_url"
                     control={control}

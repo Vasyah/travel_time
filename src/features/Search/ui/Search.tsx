@@ -65,6 +65,7 @@ export const SearchFeature: FC<SearchFeatureProps> = (props: SearchFeatureProps)
             />
             <TextField value={String(quantity)} onChange={(value) => setQuantity(value ? +value : 0)}
                        placeholder={'Гости'} type={'number'} withClearButton style={{maxWidth: '144px'}}
+                       incrementButtons={false}
             />
             <Button label={'Найти'} onClick={onSearch}/>
         </FieldGroup>

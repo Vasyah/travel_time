@@ -11,3 +11,13 @@ body {
     padding: 0;
     margin: 0;
 }
+
+.rct-sidebar-row {
+    min-height: 44px !important;
+    /*max-height: 44px !important;*/
+}
+
+.rct-horizontal-lines > div {
+    min-height: 44px !important;
+    /*max-height: 44px !important;*/
+}

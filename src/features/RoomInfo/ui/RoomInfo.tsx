@@ -35,10 +35,10 @@ export const RoomInfo: FC<RoomInfoProps> = ({
                                                 currentReserve,
                                                 isLoading = false,
                                             }: RoomInfoProps) => {
-        const {data: hotels, isPending} = useGetHotelsForRoom()
+        const {data: hotels, isLoading: isHotelsLoading} = useGetHotelsForRoom()
 
 
-        const loading = isLoading || isPending
+        const loading = isLoading || isHotelsLoading
 
 
         const hotelOptions = useMemo(() => {
@@ -53,6 +53,10 @@ export const RoomInfo: FC<RoomInfoProps> = ({
             formState: {errors},
         } = useForm<RoomForm>({
             defaultValues: {
+                hotel_id: currentReserve?.hotel ? {
+                    id: currentReserve?.hotel?.id,
+                    label: currentReserve?.hotel?.title
+                } : undefined,
                 quantity: 3,
                 price: 0
             }

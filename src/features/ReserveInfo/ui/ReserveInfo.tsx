@@ -38,7 +38,7 @@ export const ReserveInfo: FC<ReserveInfoProps> = ({
                                                       isLoading,
                                                   }: ReserveInfoProps) => {
 
-    const {data: hotels, isPending: isHotelsLoading, status: hotelsStatus} = useGetHotelsForRoom()
+    const {data: hotels, isLoading: isHotelsLoading, status: hotelsStatus} = useGetHotelsForRoom()
 
     const getDefaultValues = ({
                                   reserve,
@@ -86,7 +86,7 @@ export const ReserveInfo: FC<ReserveInfoProps> = ({
         watch,
 
     } = useForm<ReserveForm>({
-        defaultValues: currentReserve?.reserve ? getDefaultValues(currentReserve) : undefined
+        defaultValues: currentReserve?.hotel ? getDefaultValues(currentReserve) : undefined
     })
 
     const formData = watch()
@@ -94,10 +94,10 @@ export const ReserveInfo: FC<ReserveInfoProps> = ({
 
     const {
         data: rooms,
-        isPending: isRoomsLoading,
+        isLoading: isRoomsLoading,
         refetch: fetchRoomsByHotel,
         status: roomsStatus
-    } = useGetRoomsByHotel(formData?.hotel_id?.id)
+    } = useGetRoomsByHotel(formData?.hotel_id?.id, false)
 
 
     const hotelOptions = useMemo(() => {
