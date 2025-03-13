@@ -57,7 +57,7 @@ export const createRoomApi = async (room: Room) => {
 }
 
 
-export const useGetRoomsByHotel = (hotel_id?: string, enabled?: boolean = false) => {
+export const useGetRoomsByHotel = (hotel_id?: string, enabled?: boolean) => {
     return useQuery({
         queryKey: QUERY_KEYS.roomsByHotel,
         queryFn: () => getRoomsByHotel(hotel_id),

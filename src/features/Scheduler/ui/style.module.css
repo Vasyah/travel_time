@@ -4,6 +4,7 @@
     margin-bottom: 0.75rem;
     padding: 0 var(--space-l);
     position: relative;
+    overflow: hidden;
     /*max-height: 280px;*/
 }
 
@@ -24,16 +25,16 @@
     gap: 0.5rem;
 }
 
-.title {
-    color: var(--color-typo-success);
-    padding-left: 0.5rem;
-    max-width: 160px;
-}
+/*.title {*/
+/*    color: var(--color-typo-success);*/
+/*    padding-left: 0.5rem;*/
+/*    max-width: 160px;*/
+/*}*/
 
-.rct-sidebar-row {
-    min-height: 44px !important;
-    max-height: 44px !important;
-}
+/*.rct-sidebar-row {*/
+/*    min-height: 44px !important;*/
+/*    max-height: 44px !important;*/
+/*}*/
 
 .calendarHeader {
     display: flex;

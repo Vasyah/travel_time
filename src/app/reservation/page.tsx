@@ -34,7 +34,6 @@ export default function Home() {
 
     return (
         <div>
-            <code>{JSON.stringify(filter)}</code>
             <Text size="2xl" weight={'semibold'} view={"success"}
                   style={{marginBottom: '2.25rem'}}>Все
                 отели</Text>

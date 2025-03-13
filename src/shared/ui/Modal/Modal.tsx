@@ -24,10 +24,13 @@ export const Modal: FC<ModalProps> = ({children, loading = false, ...props}) => 
         }, [isOpen]);
 
         return (
-            <ModalConsta  {...props} rootClassName={st.sidebarOverlay}
+            <ModalConsta  {...props} rootClassName={cn(st.sidebarOverlay, {[st.rootLoading]: loading})}
                           className={cn(st.modal, {[st.modalLoading]: loading, [st.opened]: isOpen})}>
+                {loading &&
+                    <div className={st.loading}>
+                        <Loader/>
+                    </div>}
                 {children}
-                {loading && <div className={st.loading}><Loader/></div>}
             </ModalConsta>
         );
     }

@@ -15,21 +15,18 @@ import {DragNDropField} from "@consta/uikit/DragNDropField";
 import {Button} from "@consta/uikit/Button";
 import {Text} from "@consta/uikit/Text";
 import {adaptToOption} from "@/features/RoomInfo/lib/adaptHotel";
-import {Modal} from "@/shared/ui/Modal/Modal";
-import {CurrentReserveType} from "@/shared/api/reserve/reserve";
+import {CurrentReserveType, Nullable} from "@/shared/api/reserve/reserve";
 import {Room} from "@/shared/api/room/room";
 
 export interface RoomInfoProps {
-    isOpen: boolean;
     onClose: () => void;
     onAccept: (args?: any) => void;
-    currentReserve?: CurrentReserveType
+    currentReserve?: Nullable<CurrentReserveType>
     isLoading?: boolean;
 }
 
 
 export const RoomInfo: FC<RoomInfoProps> = ({
-                                                isOpen = false,
                                                 onAccept,
                                                 onClose,
                                                 currentReserve,
@@ -75,13 +72,7 @@ export const RoomInfo: FC<RoomInfoProps> = ({
 
 
         return (
-            <Modal
-                hasOverlay
-                isOpen={isOpen}
-                onClickOutside={onClose}
-                onEsc={onClose}
-                loading={loading}
-            >
+            <>
                 <FormTitle>
                     Добавление номера
                 </FormTitle>
@@ -188,8 +179,7 @@ export const RoomInfo: FC<RoomInfoProps> = ({
                 />
 
                 <FormButtons isLoading={loading} onAccept={onAcceptForm} onClose={onClose}/>
-
-            </Modal>
+            </>
         );
     }
 ;

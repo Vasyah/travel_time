@@ -14,3 +14,7 @@
 .reserveTotal {
     margin-bottom: 0.75rem;
 }
+
+.datePicker {
+    z-index: 999 !important;
+}

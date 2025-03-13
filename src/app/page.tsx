@@ -12,7 +12,6 @@ import key from './key.svg'
 import {HotelInfo} from "@/features/HotelModal/ui/HotelInfo";
 import {Button} from "@consta/uikit/Button";
 import {ToastContainer} from 'react-toastify';
-import {RoomInfo} from "@/features/RoomInfo/ui/RoomInfo";
 import cx from './page.module.css'
 import {Room, useCreateRoom} from "@/shared/api/room/room";
 import {Reserve, useCreateReserve} from "@/shared/api/reserve/reserve";
@@ -20,6 +19,9 @@ import {showToast} from "@/shared/ui/Toast/Toast";
 import {FullWidthLoader} from "@/shared/ui/Loader/Loader";
 import {QUERY_KEYS, queryClient} from "@/shared/config/reactQuery";
 import {Flex} from "antd";
+import {RoomModal} from "@/features/RoomInfo/ui/RoomModal";
+import {ReserveModal} from "@/features/ReserveInfo/ui/ReserveModal";
+import {HotelModal} from "@/features/HotelModal/ui/ReserveModal";
 
 
 export default function Main() {
@@ -115,31 +117,27 @@ export default function Main() {
     }
     return (
         <div>
-            {isHotelOpen &&
-                <HotelInfo
-                    isOpen={isHotelOpen}
-                    onClose={() => setIsHotelOpen(false)}
-                    onAccept={onHotelCreate}
-                    isLoading={isHotelLoading}
-                />
-            }
-            {isRoomOpen &&
-                <RoomInfo
-                    isOpen={isRoomOpen}
-                    onClose={() => setIsRoomOpen(false)}
-                    onAccept={onRoomCreate}
-                    isLoading={isRoomLoading}
-                />
-            }
-            {isReserveOpen &&
-                <ReserveInfo
-                    isOpen={isReserveOpen}
-                    onClose={() => setIsReserveOpen(false)}
-                    onAccept={onReserveCreate}
-                    currentReserve={null}
-                    isLoading={isReserveLoading}
-                />
-            }
+            <HotelModal
+                isOpen={isHotelOpen}
+                onClose={() => setIsHotelOpen(false)}
+                onAccept={onHotelCreate}
+                isLoading={isHotelLoading}
+                currentReserve={null}
+            />
+            <RoomModal
+                isOpen={isRoomOpen}
+                onClose={() => setIsRoomOpen(false)}
+                onAccept={onRoomCreate}
+                isLoading={isRoomLoading}
+                currentReserve={null}
+            />
+            <ReserveModal
+                isOpen={isReserveOpen}
+                onClose={() => setIsReserveOpen(false)}
+                onAccept={onReserveCreate}
+                currentReserve={null}
+                isLoading={isReserveLoading}
+            />
 
 
             <Text size="2xl" weight={'semibold'} view={"success"} style={{marginBottom: '2.25rem'}}>Все отели</Text>

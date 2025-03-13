@@ -1,5 +1,4 @@
 import React, {FC, useEffect, useMemo} from 'react'
-import {Text} from "@consta/uikit/Text";
 import cx from '@/features/ReserveInfo/ui/style.module.css'
 import {FieldGroup} from "@consta/uikit/FieldGroup";
 import {TextField} from "@consta/uikit/TextField";
@@ -15,23 +14,21 @@ import {adaptToOption} from "@/features/RoomInfo/lib/adaptHotel";
 import {FormButtons} from "@/shared/ui/FormButtons/FormButtons";
 import moment from "moment";
 import {ReserveTotal} from "@/features/ReserveInfo/ui/ReserveTotal";
-import {Modal} from "@/shared/ui/Modal/Modal";
 import {FormTitle} from "@/shared/ui/FormTitle/FormTitle";
 import {showToast} from "@/shared/ui/Toast/Toast";
 import {IoLogoWhatsapp} from "react-icons/io";
 import {createWhatsappLink} from "@/shared/lib/links";
 import {LinkIcon} from "@/shared/ui/LinkIcon/LinkIcon";
+import {TextFieldPropStatus} from "@consta/uikit/__internal__/src/components/TextField/types";
 
 export interface ReserveInfoProps {
-    isOpen: boolean;
     onClose: () => void;
     onAccept: (reserve: Reserve | ReserveDTO) => void;
-    currentReserve: Nullable<CurrentReserveType>
+    currentReserve?: Nullable<CurrentReserveType>
     isLoading: boolean
 }
 
 export const ReserveInfo: FC<ReserveInfoProps> = ({
-                                                      isOpen = false,
                                                       onAccept,
                                                       onClose,
                                                       currentReserve,
@@ -62,14 +59,14 @@ export const ReserveInfo: FC<ReserveInfoProps> = ({
 
         let defaults = {
             date: [moment().toDate(), moment().add(1, 'days').toDate()] as [Date, Date],
-            hotel_id: adaptToOption({
+            hotel_id: hotel ? adaptToOption({
                 id: hotel?.id,
                 title: hotel?.title
-            }),
-            room_id: adaptToOption({
+            }) : undefined,
+            room_id: room ? adaptToOption({
                 id: room?.id,
                 title: room?.title
-            })
+            }) : undefined,
         }
 
         if (!!reserve) {
@@ -84,8 +81,10 @@ export const ReserveInfo: FC<ReserveInfoProps> = ({
         control,
         register,
         watch,
-
+        formState: {errors},
+        handleSubmit
     } = useForm<ReserveForm>({
+        mode: 'onSubmit',
         defaultValues: currentReserve?.hotel ? getDefaultValues(currentReserve) : undefined
     })
 
@@ -96,7 +95,7 @@ export const ReserveInfo: FC<ReserveInfoProps> = ({
         data: rooms,
         isLoading: isRoomsLoading,
         refetch: fetchRoomsByHotel,
-        status: roomsStatus
+        status: roomsStatus,
     } = useGetRoomsByHotel(formData?.hotel_id?.id, false)
 
 
@@ -148,25 +147,37 @@ export const ReserveInfo: FC<ReserveInfoProps> = ({
     }
 
 
-    const onAcceptForm = () => {
+    console.log({formData, errors})
+    const onAcceptForm = (formData: ReserveForm) => {
         if (!formData?.date?.[0] || !formData?.date?.[1]) {
             showToast('Ошибка при создании брони, проверьте даты', "error")
             return
         }
 
+        if (errors) {
+            showToast('Ошибка при создании брони, проверьте корректность ввода данных', "error")
+            console.log(errors)
+        }
         const data = deserializeData(formData)
         onAccept(currentReserve ? {...data, id: currentReserve?.reserve?.id} : data)
     }
 
+    const getError = (field: keyof ReserveDTO, errors: Record<string, unknown>) => {
+        if (!errors?.[field]) {
+            return {
+                status: undefined,
+                caption: undefined,
+            }
+        }
+
+        return {
+            status: 'alert' as TextFieldPropStatus,
+            caption: errors[field],
+        }
+    }
 
     return (
-        <Modal
-            hasOverlay
-            isOpen={isOpen}
-            onClickOutside={onClose}
-            onEsc={onClose}
-            loading={loading}
-        >
+        <>
             <FormTitle>
                 Бронирование
             </FormTitle>
@@ -177,10 +188,10 @@ export const ReserveInfo: FC<ReserveInfoProps> = ({
                 rules={{required: true}}
                 render={({field}) =>
                     <DatePicker
+                        style={{zIndex: 999}}
                         required
                         value={field.value}
                         onChange={e => field.onChange(e)}
-                        style={{zIndex: 90}}
                         type="date-range"
                         leftSide={[IconCalendar, IconCalendar]}
                         placeholder={['ДД.ММ.ГГГГ', 'ДД.ММ.ГГГГ']}
@@ -198,6 +209,7 @@ export const ReserveInfo: FC<ReserveInfoProps> = ({
                 render={({field}) =>
                     <Select
                         {...field}
+                        style={{zIndex: 999}}
                         items={hotelOptions}
                         placeholder={'Выберите из списка'}
                         label={"Название отеля"} required size={FORM_SIZE}
@@ -277,10 +289,12 @@ export const ReserveInfo: FC<ReserveInfoProps> = ({
                     label="Номер гостя"
                     type={'phone'}
                     size={FORM_SIZE}
-                    rightSide={() => formData?.phone ? <LinkIcon icon={<IoLogoWhatsapp
-                        color="#5BD066"
-                        size={'24px'}
-                    />} link={createWhatsappLink(formData?.phone, 'Добрый день')}/> : null}
+                    rightSide={() => formData?.phone ? <LinkIcon icon={
+                        <IoLogoWhatsapp
+                            color="#5BD066"
+                            size={'24px'}
+                        />
+                    } link={createWhatsappLink(formData?.phone, 'Добрый день')}/> : null}
                 />}
             />
 
@@ -325,7 +339,9 @@ export const ReserveInfo: FC<ReserveInfoProps> = ({
                               }
                           />}/>
 
-            <FormButtons isLoading={loading} onAccept={onAcceptForm} onClose={onClose}/>
-        </Modal>
+            <FormButtons isLoading={loading} onAccept={() => handleSubmit(onAcceptForm)} onClose={onClose}/>
+            {/*<FormButtons isLoading={loading} onAccept={() => handleSubmit((data => console.log({data, errors})))}*/}
+            {/*             onClose={onClose}/>*/}
+        </>
     );
 };

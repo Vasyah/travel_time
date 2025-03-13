@@ -11,23 +11,21 @@ import {FORM_SIZE} from "@/shared/lib/const";
 import {HOTEL_TYPES} from "@/features/HotelModal/lib/const";
 import {FormTitle} from "@/shared/ui/FormTitle/FormTitle";
 import {Modal} from "@/shared/ui/Modal/Modal";
-import {CurrentReserveType} from "@/shared/api/reserve/reserve";
+import {CurrentReserveType, Nullable} from "@/shared/api/reserve/reserve";
 import {LinkIcon} from "@/shared/ui/LinkIcon/LinkIcon";
 import {createTelegramLink} from "@/shared/lib/links";
 import {FaTelegram} from "react-icons/fa";
 
 export interface HotelInfoProps {
-    isOpen: boolean;
     onClose: () => void;
     onAccept: (args?: any) => void;
-    currentReserve?: CurrentReserveType
+    currentReserve: Nullable<CurrentReserveType>
     isLoading?: boolean;
 }
 
 export type HotelForm = Hotel & { type: { label: string, id: string } };
 
 export const HotelInfo: FC<HotelInfoProps> = ({
-                                                  isOpen = false,
                                                   onAccept,
                                                   onClose,
                                                   currentReserve,
@@ -62,13 +60,7 @@ export const HotelInfo: FC<HotelInfoProps> = ({
 
 
         return (
-            <Modal
-                hasOverlay
-                isOpen={isOpen}
-                onClickOutside={onClose}
-                onEsc={onClose}
-                loading={isLoading}
-            >
+            <>
                 <FormTitle>
                     Добавление отеля
                 </FormTitle>
@@ -193,7 +185,7 @@ export const HotelInfo: FC<HotelInfoProps> = ({
                             loading={isLoading}
                         /></GridItem>
                 </Grid>
-            </Modal>
+            </>
         );
     }
 ;

@@ -37,7 +37,7 @@ export type ReserveForm = Omit<ReserveDTO, "id" | "start" | "end" | "room_id"> &
 export type Nullable<Type> = Type | null
 
 export type CurrentReserveType =
-    { room: RoomDTO, hotel: HotelDTO, reserve?: ReserveDTO }
+    { room?: RoomDTO, hotel: HotelDTO, reserve?: ReserveDTO }
 
 export const createReserveApi = async (reserve: Reserve) => {
     const {responseData} = await insertItem<Reserve>(TABLE_NAMES.RESERVES, reserve)
