@@ -13,20 +13,20 @@ import {$hotelsFilter} from "@/shared/models/hotels";
 
 export default function Home() {
     const {isLoading, error, data: hotels, refetch} = useGetAllHotels()
-    const filter = useUnit($hotelsFilter)
+    // const filter = useUnit($hotelsFilter)
     // если добавили фильтр, то загрузить только отели в которых есть свободные места
 
-    useEffect(() => {
-        // if (!filter?.start && !filter?.end) returnp
-        //
-        // const filteredHotels = getHotelsWithFreeRooms(filter?.start, filter?.end)
-        //
-        // filteredHotels.then(data => setFilteredHotels(data))
-        if (!!filter?.end && !!filter?.start) {
-            getHotelsWithFreeRooms(filter?.start, filter?.end)
-
-        }
-    }, [filter])
+    // useEffect(() => {
+    //     // if (!filter?.start && !filter?.end) returnp
+    //     //
+    //     // const filteredHotels = getHotelsWithFreeRooms(filter?.start, filter?.end)
+    //     //
+    //     // filteredHotels.then(data => setFilteredHotels(data))
+    //     if (!!filter?.end && !!filter?.start) {
+    //         getHotelsWithFreeRooms(filter?.start, filter?.end)
+    //
+    //     }
+    // }, [filter])
 
     if (isLoading) {
         return <div className={cx.loaderContainer}><Loader/></div>

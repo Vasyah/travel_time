@@ -6,9 +6,9 @@ import {ReserveInfo} from "@/features/ReserveInfo/ui/ReserveInfo";
 import {Card} from "@consta/uikit/Card";
 import Image from 'next/image'
 import {Hotel, useCreateHotel, useGetAllCounts} from "@/shared/api/hotel/hotel";
-import building from './building.svg'
-import bed from './bed.svg'
-import key from './key.svg'
+import building from '../../public/main/building.svg'
+import bed from '../../public/main/bed.svg'
+import key from '../../public/main/key.svg'
 import {HotelInfo} from "@/features/HotelModal/ui/HotelInfo";
 import {Button} from "@consta/uikit/Button";
 import {ToastContainer} from 'react-toastify';

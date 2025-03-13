@@ -7,7 +7,7 @@ import React, {useState} from "react";
 import {TravelMenu} from "@/shared/ui/Menu/Menu";
 import '@consta/themes/Theme_color_highlightsGreenDefault';
 import {Grid, GridItem} from "@consta/uikit/Grid";
-import "./globals.css";
+import "../shared/ui/globals.css";
 import '@/features/lib/zIndexes.css'
 import {SearchFeature} from "@/features/Search/ui/Search";
 import {Text} from "@consta/uikit/Text";
@@ -19,6 +19,7 @@ import moment from "moment";
 import {DateTime} from "@consta/uikit/DateTime";
 import cx from './layout.module.css'
 import {ConfigProvider} from "antd";
+import {SafeHydrate} from "@/components/SafeHydrate/SafeHydrate";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -73,38 +74,40 @@ export default function RootLayout({
         >
             <QueryClientProvider client={queryClient}>
                 <Theme preset={preset}>
-                    <LayoutExampleBig/>
-                    <Grid cols={24} style={{minHeight: `calc(100vh - 64px)`,}}>
-                        <GridItem col={2} style={{
-                            borderRight: '1px solid var(--color-bg-border)',
-                            minWidth: '120px',
-                            maxWidth: '120px'
-                        }}>
-                            <TravelMenu/>
-                        </GridItem>
-                        <GridItem col={22} style={{padding: '0 2.5rem'}}>
-                            <Grid cols={11} gap={'l'}>
-                                <GridItem col={7} style={{margin: '2.5rem 0'}}>
-                                    <SearchFeature/>
-                                </GridItem>
-                                <GridItem col={4} direction={'column'} style={{margin: '1.5rem 0'}}>
-                                    <Text size="xl" view={"success"}>Сегодня</Text>
-                                    <div onClick={() => setIsCalendarOpen(prev => !prev)}><Text size="2xl"
-                                                                                                view={"success"}
-                                                                                                cursor={'pointer'}
-                                                                                                className={cx.dateContainer}
-                                    >{moment().locale('ru').format('ddd, MMMM D YYYY')}<FaCaretDown
-                                        size={14}/>
-                                        <DateTime type="date"
-                                                  className={`${cx.date} ${isCalendarOpen ? cx.open : ''}`}/>
-                                    </Text></div>
+                    <SafeHydrate>
+                        <LayoutExampleBig/>
+                        <Grid cols={24} style={{minHeight: `calc(100vh - 64px)`,}}>
+                            <GridItem col={2} style={{
+                                borderRight: '1px solid var(--color-bg-border)',
+                                minWidth: '120px',
+                                maxWidth: '120px'
+                            }}>
+                                <TravelMenu/>
+                            </GridItem>
+                            <GridItem col={22} style={{padding: '0 2.5rem'}}>
+                                <Grid cols={11} gap={'l'}>
+                                    <GridItem col={7} style={{margin: '2.5rem 0'}}>
+                                        <SearchFeature/>
+                                    </GridItem>
+                                    <GridItem col={4} direction={'column'} style={{margin: '1.5rem 0'}}>
+                                        <Text size="xl" view={"success"}>Сегодня</Text>
+                                        <div onClick={() => setIsCalendarOpen(prev => !prev)}><Text size="2xl"
+                                                                                                    view={"success"}
+                                                                                                    cursor={'pointer'}
+                                                                                                    className={cx.dateContainer}
+                                        >{moment().locale('ru').format('ddd, MMMM D YYYY')}<FaCaretDown
+                                            size={14}/>
+                                            <DateTime type="date"
+                                                      className={`${cx.date} ${isCalendarOpen ? cx.open : ''}`}/>
+                                        </Text></div>
 
-                                </GridItem>
-                            </Grid>
-                            {children}
-                        </GridItem>
+                                    </GridItem>
+                                </Grid>
+                                {children}
+                            </GridItem>
 
-                    </Grid>
+                        </Grid>
+                    </SafeHydrate>
                 </Theme>
                 <ReactQueryDevtools/>
             </QueryClientProvider>
