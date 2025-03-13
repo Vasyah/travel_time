@@ -21,7 +21,7 @@ export interface SearchFeatureProps {
 export const SearchFeature: FC<SearchFeatureProps> = (props: SearchFeatureProps) => {
     const [date, setValue] = useState<[Date?, Date?] | null>(null);
     const [category, setCategory] = useState<Item | null>();
-    const [quantity, setQuantity] = useState<number>(0);
+    const [quantity, setQuantity] = useState<number>();
 
     const onSearch = () => {
         let filter = undefined;
@@ -63,7 +63,7 @@ export const SearchFeature: FC<SearchFeatureProps> = (props: SearchFeatureProps)
                 dateTimeView={'classic'}
                 withClearButton
             />
-            <TextField value={String(quantity)} onChange={(value) => setQuantity(value ? +value : 0)}
+            <TextField value={String(quantity)} onChange={(value) => setQuantity(value ? +value : undefined)}
                        placeholder={'Гости'} type={'number'} withClearButton style={{maxWidth: '144px'}}
                        incrementButtons={false}
             />
