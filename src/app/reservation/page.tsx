@@ -5,11 +5,13 @@ import {
     getHotelsWithFreeRooms,
     useGetAllHotels
 } from "@/shared/api/hotel/hotel";
-import {Calendar} from "@/features/Scheduler/ui/Calendar";
+import {Calendar} from "@/features/Calendar/ui/Calendar";
 import {Loader} from "@/shared/ui/Loader/Loader";
 import cx from './page.module.css'
 import {useUnit} from "effector-react/compat";
 import {$hotelsFilter} from "@/shared/models/hotels";
+import 'react-calendar-timeline/style.css'
+import './calendar.css'
 
 export default function Home() {
     const {isLoading, error, data: hotels, refetch} = useGetAllHotels()

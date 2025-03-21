@@ -19,25 +19,26 @@
 }
 
 .react-calendar-timeline .rct-dateHeader-primary {
-    background-color: var(--color-bg-success);
+    background-color: var(--color-bg-success) !important;
 }
 
-[data-testid=sidebarHeader] {
-    background-color: var(--color-bg-default);
-}
+/*[data-testid=sidebarHeader] {*/
+/*    background-color: var(--color-bg-default);*/
+/*    color: var(--color-typo-primary);*/
+/*}*/
 
 .travel-timeline {
 
 
     .rct-outer {
-        max-height: 280px;
+        /*max-height: 280px;*/
         overflow-y: auto;
     }
 }
 
 .rct-header-root > div {
     background-color: var(--color-bg-default);
-    color: var(--color-typo-primary) !important;
+    /*color: var(--color-typo-primary) !important;*/
 }
 
 .react-calendar-timeline .rct-vertical-lines .rct-vl {

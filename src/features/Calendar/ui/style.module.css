@@ -42,3 +42,14 @@
     margin-left: auto;
     padding-right: 0.5rem;
 }
+
+.interval {
+    line-height: 30px;
+    text-align: center;
+    border-left: 1px solid var(--color-typo-ghost);
+    border-bottom: 1px solid var(--color-typo-ghost);
+    background-color: white;
+    cursor: pointer;
+    color: var(--color-typo-primary);
+    padding: 0.15rem 0 ;
+}

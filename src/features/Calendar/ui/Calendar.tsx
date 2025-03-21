@@ -1,6 +1,5 @@
-import React, {useCallback, useMemo, useState} from "react";
-import 'react-calendar-timeline/style.css'
-import './calendar.css'
+import React, {useCallback, useEffect, useMemo, useState} from "react";
+import '../../../app/reservation/calendar.css'
 import {Grid} from "@consta/uikit/Grid";
 import Image from "next/image";
 import {Text} from "@consta/uikit/Text";
@@ -18,7 +17,7 @@ import {
     useUpdateReserve
 } from "@/shared/api/reserve/reserve";
 import {Room, useCreateRoom, useGetRoomsWithReservesByHotel} from "@/shared/api/room/room";
-import {DateHeader, SidebarHeader, Timeline, TimelineHeaders} from "react-calendar-timeline";
+import {CustomHeader, DateHeader, SidebarHeader, Timeline, TimelineHeaders} from "react-calendar-timeline";
 import {useQueryClient} from "@tanstack/react-query";
 import {QUERY_KEYS} from "@/shared/config/reactQuery";
 import {Flex, Tooltip} from "antd";
@@ -36,6 +35,9 @@ import {nanoid} from "nanoid";
 import {Modal} from "@/shared/ui/Modal/Modal";
 import {RoomModal} from "@/features/RoomInfo/ui/RoomModal";
 import {ReserveModal} from "@/features/ReserveInfo/ui/ReserveModal";
+import "moment/locale/ru"; // Подключаем русскую локализацию
+
+moment.locale("ru"); // Для локализации дат
 
 const keys = {
     groupIdKey: "id",
@@ -57,7 +59,7 @@ export interface CalendarProps {
 
 const DAY = 24 * 60 * 60 * 1000
 const WEEK = DAY * 7;
-const THREE_MONTHS = DAY * 30 * 12;
+const THREE_MONTHS = DAY * 30 * 24;
 // const THREE_MONTHS = 5 * 365.24 * 86400 * 1000;
 
 export const Calendar = ({hotel}: CalendarProps) => {
@@ -150,12 +152,13 @@ export const Calendar = ({hotel}: CalendarProps) => {
 
     data?.forEach(({id: room_id, reserves}) => {
         const reservesTmp = reserves.map(({end, start, ...reserve}) => ({
+            ...reserve,
+            id: reserve.id,
             group: room_id,
             // end: end,
             end: getDateFromUnix(end),
             // start: start,
             start: getDateFromUnix(start),
-            ...reserve
         }));
 
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -207,15 +210,8 @@ export const Calendar = ({hotel}: CalendarProps) => {
     const reserveLoading = isReserveCreating || isReserveUpdating
     const stars = Array.from(Array(rating))
 
-    const defaultTimeStart = moment()
-        .startOf("month")
-        .toDate();
-
-    const defaultTimeEnd = moment()
-        .endOf("month")
-        // .add(1, "day")
-        .toDate();
-
+    const defaultTimeStart = moment().add(-15, 'day')
+    const defaultTimeEnd = moment().add(15, 'day')
 
     return <>
         <Flex gap={'middle'} className={cx.container}>
@@ -245,7 +241,7 @@ export const Calendar = ({hotel}: CalendarProps) => {
                 {/*</GridItem>*/}
                 {/*</Grid>*/}
             </div>
-            <div>
+            <div style={{maxHeight: "280px", overflow: "auto"}}>
                 <Timeline
                     className={'travel-timeline'}
                     groups={hotelRooms}
@@ -297,8 +293,90 @@ export const Calendar = ({hotel}: CalendarProps) => {
                                 </div>
                             }}
                         </SidebarHeader>
-                        <DateHeader unit="primaryHeader"/>
+                        <DateHeader unit="primaryHeader" labelFormat={(props) => {
+                            console.log(props)
+                            return 'HELLO'
+                        }}
+                        />
                         <DateHeader/>
+                        <CustomHeader height={50} headerData={{someData: 'data'}} unit={'year'}>
+                            {({
+                                  headerContext: {intervals, unit},
+
+                                  getRootProps,
+                                  getIntervalProps,
+                                  showPeriod,
+                                  data,
+                              }) => {
+                                return (
+                                    <div {...getRootProps()}>
+                                        {intervals.map(interval => {
+                                            const isMonth = unit === 'month';
+                                            const isYear = unit === 'year';
+
+                                            const dateText = interval.startTime.format('YYYY')
+                                            return (
+                                                <div
+                                                    onClick={() => {
+                                                        showPeriod(interval.startTime, interval.endTime)
+                                                        console.log({interval, unit, data,root: getRootProps()})
+                                                        // console.log(getIntervalProps({interval}))
+                                                    }}
+                                                    className={cx.interval}
+                                                    {...getIntervalProps({
+                                                        interval,
+                                                    })}
+                                                    key={nanoid()}
+                                                >
+                                                    <div className="sticky">
+                                                        {dateText}
+                                                    </div>
+                                                </div>
+                                            )
+                                        })}
+                                    </div>
+                                )
+                            }}
+                        </CustomHeader>
+                        <CustomHeader height={50} headerData={{someData: 'data'}}>
+                            {({
+                                  headerContext: {intervals, unit},
+
+                                  getRootProps,
+                                  getIntervalProps,
+                                  showPeriod,
+                                  data,
+                              }) => {
+                                return (
+                                    <div {...getRootProps()}>
+                                        {intervals.map(interval => {
+                                            const isMonth = unit === 'month';
+                                            const isYear = unit === 'year';
+
+                                            const dateText = isMonth ? moment(interval.startTime.toDate()).locale('ru').format('MMM') : interval.startTime.format('DD')
+                                            return (
+                                                <div
+                                                    onClick={() => {
+                                                        showPeriod(interval.startTime, interval.endTime)
+                                                        console.log({interval, unit, data,root: getRootProps()})
+                                                        // console.log(getIntervalProps({interval}))
+                                                    }}
+                                                    className={cx.interval}
+                                                    {...getIntervalProps({
+                                                        interval,
+                                                    })}
+                                                    key={nanoid()}
+                                                >
+                                                    <div className="sticky">
+                                                        {dateText}
+                                                    </div>
+                                                </div>
+                                            )
+                                        })}
+                                    </div>
+                                )
+                            }}
+                        </CustomHeader>
                     </TimelineHeaders>
                 </Timeline>
             </div>
