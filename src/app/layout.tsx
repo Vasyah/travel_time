@@ -10,16 +10,13 @@ import { Grid, GridItem } from '@consta/uikit/Grid'
 import '../shared/ui/globals.css'
 import '@/features/lib/zIndexes.css'
 import { SearchFeature } from '@/features/Search/ui/Search'
-import { Text } from '@consta/uikit/Text'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClient } from '@/shared/config/reactQuery'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { FaCaretDown } from 'react-icons/fa'
 import moment from 'moment'
-import { DateTime } from '@consta/uikit/DateTime'
-import cx from './layout.module.css'
 import { ConfigProvider, Flex } from 'antd'
 import { SafeHydrate } from '@/components/SafeHydrate/SafeHydrate'
+import { Today } from '@/features/Today/Today'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -96,24 +93,11 @@ export default function RootLayout({
                         <SearchFeature />
                       </div>
                       <Flex vertical style={{ margin: '1.5rem 0' }}>
-                        <Text size="xl" view={'success'}>
-                          Сегодня
-                        </Text>
-                        <div onClick={() => setIsCalendarOpen(prev => !prev)}>
-                          <Text
-                            size="2xl"
-                            view={'success'}
-                            cursor={'pointer'}
-                            className={cx.dateContainer}
-                          >
-                            {currentDate}
-                            <FaCaretDown size={14} />
-                            <DateTime
-                              type="date"
-                              className={`${cx.date} ${isCalendarOpen ? cx.open : ''}`}
-                            />
-                          </Text>
-                        </div>
+                        <Today
+                          currentDate={currentDate}
+                          open={isCalendarOpen}
+                          onToggle={() => setIsCalendarOpen(prev => !prev)}
+                        />
                       </Flex>
                     </Flex>
                     {children}

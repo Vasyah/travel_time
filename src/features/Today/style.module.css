@@ -11,11 +11,6 @@
     z-index: var(--zIndex-calendar);
     visibility: hidden;
     opacity: 0;
-    --transition-space: var(--space-2xs);
-    background: var(--color-bg-default);
-    box-shadow: var(--shadow-layer);
-    padding: var(--space-l);
-    width: auto;
 }
 
 .open {

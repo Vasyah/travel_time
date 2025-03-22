@@ -82,7 +82,7 @@ export default function Main() {
     () => [
       {
         id: nanoid(),
-        title: 'Отелей всего в базе',
+        title: `Отелей всего        в базе`,
         btn: { onClick: () => setIsHotelOpen(true), title: 'Добавить отель' },
         count: countsData?.[0]?.hotel_count ?? 0,
         image: <Image src={building.src} alt={''} width={115} height={140} />,

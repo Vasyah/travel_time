@@ -51,7 +51,6 @@ export default function Home() {
       >
         Все отели
       </Text>
-      filter {JSON.stringify(filter)}
       {hotels?.map(hotel => <Calendar hotel={hotel} key={hotel.id} />)}
     </div>
   )
