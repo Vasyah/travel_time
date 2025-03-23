@@ -42,7 +42,9 @@ import { nanoid } from 'nanoid'
 import { RoomModal } from '@/features/RoomInfo/ui/RoomModal'
 import { ReserveModal } from '@/features/ReserveInfo/ui/ReserveModal'
 import 'moment/locale/ru'
-import { Interval } from '@/features/Calendar/ui/Intervals' // Подключаем русскую локализацию
+import { Interval } from '@/features/Calendar/ui/Intervals'
+import { $hotelsFilter, TravelFilterType } from '@/shared/models/hotels'
+import { useUnit } from 'effector-react/compat' // Подключаем русскую локализацию
 
 moment.locale('ru') // Для локализации дат
 
@@ -70,9 +72,11 @@ const THREE_MONTHS = DAY * 30 * 24
 
 export const Calendar = ({ hotel }: CalendarProps) => {
   const { rating } = hotel
+  const filter = useUnit($hotelsFilter)
   const queryClient = useQueryClient()
   const { data, isFetching: isRoomLoading } = useGetRoomsWithReservesByHotel(
-    hotel.id
+    hotel.id,
+    filter
   )
   const [currentReserve, setCurrentReserve] =
     useState<Nullable<CurrentReserveType>>(null)
@@ -268,6 +272,7 @@ export const Calendar = ({ hotel }: CalendarProps) => {
               )
             })}
           </div>
+          <div>{hotel.type}</div>
           <div className={cx.hotelDescription}>
             <Text
               className={cx.title}

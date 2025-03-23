@@ -1,22 +1,24 @@
-// userModel.ts
-import {createEvent, createStore, createEffect, sample} from 'effector';
+import { createEvent, createStore, createEffect, sample } from 'effector'
+import { Nullable } from '@/shared/api/reserve/reserve'
 
-const changeTravelFilter = createEvent<{
-    type?: string,
-    quantity?: number,
-    start?: number,
-    end?: number
-} | null>();
+export type TravelFilterType = Nullable<{
+  type?: string
+  quantity?: number
+  start?: number
+  end?: number
+  hotels_id?: string[]
+  rooms_id?: Map<string, string[]>
+}>
+
+const changeTravelFilter = createEvent<TravelFilterType>()
+
 // Создаем стор для хранения пользователей
-const $hotelsFilter = createStore(null as {
-    type?: string,
-    quantity?: number,
-    start?: number,
-    end?: number
-} | null).on(changeTravelFilter, (state, newFilter) => {
-    return {...newFilter}
-});
-
+const $hotelsFilter = createStore<TravelFilterType>(null).on(
+  changeTravelFilter,
+  (state, newFilter) => {
+    return { ...state, ...newFilter }
+  }
+)
 
 // Экспортируем стор и событие
-export {$hotelsFilter, changeTravelFilter};
+export { $hotelsFilter, changeTravelFilter }

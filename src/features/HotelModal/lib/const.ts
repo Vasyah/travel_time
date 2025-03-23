@@ -4,7 +4,7 @@ export const HOTEL_TYPES: { id: number; label: string }[] = [
     id: 1,
   },
   {
-    label: 'Гостевые Дома',
+    label: 'Гостевые дома',
     id: 2,
   },
   {

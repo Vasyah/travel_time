@@ -9,15 +9,22 @@ import { Calendar } from '@/features/Calendar/ui/Calendar'
 import { Loader } from '@/shared/ui/Loader/Loader'
 import cx from './page.module.css'
 import { useUnit } from 'effector-react/compat'
-import { $hotelsFilter } from '@/shared/models/hotels'
+import { $hotelsFilter, changeTravelFilter } from '@/shared/models/hotels'
 import 'react-calendar-timeline/style.css'
 import './calendar.css'
+import { QUERY_KEYS, queryClient } from '@/shared/config/reactQuery'
 
 export default function Home() {
-  const { isLoading, error, data: hotels, refetch } = useGetAllHotels()
   const filter = useUnit($hotelsFilter)
+  const {
+    isLoading,
+    error,
+    data: hotels,
+    refetch,
+  } = useGetAllHotels(!filter, filter)
   // если добавили фильтр, то загрузить только отели в которых есть свободные места
 
+  console.log(filter)
   useEffect(() => {
     // if (!filter?.start && !filter?.end) returnp
     //
@@ -26,12 +33,39 @@ export default function Home() {
     // filteredHotels.then(data => setFilteredHotels(data))
     if (!!filter?.end && !!filter?.start) {
       getHotelsWithFreeRooms(filter?.start, filter?.end).then(
-        d => console.log(d)
+        result => {
+          const hotels_id = result?.map(hotel => hotel.hotel_id)
+          const rooms_id = new Map<string, string[]>()
+
+          result?.forEach(hotel =>
+            rooms_id.set(
+              hotel.hotel_id,
+              hotel.rooms.map(room => room.room_id)
+            )
+          )
+
+          console.log({ hotels_id, rooms_id })
+          changeTravelFilter({ hotels_id: hotels_id, rooms_id: rooms_id })
+        }
 
         //
       )
     }
-  }, [filter])
+  }, [filter?.start, filter?.end])
+
+  useEffect(() => {
+    if (
+      !!filter?.hotels_id ||
+      !!filter?.rooms_id ||
+      filter?.type ||
+      filter?.quantity
+    ) {
+      refetch()
+      queryClient.invalidateQueries({
+        queryKey: [...QUERY_KEYS.roomsWithReservesByHotel],
+      })
+    }
+  }, [filter?.hotels_id, filter?.rooms_id, filter?.type, filter?.quantity])
 
   if (isLoading) {
     return (
