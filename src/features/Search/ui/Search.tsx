@@ -8,6 +8,7 @@ import { HOTEL_TYPES } from '@/features/HotelModal/lib/const'
 import moment from 'moment/moment'
 import { changeTravelFilter } from '@/shared/models/hotels'
 import { TextField } from '@consta/uikit/TextField'
+import { useRouter } from 'next/navigation'
 
 type Item = {
   label: string
@@ -22,7 +23,7 @@ export const SearchFeature: FC<SearchFeatureProps> = (
   const [date, setValue] = useState<[Date?, Date?] | null>(null)
   const [category, setCategory] = useState<Item | null>()
   const [quantity, setQuantity] = useState<number>()
-
+  const router = useRouter()
   const onSearch = () => {
     let filter = undefined
     if (!!date?.length) {
@@ -30,6 +31,8 @@ export const SearchFeature: FC<SearchFeatureProps> = (
         start_time: moment(date[0]).hour(12).unix(),
         end_time: moment(date[1]).hour(11).unix(),
       }
+
+      router.push('/reservation')
     }
 
     if (filter || category || quantity) {

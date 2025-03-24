@@ -13,11 +13,16 @@ import { $hotelsFilter, changeTravelFilter } from '@/shared/models/hotels'
 import 'react-calendar-timeline/style.css'
 import './calendar.css'
 import { QUERY_KEYS, queryClient } from '@/shared/config/reactQuery'
+import {
+  $isHotelsWithFreeRoomsLoading,
+  getHotelsWithFreeRoomsFx,
+} from '@/features/Reservation/model/reservationStore'
 
 export default function Home() {
   const filter = useUnit($hotelsFilter)
+  const isFreeHotelsLoading = useUnit($isHotelsWithFreeRoomsLoading)
   const {
-    isLoading,
+    isPending,
     error,
     data: hotels,
     refetch,
@@ -26,30 +31,8 @@ export default function Home() {
 
   console.log(filter)
   useEffect(() => {
-    // if (!filter?.start && !filter?.end) returnp
-    //
-    // const filteredHotels = getHotelsWithFreeRooms(filter?.start, filter?.end)
-    //
-    // filteredHotels.then(data => setFilteredHotels(data))
     if (!!filter?.end && !!filter?.start) {
-      getHotelsWithFreeRooms(filter?.start, filter?.end).then(
-        result => {
-          const hotels_id = result?.map(hotel => hotel.hotel_id)
-          const rooms_id = new Map<string, string[]>()
-
-          result?.forEach(hotel =>
-            rooms_id.set(
-              hotel.hotel_id,
-              hotel.rooms.map(room => room.room_id)
-            )
-          )
-
-          console.log({ hotels_id, rooms_id })
-          changeTravelFilter({ hotels_id: hotels_id, rooms_id: rooms_id })
-        }
-
-        //
-      )
+      getHotelsWithFreeRoomsFx({ start: filter?.start, end: filter?.end })
     }
   }, [filter?.start, filter?.end])
 
@@ -67,7 +50,7 @@ export default function Home() {
     }
   }, [filter?.hotels_id, filter?.rooms_id, filter?.type, filter?.quantity])
 
-  if (isLoading) {
+  if (isPending || isFreeHotelsLoading) {
     return (
       <div className={cx.loaderContainer}>
         <Loader />
