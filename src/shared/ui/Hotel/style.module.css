@@ -1,0 +1,27 @@
+.container {
+    position: relative;
+}
+
+.headingContainer {
+    margin-bottom: 1.5rem;
+}
+
+.hotelIcon {
+    border-radius: var(--control-radius);
+    /*padding-bottom: var(--space-l);*/
+}
+
+.tag {
+    position: absolute !important;
+    left: 5px;
+    top: 7px;
+    /*--tag-base-border-color: transparent;*/
+    color: #000 !important;
+    --tag-base-bg-color: var(--color-control-bg-default) !important;
+    opacity: 0.6;
+
+}
+
+.title {
+    color: var(--color-typo-success);
+}
