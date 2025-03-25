@@ -4,6 +4,8 @@ import cx from '@/features/Calendar/ui/style.module.css'
 import { nanoid } from 'nanoid'
 import { IntervalContext } from 'react-calendar-timeline'
 import { Dayjs } from 'dayjs'
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-expect-error
 import { GetIntervalPropsParams } from 'react-calendar-timeline/dist/lib/headers/types'
 
 export interface IntervalProps {

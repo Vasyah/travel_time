@@ -206,14 +206,20 @@ export const Calendar = ({ hotel }: CalendarProps) => {
     hotelReserves = hotelReserves.concat(reservesTmp)
   })
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-expect-error
+  // @ts-nocheck
   const itemRenderer = ({
     item,
     itemContext,
     getItemProps,
     getResizeProps,
+  }: {
+    item: any
+    itemContext: any
+    getItemProps: (item: any) => any
+    getResizeProps: (item: any) => any
   }) => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
     const { left: leftResizeProps, right: rightResizeProps } = getResizeProps()
 
     const onItemClick = (reserve: ReserveDTO, hotel: HotelDTO) => {

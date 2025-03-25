@@ -4,8 +4,7 @@ import { QUERY_KEYS } from '@/shared/config/reactQuery'
 import { Room } from '@/shared/api/room/room'
 import { ReserveDTO, TravelOption } from '@/shared/api/reserve/reserve'
 import { TABLE_NAMES } from '@/shared/api/const'
-import { PostgrestError } from '@supabase/supabase-js'
-import { TravelFilterType, TravelFilterType } from '@/shared/models/hotels'
+import { TravelFilterType } from '@/shared/models/hotels'
 
 // Тип Hotel
 export type HotelDTO = {
@@ -165,10 +164,10 @@ export async function getHotelsWithFreeRooms(
     if (error) throw error
     return data ?? ([] as FreeHotelsDTO[])
   } catch (error) {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
     console.error(
       'Ошибка при получении отелей с свободными номерами:',
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
       error?.message
     )
     throw error
