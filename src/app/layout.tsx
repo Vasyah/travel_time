@@ -87,7 +87,7 @@ export default function RootLayout({
                   >
                     <TravelMenu />
                   </GridItem>
-                  <GridItem col={22} style={{ padding: '0 2.5rem' }}>
+                  <GridItem col={22} style={{ padding: '0 1rem 0 2.5rem' }}>
                     <Flex gap={'middle'}>
                       <div style={{ margin: '2.5rem 0' }}>
                         <SearchFeature />

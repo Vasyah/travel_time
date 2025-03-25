@@ -8,11 +8,6 @@
     /*max-height: 280px;*/
 }
 
-.hotelIcon {
-    border-radius: var(--control-radius);
-    /*padding-bottom: var(--space-l);*/
-}
-
 .hotelInfo {
     margin-top: 1.5rem;
     max-width: 180px;
@@ -51,5 +46,5 @@
     background-color: white;
     cursor: pointer;
     color: var(--color-typo-primary);
-    padding: 0.15rem 0 ;
+    padding: 0.15rem 0;
 }

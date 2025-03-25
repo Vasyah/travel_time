@@ -1,10 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react'
 import '../../../app/reservation/calendar.css'
 import { Grid } from '@consta/uikit/Grid'
-import Image from 'next/image'
-import { Text } from '@consta/uikit/Text'
 import hotelImage from '../hotel.svg'
-import star from '../star.svg'
 import cx from './style.module.css'
 import { HotelDTO } from '@/shared/api/hotel/hotel'
 import {
@@ -33,8 +30,6 @@ import { Flex, Tooltip } from 'antd'
 import { getDateFromUnix } from '@/shared/lib/date'
 import { FullWidthLoader } from '@/shared/ui/Loader/Loader'
 import moment from 'moment'
-import { FaTelegram } from 'react-icons/fa'
-import { LinkIcon } from '@/shared/ui/LinkIcon/LinkIcon'
 import { CiSquarePlus } from 'react-icons/ci'
 import { Button } from 'antd'
 import { BiSortDown, BiSortUp } from 'react-icons/bi'
@@ -45,7 +40,11 @@ import { ReserveModal } from '@/features/ReserveInfo/ui/ReserveModal'
 import 'moment/locale/ru'
 import { Interval } from '@/features/Calendar/ui/Intervals'
 import { $hotelsFilter } from '@/shared/models/hotels'
-import { useUnit } from 'effector-react/compat' // Подключаем русскую локализацию
+import { useUnit } from 'effector-react/compat'
+import { HotelImage } from '@/shared/ui/Hotel/HotelImage'
+import { HotelRating } from '@/shared/ui/Hotel/HotelRating'
+import { HotelTitle } from '@/shared/ui/Hotel/HotelTitle'
+import { HotelTelegram } from '@/shared/ui/Hotel/HotelTelegram' // Подключаем русскую локализацию
 
 moment.locale('ru') // Для локализации дат
 
@@ -266,7 +265,6 @@ export const Calendar = ({ hotel }: CalendarProps) => {
 
   const isLoading = isRoomLoading || isRoomCreating
   const reserveLoading = isReserveCreating || isReserveUpdating
-  const stars = Array.from(Array(rating))
 
   const defaultTimeStart = moment().add(-15, 'day')
   const defaultTimeEnd = moment().add(15, 'day')
@@ -277,42 +275,21 @@ export const Calendar = ({ hotel }: CalendarProps) => {
       <Flex gap={'middle'} className={cx.container}>
         {isLoading && <FullWidthLoader />}
         <div className={cx.hotelInfo}>
-          <Image
+          <HotelImage
+            type={hotel?.type}
             className={cx.hotelIcon}
             src={hotelImage.src}
-            alt={'Изображение отеля'}
             width={157}
             height={164}
           />
           <div className={cx.stars}>
-            {stars?.map((_, index) => {
-              return (
-                <Image
-                  src={star.src}
-                  alt={'Звезда отеля'}
-                  width={24}
-                  height={24}
-                  key={index}
-                />
-              )
-            })}
+            <HotelRating rating={rating} />
           </div>
-          <div>{hotel.type}</div>
           <div className={cx.hotelDescription}>
-            <Text
-              className={cx.title}
-              transform={'uppercase'}
-              weight={'semibold'}
-              size={'xl'}
-            >
-              {hotel.title}
-            </Text>
+            <HotelTitle>{hotel?.title}</HotelTitle>
             <div>
               {hotel?.telegram_url && (
-                <LinkIcon
-                  icon={<FaTelegram color="2AABEE" size={'24px'} />}
-                  link={hotel?.telegram_url}
-                />
+                <HotelTelegram url={hotel?.telegram_url} />
               )}
             </div>
           </div>
