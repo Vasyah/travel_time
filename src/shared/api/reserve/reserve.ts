@@ -52,6 +52,22 @@ export const createReserveApi = async (reserve: Reserve) => {
   return responseData
 }
 
+export const deleteReserveApi = async (id: string) => {
+  try {
+    const { data, error } = await supabase
+      .from('reserves')
+      .delete()
+      .eq('id', id)
+
+    if (error) {
+      throw new Error(error.message) // Преобразуем ошибку в стандартный формат
+    }
+    return data
+  } catch (err) {
+    console.error('Error fetching posts:', err)
+    throw err // Передаем ошибку дальше для обработки в React Query
+  }
+}
 export const updateReserveApi = async ({ id, ...reserve }: ReserveDTO) => {
   try {
     await supabase.from('reserves').update(reserve).eq('id', id)
@@ -77,6 +93,17 @@ export const useCreateReserve = (
 ) => {
   return useMutation({
     mutationFn: createReserveApi,
+    onSuccess,
+    onError,
+  })
+}
+
+export const useDeleteReserve = (
+  onSuccess?: () => void,
+  onError?: (e: Error) => void
+) => {
+  return useMutation({
+    mutationFn: deleteReserveApi,
     onSuccess,
     onError,
   })

@@ -23,7 +23,7 @@ import { QUERY_KEYS, queryClient } from '@/shared/config/reactQuery'
 import { Flex } from 'antd'
 import { RoomModal } from '@/features/RoomInfo/ui/RoomModal'
 import { ReserveModal } from '@/features/ReserveInfo/ui/ReserveModal'
-import { HotelModal } from '@/features/HotelModal/ui/ReserveModal'
+import { HotelModal } from '@/features/HotelModal/ui/HotelModal'
 
 export default function Main() {
   const [isHotelOpen, setIsHotelOpen] = useState<boolean>(false)

@@ -13,6 +13,7 @@ import {
   Reserve,
   ReserveDTO,
   useCreateReserve,
+  useDeleteReserve,
   useUpdateReserve,
 } from '@/shared/api/reserve/reserve'
 import {
@@ -43,7 +44,7 @@ import { RoomModal } from '@/features/RoomInfo/ui/RoomModal'
 import { ReserveModal } from '@/features/ReserveInfo/ui/ReserveModal'
 import 'moment/locale/ru'
 import { Interval } from '@/features/Calendar/ui/Intervals'
-import { $hotelsFilter, TravelFilterType } from '@/shared/models/hotels'
+import { $hotelsFilter } from '@/shared/models/hotels'
 import { useUnit } from 'effector-react/compat' // Подключаем русскую локализацию
 
 moment.locale('ru') // Для локализации дат
@@ -105,6 +106,15 @@ export const Calendar = ({ hotel }: CalendarProps) => {
       setIsReserveOpen(false)
     })
 
+  const { isPending: isReserveDeleting, mutateAsync: deleteReserve } =
+    useDeleteReserve(() => {
+      queryClient.invalidateQueries({
+        queryKey: [...QUERY_KEYS.roomsWithReservesByHotel, hotel.id],
+      })
+      setCurrentReserve(null)
+      setIsReserveOpen(false)
+    })
+
   const {
     isPending: isRoomCreating,
     mutate: createRoom,
@@ -128,6 +138,7 @@ export const Calendar = ({ hotel }: CalendarProps) => {
     createRoom(room)
     console.log('Создаю ROOM', room)
   }, [])
+
   const onReserveAccept = async (reserve: Reserve) => {
     const isEdit = currentReserve?.reserve
 
@@ -140,6 +151,14 @@ export const Calendar = ({ hotel }: CalendarProps) => {
 
     await createReserve(reserve)
   }
+
+  const onReserveDelete = async (id: string) => {
+    console.log('Пытаюсь удалить запись')
+    await deleteReserve(id)
+
+    return
+  }
+
   const onClose = () => {
     // queryClient.invalidateQueries({queryKey: [QUERY_KEYS.hotelsForRoom]})
     // queryClient.invalidateQueries({queryKey: [QUERY_KEYS.roomsByHotel]})
@@ -440,6 +459,7 @@ export const Calendar = ({ hotel }: CalendarProps) => {
         isOpen={isReserveOpen}
         onClose={onClose}
         onAccept={onReserveAccept}
+        onDelete={onReserveDelete}
         currentReserve={currentReserve}
         isLoading={reserveLoading}
       />

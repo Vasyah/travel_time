@@ -1,26 +1,24 @@
 import React, { FC, useCallback } from 'react'
-import { Text } from '@consta/uikit/Text'
 import cx from './style.module.css'
 import { TextField } from '@consta/uikit/TextField'
 import { Select } from '@consta/uikit/Select'
 import { Controller, useForm } from 'react-hook-form'
 import { Hotel } from '@/shared/api/hotel/hotel'
 import { Grid, GridItem } from '@consta/uikit/Grid'
-import { TravelButton } from '@/shared/ui/Button/Button'
 import { FORM_SIZE } from '@/shared/lib/const'
 import { HOTEL_TYPES } from '@/features/HotelModal/lib/const'
 import { FormTitle } from '@/shared/ui/FormTitle/FormTitle'
-import { Modal } from '@/shared/ui/Modal/Modal'
 import { CurrentReserveType, Nullable } from '@/shared/api/reserve/reserve'
 import { LinkIcon } from '@/shared/ui/LinkIcon/LinkIcon'
-import { createTelegramLink } from '@/shared/lib/links'
 import { FaTelegram } from 'react-icons/fa'
+import { FormButtons } from '@/shared/ui/FormButtons/FormButtons'
 
 export interface HotelInfoProps {
   onClose: () => void
   onAccept: (args?: any) => void
   currentReserve: Nullable<CurrentReserveType>
   isLoading?: boolean
+  isEdit: boolean
 }
 
 export type HotelForm = Hotel & { type: { label: string; id: string } }
@@ -30,6 +28,7 @@ export const HotelInfo: FC<HotelInfoProps> = ({
   onClose,
   currentReserve,
   isLoading = false,
+  isEdit = false,
 }: HotelInfoProps) => {
   const {
     control,
@@ -170,26 +169,14 @@ export const HotelInfo: FC<HotelInfoProps> = ({
         disabled={isLoading}
         className={cx.fields}
       />
-      <Grid cols={2}>
-        <GridItem>
-          <TravelButton
-            style={{ color: 'red', borderColor: 'red' }}
-            size="m"
-            view="secondary"
-            label="Отмена"
-            onClick={onClose}
-            disabled={isLoading}
-          />
-        </GridItem>
-        <GridItem style={{ alignSelf: 'end' }}>
-          <TravelButton
-            size="m"
-            label="Добавить"
-            onClick={onAcceptForm}
-            loading={isLoading}
-          />
-        </GridItem>
-      </Grid>
+      <FormButtons
+        onDelete={() => console.log('Удаляю там всякое')}
+        deleteText={'Удалить отель'}
+        isEdit={isEdit}
+        isLoading={isLoading}
+        onAccept={() => handleSubmit(onAcceptForm)}
+        onClose={onClose}
+      />
     </>
   )
 }

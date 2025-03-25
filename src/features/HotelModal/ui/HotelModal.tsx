@@ -1,43 +1,40 @@
 import React, { FC } from 'react'
 import { Modal } from '@/shared/ui/Modal/Modal'
 import { CurrentReserveType, Nullable } from '@/shared/api/reserve/reserve'
-import { ReserveInfo } from '@/features/ReserveInfo/ui/ReserveInfo'
+import { HotelInfo } from '@/features/HotelModal/ui/HotelInfo'
 
 export interface ReserveModalProps {
   isOpen: boolean
   onClose: () => void
   onAccept: (args?: any) => void
-  onDelete?: (id: string) => void
-  currentReserve?: Nullable<CurrentReserveType>
+  currentReserve: Nullable<CurrentReserveType>
   isLoading?: boolean
 }
 
-export const ReserveModal: FC<ReserveModalProps> = ({
+export const HotelModal: FC<ReserveModalProps> = ({
   isOpen = false,
   onAccept,
   onClose,
-  onDelete,
-  currentReserve,
+  currentReserve = null,
   isLoading = false,
 }: ReserveModalProps) => {
   return (
     <Modal
       hasOverlay
       isOpen={isOpen}
-      // onClickOutside={onClose}
+      onClickOutside={onClose}
       onEsc={onClose}
       loading={isLoading}
     >
-      <ReserveInfo
+      <HotelInfo
+        onClose={onClose}
+        currentReserve={currentReserve}
         isEdit={
           !!currentReserve?.reserve ||
           !!currentReserve?.reserve ||
           !!currentReserve?.room
         }
-        onClose={onClose}
-        currentReserve={currentReserve}
         onAccept={onAccept}
-        onDelete={onDelete}
         isLoading={isLoading}
       />
     </Modal>
