@@ -18,6 +18,8 @@ import { ConfigProvider, Flex } from 'antd'
 import { SafeHydrate } from '@/components/SafeHydrate/SafeHydrate'
 import { Today } from '@/features/Today/Today'
 
+moment.locale('ru') // Для локализации дат
+
 const geistSans = Geist({
   variable: '--font-geist-sans',
   subsets: ['latin'],

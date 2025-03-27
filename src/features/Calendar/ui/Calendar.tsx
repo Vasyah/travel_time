@@ -46,7 +46,7 @@ import { HotelRating } from '@/shared/ui/Hotel/HotelRating'
 import { HotelTitle } from '@/shared/ui/Hotel/HotelTitle'
 import { HotelTelegram } from '@/shared/ui/Hotel/HotelTelegram' // Подключаем русскую локализацию
 
-moment.locale('ru') // Для локализации дат
+
 
 const keys = {
   groupIdKey: 'id',
