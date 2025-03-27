@@ -6,6 +6,13 @@
     white-space: pre-wrap;
 }
 
+@media (max-width: 1365px) {
+    .card {
+        max-width: 100%;
+        min-width: 100%;
+    }
+}
+
 .container {
     display: flex;
     gap: 51px

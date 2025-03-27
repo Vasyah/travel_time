@@ -167,7 +167,7 @@ export default function Main() {
       >
         Все отели
       </Text>
-      <Flex gap={'middle'} style={{ maxWidth: '1280px' }}>
+      <Flex gap={'middle'} style={{ maxWidth: '1280px' }} wrap>
         {cards.map(({ count, btn, image, title, id }) => {
           return (
             <Card key={id} shadow title={title} className={cx.card}>

@@ -22,3 +22,23 @@
     opacity: 1;
     visibility: visible;
 }
+
+.widgetContainer{
+    margin-top: 1.5rem;
+}
+
+.content{
+    min-height: calc(100vh - var(--header-size));
+    background-color: #fff;
+}
+
+@media (max-width: 1365px) {
+    .content{
+        /* min-height: auto; */
+        /* max-height: auto; */
+        overflow: hidden;
+        overflow-y: auto;
+        min-height: calc(100vh - var(--header-size) - var(--menu-height));
+        max-height: calc(100vh - var(--header-size) - var(--menu-height));
+    }
+}

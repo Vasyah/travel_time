@@ -14,9 +14,12 @@ import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClient } from '@/shared/config/reactQuery'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import moment from 'moment'
-import { ConfigProvider, Flex } from 'antd'
+import { Col, ConfigProvider, Flex, Layout, Row } from 'antd'
 import { SafeHydrate } from '@/components/SafeHydrate/SafeHydrate'
 import { Today } from '@/features/Today/Today'
+import Sider from 'antd/es/layout/Sider'
+import { Content } from 'antd/es/layout/layout'
+import styles from './layout.module.css'
 
 moment.locale('ru') // Для локализации дат
 
@@ -49,17 +52,22 @@ const preset: ThemePreset = {
 }
 
 moment.locale('ru')
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false)
+  const [collapsed, setCollapsed] = useState(false)
 
   const currentDate = moment().format('ddd, MMMM D YYYY')
 
   return (
     <html lang="en">
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+      </head>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <ConfigProvider
           theme={{
@@ -77,24 +85,21 @@ export default function RootLayout({
           <QueryClientProvider client={queryClient}>
             <Theme preset={preset}>
               <SafeHydrate>
+                <Layout>
+
+           
                 <LayoutExampleBig />
-                <Grid cols={24} style={{ minHeight: `calc(100vh - 64px)` }}>
-                  <GridItem
-                    col={2}
-                    style={{
-                      borderRight: '1px solid var(--color-bg-border)',
-                      minWidth: '120px',
-                      maxWidth: '120px',
-                    }}
-                  >
+                <Row style={{paddingRight:'1rem',backgroundColor: '#fff'}} gutter={[16,16]}>
+                  <Col xs={{flex: 'auto', order: 1}} sm={{flex: 'auto', order: 1}} xl={{flex:"156px", order: 0}} style={{backgroundColor: '#fff',borderRight: "1px solid var(--color-bg-border)"}}>
                     <TravelMenu />
-                  </GridItem>
-                  <GridItem col={22} style={{ padding: '0 1rem 0 2.5rem' }}>
-                    <Flex gap={'middle'}>
-                      <div style={{ margin: '2.5rem 0' }}>
+                  </Col>
+                  <Col flex="auto" style={{padding: '0 1rem'}}>
+                  <Layout className={styles.content} style={{backgroundColor:'#fff' }}>
+                    <Flex gap={'middle'} wrap className={styles.widgetContainer}>
+                      <div style={{ paddingTop: '1rem' }}>
                         <SearchFeature />
                       </div>
-                      <Flex vertical style={{ margin: '1.5rem 0' }}>
+                      <Flex vertical>
                         <Today
                           currentDate={currentDate}
                           open={isCalendarOpen}
@@ -102,9 +107,12 @@ export default function RootLayout({
                         />
                       </Flex>
                     </Flex>
-                    {children}
-                  </GridItem>
-                </Grid>
+                   {children}
+                    </Layout>
+                    </Col>
+
+                </Row>
+                </Layout>
               </SafeHydrate>
             </Theme>
             <ReactQueryDevtools />

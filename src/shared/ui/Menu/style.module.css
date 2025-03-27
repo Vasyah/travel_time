@@ -1,12 +1,23 @@
 .layout {
     margin-top: 136px;
+    display: flex;
+    flex-direction: column;
+    
 }
 
+@media (max-width: 1365px){
+    .layout{
+        margin-top: 0px;
+        flex-direction: row;
+        justify-content: center;
+    }
+}
 .link {
     padding: 1rem;
     text-decoration: none;
     color: #7C918F;
-
+    min-height: 32px;
+    min-width: 120px;
     &:hover {
         transition: all .25s ease-in-out;
         background-color: var(--color-bg-success);

@@ -33,7 +33,7 @@ export const TravelMenu = () => {
     const pathname = usePathname();
 
     return (
-        <div style={{display: "flex", flexDirection: "column"}} className={cx.layout}>
+        <div className={cx.layout}>
             {pages.map((page, index) => {
 
                     const isActive = pathname === page?.href;
