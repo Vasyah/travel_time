@@ -5,6 +5,7 @@ import { Room } from '@/shared/api/room/room'
 import { ReserveDTO, TravelOption } from '@/shared/api/reserve/reserve'
 import { TABLE_NAMES } from '@/shared/api/const'
 import { TravelFilterType } from '@/shared/models/hotels'
+import { showToast } from '@/shared/ui/Toast/Toast'
 
 // Тип Hotel
 export type HotelDTO = {
@@ -16,6 +17,7 @@ export type HotelDTO = {
   telegram_url?: string // Ссылка на Telegram (опционально)
   phone: string // Телефон отеля
   description: string // Описание отеля
+  imageURL?: string
 }
 
 //для создания отеля
@@ -93,12 +95,6 @@ export async function insertItem<Type>(
   }
 }
 
-export const createHotelApi = async (hotel: Hotel) => {
-  const { responseData } = await insertItem<Hotel>(TABLE_NAMES.HOTELS, hotel)
-
-  return responseData
-}
-
 export const useGetAllHotels = (
   enabled?: boolean,
   filter?: TravelFilterType
@@ -120,19 +116,6 @@ export const useGetHotelsForRoom = () => {
   return useQuery({
     queryKey: QUERY_KEYS.hotelsForRoom,
     queryFn: getAllHotelsForRoom,
-  })
-}
-
-export const useCreateHotel = (
-  onSuccess: () => void,
-  onError?: (e: Error) => void
-) => {
-  return useMutation({
-    mutationFn: (hotel: Hotel) => {
-      return createHotelApi(hotel)
-    },
-    onSuccess,
-    onError,
   })
 }
 
@@ -161,7 +144,6 @@ export async function getHotelsWithFreeRooms(
       }
     )
 
-    if (error) throw error
     return data ?? ([] as FreeHotelsDTO[])
   } catch (error) {
     console.error(
@@ -172,4 +154,66 @@ export async function getHotelsWithFreeRooms(
     )
     throw error
   }
+}
+
+export const createHotelApi = async (hotel: Hotel) => {
+  try {
+    await insertItem<Hotel>(TABLE_NAMES.HOTELS, hotel)
+  } catch (error) {
+    console.error(error)
+    showToast(`Ошибка при обновлении брони ${error}`, 'error')
+  }
+}
+
+export const updateHotelApi = async ({ id, ...hotel }: HotelDTO) => {
+  try {
+    await supabase.from('hotels').update(hotel).eq('id', id)
+  } catch (error) {
+    console.error(error)
+    showToast(`Ошибка при обновлении брони ${error}`, 'error')
+  }
+}
+
+export const deleteHotelApi = async (id: string) => {
+  try {
+    await supabase.from('hotels').delete().eq('id', id)
+  } catch (err) {
+    console.error('Error fetching posts:', err)
+    showToast(`Ошибка при обновлении брони ${err}`, 'error')
+  }
+}
+
+export const useCreateHotel = (
+  onSuccess: () => void,
+  onError?: (e: Error) => void
+) => {
+  return useMutation({
+    mutationFn: (hotel: Hotel) => {
+      return createHotelApi(hotel)
+    },
+    onSuccess,
+    onError,
+  })
+}
+
+export const useUpdateHotel = (
+  onSuccess?: () => void,
+  onError?: (e: Error) => void
+) => {
+  return useMutation({
+    mutationFn: updateHotelApi,
+    onSuccess,
+    onError,
+  })
+}
+
+export const useDeleteHotel = (
+  onSuccess?: () => void,
+  onError?: (e: Error) => void
+) => {
+  return useMutation({
+    mutationFn: deleteHotelApi,
+    onSuccess,
+    onError,
+  })
 }

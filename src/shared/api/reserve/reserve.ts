@@ -39,7 +39,7 @@ export type Nullable<Type> = Type | null
 
 export type CurrentReserveType = {
   room?: RoomDTO
-  hotel: HotelDTO
+  hotel?: Nullable<HotelDTO>
   reserve?: ReserveDTO
 }
 
@@ -68,6 +68,7 @@ export const deleteReserveApi = async (id: string) => {
     throw err // Передаем ошибку дальше для обработки в React Query
   }
 }
+
 export const updateReserveApi = async ({ id, ...reserve }: ReserveDTO) => {
   try {
     await supabase.from('reserves').update(reserve).eq('id', id)
@@ -76,16 +77,6 @@ export const updateReserveApi = async ({ id, ...reserve }: ReserveDTO) => {
     showToast('Ошибка при обновлении брони', 'error')
   }
 }
-export const useUpdateReserve = (
-  onSuccess?: () => void,
-  onError?: (e: Error) => void
-) => {
-  return useMutation({
-    mutationFn: updateReserveApi,
-    onSuccess,
-    onError,
-  })
-}
 
 export const useCreateReserve = (
   onSuccess?: () => void,
@@ -93,6 +84,17 @@ export const useCreateReserve = (
 ) => {
   return useMutation({
     mutationFn: createReserveApi,
+    onSuccess,
+    onError,
+  })
+}
+
+export const useUpdateReserve = (
+  onSuccess?: () => void,
+  onError?: (e: Error) => void
+) => {
+  return useMutation({
+    mutationFn: updateReserveApi,
     onSuccess,
     onError,
   })

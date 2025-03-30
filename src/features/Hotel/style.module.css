@@ -1,0 +1,26 @@
+.container {
+    max-width: 560px;
+    min-width: 560px;
+    padding: 1.25rem;
+}
+
+.verticalContainer {
+    min-height: 100%;
+}
+
+.infoContainer {
+    width: 100%;
+}
+
+.telegram {
+    width: 24px;
+    height: 24px;
+}
+
+.info {
+    margin-top: 0.75rem;
+}
+
+.actions {
+    margin-top: auto;
+}

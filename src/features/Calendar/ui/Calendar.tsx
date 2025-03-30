@@ -46,8 +46,6 @@ import { HotelRating } from '@/shared/ui/Hotel/HotelRating'
 import { HotelTitle } from '@/shared/ui/Hotel/HotelTitle'
 import { HotelTelegram } from '@/shared/ui/Hotel/HotelTelegram' // Подключаем русскую локализацию
 
-
-
 const keys = {
   groupIdKey: 'id',
   groupTitleKey: 'title',
@@ -76,7 +74,8 @@ export const Calendar = ({ hotel }: CalendarProps) => {
   const queryClient = useQueryClient()
   const { data, isFetching: isRoomLoading } = useGetRoomsWithReservesByHotel(
     hotel.id,
-    filter
+    filter,
+    true
   )
   const [currentReserve, setCurrentReserve] =
     useState<Nullable<CurrentReserveType>>(null)

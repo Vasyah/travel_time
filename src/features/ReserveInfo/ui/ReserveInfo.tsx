@@ -16,7 +16,7 @@ import {
 } from '@/shared/api/reserve/reserve'
 import { useGetHotelsForRoom } from '@/shared/api/hotel/hotel'
 import { useGetRoomsByHotel } from '@/shared/api/room/room'
-import { adaptToOption } from '@/features/RoomInfo/lib/adaptHotel'
+import { adaptToOption } from '@/shared/lib/adaptHotel'
 import { FormButtons } from '@/shared/ui/FormButtons/FormButtons'
 import moment from 'moment'
 import { ReserveTotal } from '@/features/ReserveInfo/ui/ReserveTotal'
@@ -146,12 +146,6 @@ export const ReserveInfo: FC<ReserveInfoProps> = ({
   }, [hotelsStatus, formData.hotel_id])
 
   const loading = isLoading || isHotelsLoading
-
-  // количество ночей - считаем по выбранной дате
-  // предоплата - сумма указанная вручную
-  // итоговая сумма - сумма * количество ночей - предоплата
-
-  // добавить удаление номера, при смене отеля
 
   const deserializeData = ({
     hotel_id,
@@ -410,7 +404,7 @@ export const ReserveInfo: FC<ReserveInfoProps> = ({
         deleteText={'Удалить бронь'}
         isEdit={isEdit}
         isLoading={loading}
-        onAccept={onAccept}
+        onAccept={() => onAcceptForm(formData)}
         onClose={onClose}
       />
     </>

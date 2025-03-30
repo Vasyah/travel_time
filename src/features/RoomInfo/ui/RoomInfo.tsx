@@ -11,7 +11,7 @@ import { Grid, GridItem } from '@consta/uikit/Grid'
 import { DragNDropField } from '@consta/uikit/DragNDropField'
 import { Button } from '@consta/uikit/Button'
 import { Text } from '@consta/uikit/Text'
-import { adaptToOption } from '@/features/RoomInfo/lib/adaptHotel'
+import { adaptToOption } from '@/shared/lib/adaptHotel'
 import { CurrentReserveType, Nullable } from '@/shared/api/reserve/reserve'
 import { Room } from '@/shared/api/room/room'
 
@@ -40,7 +40,6 @@ export const RoomInfo: FC<RoomInfoProps> = ({
   const {
     control,
     getValues,
-    register,
     formState: { errors },
   } = useForm<RoomForm>({
     defaultValues: {

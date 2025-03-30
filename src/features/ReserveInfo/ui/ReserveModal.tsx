@@ -29,11 +29,7 @@ export const ReserveModal: FC<ReserveModalProps> = ({
       loading={isLoading}
     >
       <ReserveInfo
-        isEdit={
-          !!currentReserve?.reserve ||
-          !!currentReserve?.reserve ||
-          !!currentReserve?.room
-        }
+        isEdit={!!currentReserve?.reserve?.id}
         onClose={onClose}
         currentReserve={currentReserve}
         onAccept={onAccept}

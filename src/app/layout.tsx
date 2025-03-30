@@ -6,7 +6,6 @@ import { LayoutExampleBig } from '@/ui/Header/Header'
 import React, { useState } from 'react'
 import { TravelMenu } from '@/shared/ui/Menu/Menu'
 import '@consta/themes/Theme_color_highlightsGreenDefault'
-import { Grid, GridItem } from '@consta/uikit/Grid'
 import '../shared/ui/globals.css'
 import '@/features/lib/zIndexes.css'
 import { SearchFeature } from '@/features/Search/ui/Search'
@@ -17,8 +16,6 @@ import moment from 'moment'
 import { Col, ConfigProvider, Flex, Layout, Row } from 'antd'
 import { SafeHydrate } from '@/components/SafeHydrate/SafeHydrate'
 import { Today } from '@/features/Today/Today'
-import Sider from 'antd/es/layout/Sider'
-import { Content } from 'antd/es/layout/layout'
 import styles from './layout.module.css'
 
 moment.locale('ru') // Для локализации дат
@@ -66,7 +63,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <ConfigProvider
@@ -86,32 +83,50 @@ export default function RootLayout({
             <Theme preset={preset}>
               <SafeHydrate>
                 <Layout>
-
-           
-                <LayoutExampleBig />
-                <Row style={{paddingRight:'1rem',backgroundColor: '#fff'}} gutter={[16,16]}>
-                  <Col xs={{flex: 'auto', order: 1}} sm={{flex: 'auto', order: 1}} xl={{flex:"156px", order: 0}} style={{backgroundColor: '#fff',borderRight: "1px solid var(--color-bg-border)"}}>
-                    <TravelMenu />
-                  </Col>
-                  <Col flex="auto" style={{padding: '0 1rem'}}>
-                  <Layout className={styles.content} style={{backgroundColor:'#fff' }}>
-                    <Flex gap={'middle'} wrap className={styles.widgetContainer}>
-                      <div style={{ paddingTop: '1rem' }}>
-                        <SearchFeature />
-                      </div>
-                      <Flex vertical>
-                        <Today
-                          currentDate={currentDate}
-                          open={isCalendarOpen}
-                          onToggle={() => setIsCalendarOpen(prev => !prev)}
-                        />
-                      </Flex>
-                    </Flex>
-                   {children}
-                    </Layout>
+                  <LayoutExampleBig />
+                  <Row
+                    style={{ paddingRight: '1rem', backgroundColor: '#fff' }}
+                    gutter={[16, 16]}
+                    wrap={false}
+                  >
+                    <Col
+                      xs={{ flex: 'auto', order: 1 }}
+                      sm={{ flex: 'auto', order: 1 }}
+                      xl={{ flex: '80px', order: 0 }}
+                      // flex={156}
+                      // order={1}
+                      style={{
+                        backgroundColor: '#fff',
+                        borderRight: '1px solid var(--color-bg-border)',
+                      }}
+                    >
+                      <TravelMenu />
                     </Col>
-
-                </Row>
+                    <Col flex="auto" style={{ padding: '0 1rem' }}>
+                      <Layout
+                        className={styles.content}
+                        style={{ backgroundColor: '#fff' }}
+                      >
+                        <Flex
+                          gap={'middle'}
+                          wrap
+                          className={styles.widgetContainer}
+                        >
+                          <div style={{ paddingTop: '1rem' }}>
+                            <SearchFeature />
+                          </div>
+                          <Flex vertical>
+                            <Today
+                              currentDate={currentDate}
+                              open={isCalendarOpen}
+                              onToggle={() => setIsCalendarOpen(prev => !prev)}
+                            />
+                          </Flex>
+                        </Flex>
+                        {children}
+                      </Layout>
+                    </Col>
+                  </Row>
                 </Layout>
               </SafeHydrate>
             </Theme>

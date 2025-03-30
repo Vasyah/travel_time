@@ -3,7 +3,7 @@ import cx from './style.module.css'
 import { TextField } from '@consta/uikit/TextField'
 import { Select } from '@consta/uikit/Select'
 import { Controller, useForm } from 'react-hook-form'
-import { Hotel } from '@/shared/api/hotel/hotel'
+import { Hotel, HotelDTO } from '@/shared/api/hotel/hotel'
 import { Grid, GridItem } from '@consta/uikit/Grid'
 import { FORM_SIZE } from '@/shared/lib/const'
 import { HOTEL_TYPES } from '@/features/HotelModal/lib/const'
@@ -12,10 +12,13 @@ import { CurrentReserveType, Nullable } from '@/shared/api/reserve/reserve'
 import { LinkIcon } from '@/shared/ui/LinkIcon/LinkIcon'
 import { FaTelegram } from 'react-icons/fa'
 import { FormButtons } from '@/shared/ui/FormButtons/FormButtons'
+import { adaptToOption } from '@/shared/lib/adaptHotel'
+import { FullWidthLoader } from '@/shared/ui/Loader/Loader'
 
 export interface HotelInfoProps {
   onClose: () => void
-  onAccept: (args?: any) => void
+  onAccept: (hotel: Hotel | HotelDTO) => Promise<void>
+  onDelete: (id: string) => Promise<void>
   currentReserve: Nullable<CurrentReserveType>
   isLoading?: boolean
   isEdit: boolean
@@ -23,8 +26,20 @@ export interface HotelInfoProps {
 
 export type HotelForm = Hotel & { type: { label: string; id: string } }
 
+const DEFAULT_VALUE = { rating: 5, telegram_url: 'https://t.me/' }
+
+const getInitialValue = (hotel?: Nullable<HotelDTO>): HotelForm => {
+  return {
+    ...DEFAULT_VALUE,
+    ...hotel,
+    type: hotel?.type
+      ? adaptToOption({ title: hotel?.type, id: hotel?.type })
+      : undefined,
+  }
+}
 export const HotelInfo: FC<HotelInfoProps> = ({
   onAccept,
+  onDelete,
   onClose,
   currentReserve,
   isLoading = false,
@@ -38,36 +53,39 @@ export const HotelInfo: FC<HotelInfoProps> = ({
     watch,
     formState: { errors },
   } = useForm<HotelForm>({
-    defaultValues: { rating: 5, telegram_url: 'https://t.me/' },
+    defaultValues: getInitialValue(currentReserve?.hotel),
   })
 
   const formData = watch()
-  // количество ночей - считаем по выбранной дате
-  // предоплата - сумма указанная вручную
-  // итоговая сумма - сумма * количество ночей - предоплата
 
   const deserializeData = (data: HotelForm): Hotel => {
     return { ...data, type: data.type.label }
   }
-  const onAcceptForm = useCallback(() => {
+  const onAcceptForm = useCallback(async () => {
     const serializedData = deserializeData(formData)
 
-    onAccept(serializedData)
+    console.log(serializedData)
+    await onAccept(serializedData)
   }, [formData])
 
   return (
     <>
+      {isLoading && <FullWidthLoader />}
       <FormTitle>Добавление отеля</FormTitle>
-      {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
-      {/*// @ts-expect-error*/}
-      <TextField
-        {...register('title')}
-        placeholder="Введите название"
-        label="Название отеля"
-        required
-        size={FORM_SIZE}
-        disabled={isLoading}
-        className={cx.fields}
+      <Controller
+        name="title"
+        control={control}
+        render={({ field }) => (
+          <TextField
+            {...field}
+            placeholder="Введите название"
+            label="Название отеля"
+            required
+            size={FORM_SIZE}
+            disabled={isLoading}
+            className={cx.fields}
+          />
+        )}
       />
 
       <Grid cols={6} gap={FORM_SIZE}>
@@ -92,17 +110,21 @@ export const HotelInfo: FC<HotelInfoProps> = ({
           />
         </GridItem>
         <GridItem col={2}>
-          {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
-          {/*// @ts-expect-error*/}
-          <TextField
-            {...register('rating')}
-            placeholder="Введите число"
-            label="Кол-во звёзд"
-            type="number"
-            required
-            size={FORM_SIZE}
-            disabled={isLoading}
-            className={cx.fields}
+          <Controller
+            name="rating"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                placeholder="Введите число"
+                label="Кол-во звёзд"
+                type="number"
+                required
+                size={FORM_SIZE}
+                disabled={isLoading}
+                className={cx.fields}
+              />
+            )}
           />
         </GridItem>
       </Grid>
@@ -170,11 +192,13 @@ export const HotelInfo: FC<HotelInfoProps> = ({
         className={cx.fields}
       />
       <FormButtons
-        onDelete={() => console.log('Удаляю там всякое')}
+        onDelete={() =>
+          currentReserve?.hotel && onDelete(currentReserve?.hotel.id)
+        }
         deleteText={'Удалить отель'}
         isEdit={isEdit}
         isLoading={isLoading}
-        onAccept={() => handleSubmit(onAcceptForm)}
+        onAccept={() => onAcceptForm()}
         onClose={onClose}
       />
     </>

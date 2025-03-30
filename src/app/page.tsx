@@ -4,11 +4,7 @@ import { Text } from '@consta/uikit/Text'
 import { nanoid } from 'nanoid'
 import { Card } from '@consta/uikit/Card'
 import Image from 'next/image'
-import {
-  Hotel,
-  useCreateHotel,
-  useGetAllCounts,
-} from '@/shared/api/hotel/hotel'
+import { useGetAllCounts } from '@/shared/api/hotel/hotel'
 import building from '../../public/main/building.svg'
 import bed from '../../public/main/bed.svg'
 import key from '../../public/main/key.svg'
@@ -31,21 +27,21 @@ export default function Main() {
   const [isReserveOpen, setIsReserveOpen] = useState<boolean>(false)
   const { data: countsData, isFetching: isCountsLoading } = useGetAllCounts()
 
-  const {
-    isError: isHotelError,
-    isPending: isHotelLoading,
-    mutate: createHotel,
-  } = useCreateHotel(
-    () => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.hotels })
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.hotelsForRoom })
-      setIsHotelOpen(false)
-      showToast('Отель добавлен')
-    },
-    e => {
-      showToast(`Ошибка при добавлении номера ${e}`, 'error')
-    }
-  )
+  // const {
+  //   isError: isHotelError,
+  //   isPending: isHotelLoading,
+  //   mutate: createHotel,
+  // } = useCreateHotel(
+  //   () => {
+  //     queryClient.invalidateQueries({ queryKey: QUERY_KEYS.hotels })
+  //     queryClient.invalidateQueries({ queryKey: QUERY_KEYS.hotelsForRoom })
+  //     setIsHotelOpen(false)
+  //     showToast('Отель добавлен')
+  //   },
+  //   e => {
+  //     showToast(`Ошибка при добавлении номера ${e}`, 'error')
+  //   }
+  // )
 
   const {
     isPending: isRoomLoading,
@@ -82,7 +78,7 @@ export default function Main() {
     () => [
       {
         id: nanoid(),
-        title: `Отелей всего        в базе`,
+        title: `Отелей всего в базе`,
         btn: { onClick: () => setIsHotelOpen(true), title: 'Добавить отель' },
         count: countsData?.[0]?.hotel_count ?? 0,
         image: <Image src={building.src} alt={''} width={115} height={140} />,
@@ -96,7 +92,7 @@ export default function Main() {
       },
       {
         id: nanoid(),
-        title: 'Номеров забронировано',
+        title: 'Номеров всего в базе',
         btn: { onClick: () => setIsReserveOpen(true), title: 'Добавить бронь' },
         count: countsData?.[0]?.reserve_count ?? 0,
         image: <Image src={key.src} alt={''} width={115} height={140} />,
@@ -105,9 +101,9 @@ export default function Main() {
     [countsData, isCountsLoading]
   )
 
-  const onHotelCreate = useCallback(async (hotel: Hotel) => {
-    createHotel(hotel)
-  }, [])
+  // const onHotelCreate = useCallback(async (hotel: Hotel) => {
+  //   createHotel(hotel)
+  // }, [])
 
   const onRoomCreate = useCallback((room: Room) => {
     createRoom(room)
@@ -119,29 +115,12 @@ export default function Main() {
     createReserve(reserve)
   }, [])
 
-  console.log({
-    isHotelLoading,
-    isRoomLoading,
-    isReserveLoading,
-    isCountsLoading,
-  })
-  const isLoading =
-    isHotelLoading || isRoomLoading || isReserveLoading || isCountsLoading
-
-  if (isCountsLoading) {
-    return (
-      <div>
-        <FullWidthLoader />
-      </div>
-    )
-  }
   return (
     <div>
+      {isCountsLoading && <FullWidthLoader />}
       <HotelModal
         isOpen={isHotelOpen}
         onClose={() => setIsHotelOpen(false)}
-        onAccept={onHotelCreate}
-        isLoading={isHotelLoading}
         currentReserve={null}
       />
       <RoomModal
@@ -179,7 +158,7 @@ export default function Main() {
               </div>
               <div className={cx.container}>
                 <div className={cx.info}>
-                  <Text view={'primary'} size={'xl'} weight={'medium'}>
+                  <Text view={'primary'} size={'xl'}>
                     {title}
                   </Text>
                   <Button

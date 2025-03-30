@@ -1,15 +1,11 @@
 'use client'
 import React, { useEffect } from 'react'
-import { Text } from '@consta/uikit/Text'
-import {
-  getHotelsWithFreeRooms,
-  useGetAllHotels,
-} from '@/shared/api/hotel/hotel'
+import { useGetAllHotels } from '@/shared/api/hotel/hotel'
 import { Calendar } from '@/features/Calendar/ui/Calendar'
 import { Loader } from '@/shared/ui/Loader/Loader'
 import cx from './page.module.css'
 import { useUnit } from 'effector-react/compat'
-import { $hotelsFilter, changeTravelFilter } from '@/shared/models/hotels'
+import { $hotelsFilter } from '@/shared/models/hotels'
 import 'react-calendar-timeline/style.css'
 import './calendar.css'
 import { QUERY_KEYS, queryClient } from '@/shared/config/reactQuery'
@@ -61,7 +57,7 @@ export default function Home() {
 
   return (
     <div>
-      <HotelHeading hotels={36} rooms={154} />
+      <HotelHeading title={'Все отели'} hotels={36} rooms={154} />
       {hotels?.map(hotel => <Calendar hotel={hotel} key={hotel.id} />)}
     </div>
   )

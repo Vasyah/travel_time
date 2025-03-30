@@ -40,19 +40,24 @@ export async function getRoomsByHotel(hotel_id?: string) {
 
 export async function getRoomsWithReservesByHotel(
   hotel_id?: string,
-  filter?: TravelFilterType
+  filter?: TravelFilterType,
+  withReserves?: boolean
 ) {
-  const query = supabase
-    .from(TABLE_NAMES.ROOMS)
-    .select(
-      `
-        id,
-        title,
-        reserves(*)
-)
+  const query = supabase.from(TABLE_NAMES.ROOMS).select(
     `
-    )
-    .filter('hotel_id', 'eq', hotel_id)
+        id,
+        title
+    `
+  )
+
+  if (withReserves) {
+    query.select(`        
+      id,
+      title,
+      reserves(*)`)
+  }
+
+  query.filter('hotel_id', 'eq', hotel_id)
 
   if (filter?.quantity) {
     query.gte('quantity', filter?.quantity)
@@ -89,11 +94,12 @@ export const useGetRoomsByHotel = (hotel_id?: string, enabled?: boolean) => {
 
 export const useGetRoomsWithReservesByHotel = (
   hotel_id?: string,
-  filter?: TravelFilterType
+  filter?: TravelFilterType,
+  withReserves?: boolean
 ) => {
   return useQuery({
     queryKey: [...QUERY_KEYS.roomsWithReservesByHotel, hotel_id],
-    queryFn: () => getRoomsWithReservesByHotel(hotel_id, filter),
+    queryFn: () => getRoomsWithReservesByHotel(hotel_id, filter, withReserves),
   })
 }
 export const useCreateRoom = (
