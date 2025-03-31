@@ -7,7 +7,7 @@ import { TABLE_NAMES } from '@/shared/api/const'
 import { TravelFilterType } from '@/shared/models/hotels'
 import { showToast } from '@/shared/ui/Toast/Toast'
 
-// Тип Hotel
+// Тип Room
 export type HotelDTO = {
   id: string // Уникальный идентификатор отеля
   title: string // Название отеля

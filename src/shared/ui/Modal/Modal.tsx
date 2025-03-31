@@ -1,7 +1,7 @@
 import React, { ComponentProps, CSSProperties, FC, useEffect } from 'react'
 import { Modal as ModalConsta } from '@consta/uikit/Modal'
 import st from './style.module.css'
-import { Loader } from '@/shared/ui/Loader/Loader'
+import { FullWidthLoader, Loader } from '@/shared/ui/Loader/Loader'
 import cn from 'classnames'
 
 export interface ModalProps extends ComponentProps<typeof ModalConsta> {
@@ -36,9 +36,9 @@ export const Modal: FC<ModalProps> = ({
       })}
     >
       {loading && (
-        <div className={st.loading}>
-          <Loader />
-        </div>
+        // <div className={st.loading}>
+        <FullWidthLoader className={st.loader} />
+        // </div>
       )}
       {children}
     </ModalConsta>

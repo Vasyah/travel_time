@@ -92,7 +92,7 @@ export default function Main() {
       },
       {
         id: nanoid(),
-        title: 'Номеров всего в базе',
+        title: 'Броней всего в базе',
         btn: { onClick: () => setIsReserveOpen(true), title: 'Добавить бронь' },
         count: countsData?.[0]?.reserve_count ?? 0,
         image: <Image src={key.src} alt={''} width={115} height={140} />,
@@ -101,7 +101,7 @@ export default function Main() {
     [countsData, isCountsLoading]
   )
 
-  // const onHotelCreate = useCallback(async (hotel: Hotel) => {
+  // const onHotelCreate = useCallback(async (hotel: Room) => {
   //   createHotel(hotel)
   // }, [])
 

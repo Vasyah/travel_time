@@ -110,6 +110,7 @@ export const ReserveInfo: FC<ReserveInfoProps> = ({
     control,
     register,
     watch,
+    setValue,
     formState: { errors },
   } = useForm<ReserveForm>({
     mode: 'onSubmit',
@@ -145,6 +146,15 @@ export const ReserveInfo: FC<ReserveInfoProps> = ({
     }
   }, [hotelsStatus, formData.hotel_id])
 
+  useEffect(() => {
+    if (rooms?.length === 0) return
+
+    const room = rooms?.find(room => room.id === formData?.room_id?.id)
+
+    if (room) {
+      setValue('price', room?.price)
+    }
+  }, [formData.room_id])
   const loading = isLoading || isHotelsLoading
 
   const deserializeData = ({
@@ -174,19 +184,18 @@ export const ReserveInfo: FC<ReserveInfoProps> = ({
   }
 
   const onAcceptForm = (formData: ReserveForm) => {
-    console.log('че за нах')
     if (!formData?.date?.[0] || !formData?.date?.[1]) {
       showToast('Ошибка при создании брони, проверьте даты', 'error')
       return
     }
 
-    if (errors) {
-      showToast(
-        'Ошибка при создании брони, проверьте корректность ввода данных',
-        'error'
-      )
-      console.log(errors)
-    }
+    // if (errors) {
+    //   showToast(
+    //     'Ошибка при создании брони, проверьте корректность ввода данных',
+    //     'error'
+    //   )
+    //   console.log(errors)
+    // }
     const data = deserializeData(formData)
     onAccept(
       currentReserve ? { ...data, id: currentReserve?.reserve?.id } : data
@@ -380,7 +389,10 @@ export const ReserveInfo: FC<ReserveInfoProps> = ({
             control={control}
             render={({ field }) => (
               <TextField
-                style={{ maxWidth: '150px', maxHeight: '20px' }}
+                style={{
+                  maxWidth: '150px',
+                  maxHeight: '20px',
+                }}
                 {...field}
                 labelPosition={'left'}
                 required

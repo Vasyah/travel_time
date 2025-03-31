@@ -69,9 +69,15 @@ export const HotelModal: FC<ReserveModalProps> = ({
 
   const isEdit = !!currentReserve?.hotel?.id
 
-  console.log(isHotelUpdating)
   return (
-    <Modal hasOverlay isOpen={isOpen} onEsc={onClose}>
+    <Modal
+      hasOverlay
+      isOpen={isOpen}
+      onEsc={onClose}
+      loading={
+        isLoading || isHotelLoading || isHotelUpdating || isHotelDeleting
+      }
+    >
       <HotelInfo
         onClose={onClose}
         currentReserve={currentReserve}

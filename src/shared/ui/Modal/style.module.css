@@ -12,17 +12,18 @@
     padding: 2rem 2rem 1.5rem;
 }
 
-.modalLoading {
-    overflow: hidden;
-}
+/*.modalLoading {*/
+/*    overflow: hidden;*/
+/*}*/
 
 .loading {
-
     position: absolute;
     top: 0;
     left: 0;
+    bottom: 0;
+    right: 0;
     width: 100%;
-    height: 100%;
+    min-height: 80vh;
     background-color: rgba(0, 0, 0, 0.2);
     overflow: hidden;
     display: flex;
@@ -32,7 +33,5 @@
 }
 
 .loader {
-    width: 50px;
-    height: 50px;
-    z-index: 999;
+    min-height: 92vh;
 }

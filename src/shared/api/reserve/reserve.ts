@@ -44,12 +44,12 @@ export type CurrentReserveType = {
 }
 
 export const createReserveApi = async (reserve: Reserve) => {
-  const { responseData } = await insertItem<Reserve>(
-    TABLE_NAMES.RESERVES,
-    reserve
-  )
-
-  return responseData
+  try {
+    await insertItem<Reserve>(TABLE_NAMES.RESERVES, reserve)
+  } catch (err) {
+    console.error('Error fetching posts:', err)
+    throw err // Передаем ошибку дальше для обработки в React Query
+  }
 }
 
 export const deleteReserveApi = async (id: string) => {
@@ -75,6 +75,7 @@ export const updateReserveApi = async ({ id, ...reserve }: ReserveDTO) => {
   } catch (error) {
     console.error(error)
     showToast('Ошибка при обновлении брони', 'error')
+    throw new Error(error?.message) // Передаем ошибку дальше для обработки в React Query
   }
 }
 

@@ -146,7 +146,6 @@ export const RoomInfo: FC<RoomInfoProps> = ({
                 className={cx.fields}
                 disabled={loading}
                 type="number"
-                incrementButtons={false}
               />
             )}
           />
@@ -158,12 +157,10 @@ export const RoomInfo: FC<RoomInfoProps> = ({
       >
         {({ openFileDialog }) => (
           <>
-            <Text view="primary">
-              Пример с Render Props, открывает окно для выбора файла из
-              дочернего блока
-            </Text>
-            <br />
             <Button onClick={openFileDialog} label="Выбрать файл" />
+            <br />
+            <Text view="primary">Перетащите изображения или загрузите</Text>
+            <Text view="secondary">Поддерживаемые форматы: PNG, TIFF, JPG</Text>
           </>
         )}
       </DragNDropField>

@@ -43,12 +43,7 @@ export async function getRoomsWithReservesByHotel(
   filter?: TravelFilterType,
   withReserves?: boolean
 ) {
-  const query = supabase.from(TABLE_NAMES.ROOMS).select(
-    `
-        id,
-        title
-    `
-  )
+  const query = supabase.from(TABLE_NAMES.ROOMS).select(`*`)
 
   if (withReserves) {
     query.select(`        

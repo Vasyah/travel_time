@@ -77,6 +77,7 @@ export const Calendar = ({ hotel }: CalendarProps) => {
     filter,
     true
   )
+
   const [currentReserve, setCurrentReserve] =
     useState<Nullable<CurrentReserveType>>(null)
   const [isRoomOpen, setIsRoomOpen] = useState<boolean>(false)
@@ -87,22 +88,32 @@ export const Calendar = ({ hotel }: CalendarProps) => {
     isPending: isReserveCreating,
     mutateAsync: createReserve,
     error: reserveError,
-  } = useCreateReserve(() => {
-    queryClient.invalidateQueries({
-      queryKey: [...QUERY_KEYS.roomsWithReservesByHotel, hotel.id],
-    })
-    setCurrentReserve(null)
-    setIsReserveOpen(false)
-  })
-
-  const { isPending: isReserveUpdating, mutateAsync: updateReserve } =
-    useUpdateReserve(() => {
+  } = useCreateReserve(
+    () => {
       queryClient.invalidateQueries({
         queryKey: [...QUERY_KEYS.roomsWithReservesByHotel, hotel.id],
       })
       setCurrentReserve(null)
       setIsReserveOpen(false)
-    })
+    },
+    e => {
+      showToast(`Ошибка при обновлении брони ${e}`, 'error')
+    }
+  )
+
+  const { isPending: isReserveUpdating, mutate: updateReserve } =
+    useUpdateReserve(
+      () => {
+        queryClient.invalidateQueries({
+          queryKey: [...QUERY_KEYS.roomsWithReservesByHotel, hotel.id],
+        })
+        setCurrentReserve(null)
+        setIsReserveOpen(false)
+      },
+      e => {
+        showToast('Ошибка при обновлении брони', 'error')
+      }
+    )
 
   const { isPending: isReserveDeleting, mutateAsync: deleteReserve } =
     useDeleteReserve(() => {
@@ -138,7 +149,7 @@ export const Calendar = ({ hotel }: CalendarProps) => {
   }, [])
 
   const onReserveAccept = async (reserve: Reserve) => {
-    const isEdit = currentReserve?.reserve
+    const isEdit = currentReserve?.reserve?.id
 
     if (isEdit) {
       console.log('Пытаюсь обновить запись')
@@ -239,23 +250,23 @@ export const Calendar = ({ hotel }: CalendarProps) => {
         }}
       >
         {itemContext.useResizeHandle ? <div {...leftResizeProps} /> : ''}
-        <Tooltip
-          title={
-            <Grid>
-              <p>Гость: {item.guest}</p>
-              <p>Номер: {item?.phone}</p>
-              <p>Предоплата: {item?.prepayment}</p>
-              <p>:{item.price}</p>
-            </Grid>
-          }
+        {/*<Tooltip*/}
+        {/*  title={*/}
+        {/*    <Grid>*/}
+        {/*      <p>Гость: {item.guest}</p>*/}
+        {/*      <p>Номер: {item?.phone}</p>*/}
+        {/*      <p>Предоплата: {item?.prepayment}</p>*/}
+        {/*      <p>:{item.price}</p>*/}
+        {/*    </Grid>*/}
+        {/*  }*/}
+        {/*>*/}
+        <div
+          className={`${cx.calendarItem} rct-item-content`}
+          style={{ maxHeight: `${itemContext.dimensions.height}` }}
         >
-          <div
-            className={`${cx.calendarItem} rct-item-content`}
-            style={{ maxHeight: `${itemContext.dimensions.height}` }}
-          >
-            {item?.guest} {item?.phone}
-          </div>
-        </Tooltip>
+          {item?.guest} {item?.phone}
+        </div>
+        {/*</Tooltip>*/}
 
         {itemContext.useResizeHandle ? <div {...rightResizeProps} /> : ''}
       </div>
@@ -314,9 +325,23 @@ export const Calendar = ({ hotel }: CalendarProps) => {
             onCanvasDoubleClick={(groupId, time, e) => {
               const room = hotelRooms?.find(group => group.id === groupId)
               // setIsHotelReserve(true)
-              console.log(room, groupId, time, e)
+              console.log(
+                room,
+                groupId,
+                time,
+                e,
+                getDateFromUnix(time).unix(),
+                getDateFromUnix(time).add(2, 'day').unix()
+              )
               if (room) {
-                setCurrentReserve({ room, hotel })
+                setCurrentReserve({
+                  room,
+                  hotel,
+                  reserve: {
+                    start: time,
+                    end: getDateFromUnix(time).add(2, 'year').unix(),
+                  },
+                })
                 setIsReserveOpen(true)
               }
             }}

@@ -14,6 +14,9 @@ import { FaTelegram } from 'react-icons/fa'
 import { FormButtons } from '@/shared/ui/FormButtons/FormButtons'
 import { adaptToOption } from '@/shared/lib/adaptHotel'
 import { FullWidthLoader } from '@/shared/ui/Loader/Loader'
+import { DragNDropField } from '@consta/uikit/DragNDropField'
+import { Button } from '@consta/uikit/Button'
+import { Text } from '@consta/uikit/Text'
 
 export interface HotelInfoProps {
   onClose: () => void
@@ -70,7 +73,7 @@ export const HotelInfo: FC<HotelInfoProps> = ({
 
   return (
     <>
-      {isLoading && <FullWidthLoader />}
+      {/*{isLoading && <FullWidthLoader />}*/}
       <FormTitle>Добавление отеля</FormTitle>
       <Controller
         name="title"
@@ -120,6 +123,8 @@ export const HotelInfo: FC<HotelInfoProps> = ({
                 label="Кол-во звёзд"
                 type="number"
                 required
+                min={1}
+                max={5}
                 size={FORM_SIZE}
                 disabled={isLoading}
                 className={cx.fields}
@@ -178,6 +183,16 @@ export const HotelInfo: FC<HotelInfoProps> = ({
         disabled={isLoading}
         className={cx.fields}
       />
+      <DragNDropField onDropFiles={files => console.log(files)}>
+        {({ openFileDialog }) => (
+          <>
+            <Button onClick={openFileDialog} label="Выбрать файл" />
+            <br />
+            <Text view="primary">Перетащите изображения или загрузите</Text>
+            <Text view="secondary">Поддерживаемые форматы: PNG, TIFF, JPG</Text>
+          </>
+        )}
+      </DragNDropField>
       {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
       {/*// @ts-expect-error*/}
       <TextField

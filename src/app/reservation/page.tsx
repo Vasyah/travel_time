@@ -26,7 +26,6 @@ export default function Home() {
   } = useGetAllHotels(!filter, filter)
   // если добавили фильтр, то загрузить только отели в которых есть свободные места
 
-  console.log(filter)
   useEffect(() => {
     if (!!filter?.end && !!filter?.start) {
       getHotelsWithFreeRoomsFx({ start: filter?.start, end: filter?.end })

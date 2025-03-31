@@ -25,3 +25,7 @@ body {
 .che--LayoutRow_height_s {
     --header-height: 64px !important;
 }
+
+.react-calendar-timeline .rct-header-root {
+    background-color: transparent !important;
+}
