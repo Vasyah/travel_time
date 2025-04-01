@@ -1,11 +1,12 @@
 import supabase from '@/shared/config/supabase'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { QUERY_KEYS } from '@/shared/config/reactQuery'
-import { Room } from '@/shared/api/room/room'
+import { Room, RoomDTO } from '@/shared/api/room/room'
 import { ReserveDTO, TravelOption } from '@/shared/api/reserve/reserve'
 import { TABLE_NAMES } from '@/shared/api/const'
 import { TravelFilterType } from '@/shared/models/hotels'
 import { showToast } from '@/shared/ui/Toast/Toast'
+import boolean from '@rc-component/async-validator/es/validator/boolean'
 
 // Тип Room
 export type HotelDTO = {
@@ -39,7 +40,7 @@ export async function getAllHotels(
   try {
     const query = supabase
       .from('hotels')
-      .select()
+      .select('*, rooms(count)')
       .order('title', { ascending: true })
 
     if (filter?.type) {
@@ -95,14 +96,17 @@ export async function insertItem<Type>(
   }
 }
 
+type HotelWithRooms = HotelDTO & { rooms: RoomDTO[] }
 export const useGetAllHotels = (
   enabled?: boolean,
-  filter?: TravelFilterType
+  filter?: TravelFilterType,
+  select?: (hotels: HotelWithRooms[]) => HotelWithRooms[]
 ) => {
   return useQuery({
     queryKey: QUERY_KEYS.hotels,
     queryFn: () => getAllHotels(filter),
     enabled: enabled,
+    select: select,
   })
 }
 

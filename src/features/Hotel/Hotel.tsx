@@ -67,7 +67,7 @@ export const Hotel = ({ className, hotel, onDelete, onEdit }: HotelProps) => {
             </div>
 
             <Flex className={styles.actions} align={'center'} gap={'small'}>
-              <ConfirmButton onConfirm={() => onDelete(id)} />
+              {/*<ConfirmButton onConfirm={() => onDelete(id)} />*/}
               <div className={styles.telegram}>
                 {telegram_url && <HotelTelegram url={telegram_url} />}
               </div>

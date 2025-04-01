@@ -27,22 +27,6 @@ export default function Main() {
   const [isReserveOpen, setIsReserveOpen] = useState<boolean>(false)
   const { data: countsData, isFetching: isCountsLoading } = useGetAllCounts()
 
-  // const {
-  //   isError: isHotelError,
-  //   isPending: isHotelLoading,
-  //   mutate: createHotel,
-  // } = useCreateHotel(
-  //   () => {
-  //     queryClient.invalidateQueries({ queryKey: QUERY_KEYS.hotels })
-  //     queryClient.invalidateQueries({ queryKey: QUERY_KEYS.hotelsForRoom })
-  //     setIsHotelOpen(false)
-  //     showToast('Отель добавлен')
-  //   },
-  //   e => {
-  //     showToast(`Ошибка при добавлении номера ${e}`, 'error')
-  //   }
-  // )
-
   const {
     isPending: isRoomLoading,
     mutate: createRoom,

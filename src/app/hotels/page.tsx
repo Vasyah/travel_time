@@ -21,7 +21,17 @@ export interface PageProps {
 }
 
 export default function Hotels({ className }: PageProps) {
-  const { isFetching, error, data: hotels, refetch } = useGetAllHotels()
+  const {
+    isFetching,
+    error,
+    data: hotels,
+    refetch,
+  } = useGetAllHotels(true, undefined, hotels => {
+    return hotels.map(hotel => ({
+      ...hotel,
+      roomsCount: hotels?.roooms.length ?? 0,
+    }))
+  })
   const [isHotelOpen, setIsHotelOpen] = useState(false)
   const [currentHotel, setIsCurrentHotel] = useState<Nullable<HotelDTO>>(null)
 

@@ -33,8 +33,6 @@ export const HotelModal: FC<ReserveModalProps> = ({
     mutateAsync: createHotel,
   } = useCreateHotel(
     () => {
-      console.log('im here')
-
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.hotels })
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.hotelsForRoom })
       onClose()
