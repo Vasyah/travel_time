@@ -26,6 +26,7 @@ import { IoLogoWhatsapp } from 'react-icons/io'
 import { createWhatsappLink } from '@/shared/lib/links'
 import { LinkIcon } from '@/shared/ui/LinkIcon/LinkIcon'
 import { TextFieldPropStatus } from '@consta/uikit/__internal__/src/components/TextField/types'
+import { Input } from 'antd'
 
 export interface ReserveInfoProps {
   onClose: () => void
@@ -147,7 +148,8 @@ export const ReserveInfo: FC<ReserveInfoProps> = ({
   }, [hotelsStatus, formData.hotel_id])
 
   useEffect(() => {
-    if (rooms?.length === 0) return
+    // если комнат нет - выходим
+    if (rooms?.length === 0 || !!currentReserve?.reserve?.price) return
 
     const room = rooms?.find(room => room.id === formData?.room_id?.id)
 
@@ -155,6 +157,7 @@ export const ReserveInfo: FC<ReserveInfoProps> = ({
       setValue('price', room?.price)
     }
   }, [formData.room_id])
+
   const loading = isLoading || isHotelsLoading
 
   const deserializeData = ({
@@ -302,7 +305,6 @@ export const ReserveInfo: FC<ReserveInfoProps> = ({
               required
               size={FORM_SIZE}
               className={cx.fields}
-              disabled={loading}
               value={String(field.value)}
               onChange={field.onChange}
               type="number"
@@ -388,23 +390,26 @@ export const ReserveInfo: FC<ReserveInfoProps> = ({
             name="prepayment"
             control={control}
             render={({ field }) => (
-              <TextField
+              <Input
                 style={{
+                  paddingLeft: 0,
+                  backgroundColor: 'transparent',
                   maxWidth: '150px',
-                  maxHeight: '20px',
+                  marginBottom: '0rem',
+                  paddingBottom: '0rem',
+                  paddingTop: 0,
+                  // maxHeight: '20px',
                 }}
+                variant={'underlined'}
                 {...field}
-                labelPosition={'left'}
+                suffix={'руб.'}
                 required
-                size={FORM_SIZE}
+                size={'large'}
                 className={cx.fields}
                 disabled={loading}
-                view={'clear'}
                 value={String(field?.value)}
                 onChange={field.onChange}
                 type={'number'}
-                incrementButtons={false}
-                rightSide={'руб.'}
               />
             )}
           />

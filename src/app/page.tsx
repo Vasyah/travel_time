@@ -28,22 +28,6 @@ export default function Main() {
   const { data: countsData, isFetching: isCountsLoading } = useGetAllCounts()
 
   const {
-    isPending: isRoomLoading,
-    mutate: createRoom,
-    error: roomError,
-  } = useCreateRoom(
-    () => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.hotels })
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.roomsByHotel })
-      setIsRoomOpen(false)
-      showToast('Номер успешно добавлен')
-    },
-    e => {
-      showToast(`Ошибка при добавлении номера ${e}`, 'error')
-    }
-  )
-
-  const {
     isPending: isReserveLoading,
     mutate: createReserve,
     error: reserveError,
@@ -85,23 +69,14 @@ export default function Main() {
     [countsData, isCountsLoading]
   )
 
-  // const onHotelCreate = useCallback(async (hotel: Room) => {
-  //   createHotel(hotel)
-  // }, [])
-
-  const onRoomCreate = useCallback((room: Room) => {
-    createRoom(room)
-    console.log('Создаю ROOM', room)
-  }, [])
-
   const onReserveCreate = useCallback((reserve: Reserve) => {
     console.log('создаю Reserve')
     createReserve(reserve)
   }, [])
 
+  if (isCountsLoading) return <FullWidthLoader />
   return (
     <div>
-      {isCountsLoading && <FullWidthLoader />}
       <HotelModal
         isOpen={isHotelOpen}
         onClose={() => setIsHotelOpen(false)}
@@ -110,8 +85,6 @@ export default function Main() {
       <RoomModal
         isOpen={isRoomOpen}
         onClose={() => setIsRoomOpen(false)}
-        onAccept={onRoomCreate}
-        isLoading={isRoomLoading}
         currentReserve={null}
       />
       <ReserveModal

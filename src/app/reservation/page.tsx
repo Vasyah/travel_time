@@ -13,7 +13,7 @@ import {
   $isHotelsWithFreeRoomsLoading,
   getHotelsWithFreeRoomsFx,
 } from '@/features/Reservation/model/reservationStore'
-import { HotelHeading } from '@/shared/ui/Hotel/HotelHeading'
+import { PageTitle } from '@/shared/ui/PageTitle/PageTitle'
 
 export default function Home() {
   const filter = useUnit($hotelsFilter)
@@ -56,7 +56,7 @@ export default function Home() {
 
   return (
     <div>
-      <HotelHeading title={'Все отели'} hotels={36} rooms={154} />
+      <PageTitle title={'Все отели'} hotels={36} rooms={154} />
       {hotels?.map(hotel => <Calendar hotel={hotel} key={hotel.id} />)}
     </div>
   )

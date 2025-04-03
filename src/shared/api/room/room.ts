@@ -2,9 +2,15 @@ import { ReserveDTO } from '@/shared/api/reserve/reserve'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { QUERY_KEYS } from '@/shared/config/reactQuery'
 import supabase from '@/shared/config/supabase'
-import { insertItem } from '@/shared/api/hotel/hotel'
+import {
+  deleteHotelApi,
+  HotelDTO,
+  insertItem,
+  updateHotelApi,
+} from '@/shared/api/hotel/hotel'
 import { TABLE_NAMES } from '@/shared/api/const'
 import { TravelFilterType } from '@/shared/models/hotels'
+import { showToast } from '@/shared/ui/Toast/Toast'
 
 export type RoomDTO = {
   id: string // Уникальный идентификатор номера
@@ -79,6 +85,25 @@ export const createRoomApi = async (room: Room) => {
   }
 }
 
+export const updateRoomApi = async ({ id, ...room }: RoomDTO) => {
+  console.log({ id, ...room })
+  try {
+    await supabase.from('rooms').update(room).eq('id', id)
+  } catch (error) {
+    console.error(error)
+    showToast(`Ошибка при обновлении брони ${error}`, 'error')
+  }
+}
+
+export const deleteRoomApi = async (id: string) => {
+  try {
+    await supabase.from('rooms').delete().eq('id', id)
+  } catch (err) {
+    console.error('Error fetching posts:', err)
+    showToast(`Ошибка при обновлении брони ${err}`, 'error')
+  }
+}
+
 export const useGetRoomsByHotel = (hotel_id?: string, enabled?: boolean) => {
   return useQuery({
     queryKey: QUERY_KEYS.roomsByHotel,
@@ -103,6 +128,28 @@ export const useCreateRoom = (
 ) => {
   return useMutation({
     mutationFn: createRoomApi,
+    onSuccess,
+    onError,
+  })
+}
+
+export const useUpdateRoom = (
+  onSuccess?: () => void,
+  onError?: (e: Error) => void
+) => {
+  return useMutation({
+    mutationFn: updateRoomApi,
+    onSuccess,
+    onError,
+  })
+}
+
+export const useDeleteRoom = (
+  onSuccess?: () => void,
+  onError?: (e: Error) => void
+) => {
+  return useMutation({
+    mutationFn: deleteRoomApi,
     onSuccess,
     onError,
   })

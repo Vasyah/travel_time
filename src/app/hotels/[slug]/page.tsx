@@ -4,16 +4,17 @@ import {
   HotelDTO,
   useDeleteHotel,
   useGetAllHotels,
+  useHotelById,
   useUpdateHotel,
 } from '@/shared/api/hotel/hotel'
 import { Flex } from 'antd'
 import { FullWidthLoader } from '@/shared/ui/Loader/Loader'
-import { HotelHeading } from '@/shared/ui/Hotel/HotelHeading'
+import { PageTitle } from '@/shared/ui/PageTitle/PageTitle'
 import style from './page.module.css'
 import { HotelModal } from '@/features/HotelModal/ui/HotelModal'
 import { Nullable, useDeleteReserve } from '@/shared/api/reserve/reserve'
 import { QUERY_KEYS, queryClient } from '@/shared/config/reactQuery'
-import { useGetRoomsWithReservesByHotel } from '@/shared/api/room/room'
+import { RoomDTO, useGetRoomsWithReservesByHotel } from '@/shared/api/room/room'
 import { useParams } from 'next/navigation'
 import { Room } from '@/features/Room/Room'
 import { RoomModal } from '@/features/RoomInfo/ui/RoomModal'
@@ -26,12 +27,11 @@ export interface PageProps {
 export default function Rooms({ className }: PageProps) {
   const params = useParams()
 
-  const [isHotelOpen, setIsHotelOpen] = useState(false)
-  const [currentHotel, setIsCurrentHotel] = useState<Nullable<HotelDTO>>(null)
-  const { data: rooms = [], isFetching: isRoomLoading } =
-    useGetRoomsWithReservesByHotel(params?.slug)
+  const [isRoomOpen, setIsRoomOpen] = useState(false)
+  const [currentRoom, setIsCurrentRoom] = useState<Nullable<RoomDTO>>(null)
 
-  console.log(rooms)
+  const { data: hotel, isFetching } = useHotelById(params?.slug as string)
+
   useEffect(() => {
     return () => {
       queryClient.invalidateQueries({
@@ -39,18 +39,21 @@ export default function Rooms({ className }: PageProps) {
       })
     }
   }, [])
-  // const isLoading = isHotelDeleting || isFetching || isHotelUpdating
 
+  if (isFetching) {
+    return <div>loading...</div>
+  }
+
+  const rooms: RoomDTO[] = hotel?.rooms ?? []
   return (
     <div className={style.container}>
       {/*{isLoading && <FullWidthLoader />}*/}
-      <HotelHeading
-        // title={hotel}
-        hotels={36}
-        rooms={154}
+      <PageTitle
+        title={hotel?.title}
+        rooms={hotel?.rooms?.length}
         buttonProps={{
           label: 'Добавить номер',
-          onClick: () => setIsHotelOpen(true),
+          onClick: () => setIsRoomOpen(true),
         }}
       />
       <Flex wrap gap={'small'}>
@@ -58,22 +61,21 @@ export default function Rooms({ className }: PageProps) {
           <Room
             room={room}
             key={room.id}
-            // onDelete={deleteHotel}
-            onEdit={(hotel: HotelDTO) => {
-              setIsCurrentHotel(hotel)
-              setIsHotelOpen(true)
+            onEdit={room => {
+              setIsCurrentRoom(room)
+              setIsRoomOpen(true)
             }}
           />
         ))}
       </Flex>
 
       <RoomModal
-        isOpen={isHotelOpen}
+        isOpen={isRoomOpen}
         onClose={() => {
-          setIsCurrentHotel(null)
-          setIsHotelOpen(false)
+          setIsCurrentRoom(null)
+          setIsRoomOpen(false)
         }}
-        currentReserve={{ hotel: currentHotel }}
+        currentReserve={{ hotel: hotel, room: currentRoom }}
       />
     </div>
   )

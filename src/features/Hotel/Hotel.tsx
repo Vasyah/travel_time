@@ -15,6 +15,7 @@ import { IconForward } from '@consta/icons/IconForward'
 import { ConfirmButton } from '@/shared/ui/ConfirmButton/ConfirmButton'
 import { IconEdit } from '@consta/icons/IconEdit'
 import Link from 'next/link'
+import { Text } from '@consta/uikit/Text'
 
 export interface HotelProps {
   children?: React.ReactNode
@@ -60,9 +61,18 @@ export const Hotel = ({ className, hotel, onDelete, onEdit }: HotelProps) => {
               </Flex>
               <HotelTitle>{title}</HotelTitle>
               <div className={styles.info}>
-                <div>35 номеров</div>
-                <div>{address}</div>
-                <div>{phone}</div>
+                <Text size={'m'}>{hotel?.rooms?.[0]?.count ?? 0} номеров</Text>
+                <div
+                  style={{
+                    maxWidth: '200px',
+                    maxHeight: '150px',
+                    overflowY: 'auto',
+                    overflowX: 'hidden',
+                  }}
+                >
+                  <Text size={'m'}>Адрес: {address}</Text>
+                </div>
+                <Text size={'m'}>Номер: {phone}</Text>
               </div>
             </div>
 

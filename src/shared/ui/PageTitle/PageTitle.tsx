@@ -6,12 +6,12 @@ import { Text } from '@consta/uikit/Text'
 import { Flex } from 'antd'
 import { TravelButton } from '@/shared/ui/Button/Button'
 
-export interface HotelHeadingProps {
+export interface PageTitleProps {
   title: string
   children?: React.ReactNode
   className?: string
-  hotels: number
-  rooms: number
+  hotels?: number
+  rooms?: number
   buttonProps?: {
     className?: string
     label: string
@@ -19,13 +19,22 @@ export interface HotelHeadingProps {
   }
 }
 
-export const HotelHeading = ({
+export const PageTitle = ({
   className,
   title,
   hotels,
   rooms,
   buttonProps,
-}: HotelHeadingProps) => {
+}: PageTitleProps) => {
+  const getTitle = (hotels?: number, rooms?: number) => {
+    if (hotels && rooms) {
+      return ` Всего ${hotels} отелей, ${rooms} номеров`
+    } else if (hotels) {
+      return ` Всего ${hotels} отелей`
+    } else {
+      return ` Всего ${rooms} номеров`
+    }
+  }
   return (
     <Flex className={cn(styles.headingContainer, className)} align={'center'}>
       <div>
@@ -34,7 +43,7 @@ export const HotelHeading = ({
         </Text>
         <Flex gap={'middle'}>
           <Text size="m" view={'success'} style={{ marginTop: '0.5rem' }}>
-            Всего {hotels} отелей, {rooms} номеров
+            {getTitle(hotels, rooms)}
           </Text>
         </Flex>
       </div>

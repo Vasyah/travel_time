@@ -21,22 +21,34 @@ export type HotelDTO = {
   imageURL?: string
 }
 
+export type HotelRoomsDTO = HotelDTO & { rooms: RoomDTO }
 //для создания отеля
 export type Hotel = Omit<HotelDTO, 'id'>
 //для формы
 export type RoomForm = Omit<Room, 'hotel_id'> & {
   hotel_id: TravelOption
 }
+
+export interface FreeHotelsDTO {
+  free_room_count: number
+  hotel_id: string
+  hotel_title: string
+  rooms: {
+    room_id: string
+    room_price: number
+    room_title: string
+    reserves: ReserveDTO[]
+  }[]
+}
+
 //для формы Room и Reserve
 export type HotelForRoom = Pick<HotelDTO, 'id' | 'title'>
 
-const hotelWithRoomsAndServesQuery = supabase
-  .from('hotels')
-  .select(`*, rooms(*, reserves(*))`)
+type HotelWithRoomsCount = HotelDTO & { rooms: { count: number }[] }
 
 export async function getAllHotels(
   filter?: TravelFilterType
-): Promise<HotelDTO[]> {
+): Promise<HotelWithRoomsCount[]> {
   try {
     const query = supabase
       .from('hotels')
@@ -53,7 +65,7 @@ export async function getAllHotels(
 
     const response = await query
 
-    return response.data as HotelDTO[] // Возвращаем массив отелей
+    return response.data as HotelWithRoomsCount[] // Возвращаем массив отелей
   } catch (error) {
     console.error('Ошибка при получении отелей:', error)
     throw error
@@ -96,11 +108,31 @@ export async function insertItem<Type>(
   }
 }
 
-type HotelWithRooms = HotelDTO & { rooms: RoomDTO[] }
+export const getHotelById = async (id: string) => {
+  try {
+    const response = await supabase
+      .from('hotels')
+      .select('*, rooms(*)')
+      .eq('id', id)
+      .single()
+
+    return response?.data
+  } catch (e) {
+    throw new Error(e)
+  }
+}
+
+export const useHotelById = (id: string) => {
+  return useQuery({
+    queryKey: QUERY_KEYS.hotelById,
+    queryFn: () => getHotelById(id),
+  })
+}
+
 export const useGetAllHotels = (
   enabled?: boolean,
   filter?: TravelFilterType,
-  select?: (hotels: HotelWithRooms[]) => HotelWithRooms[]
+  select?: (hotels: HotelWithRoomsCount[]) => HotelDTO[]
 ) => {
   return useQuery({
     queryKey: QUERY_KEYS.hotels,
@@ -121,18 +153,6 @@ export const useGetHotelsForRoom = () => {
     queryKey: QUERY_KEYS.hotelsForRoom,
     queryFn: getAllHotelsForRoom,
   })
-}
-
-export interface FreeHotelsDTO {
-  free_room_count: number
-  hotel_id: string
-  hotel_title: string
-  rooms: {
-    room_id: string
-    room_price: number
-    room_title: string
-    reserves: ReserveDTO[]
-  }[]
 }
 
 export async function getHotelsWithFreeRooms(

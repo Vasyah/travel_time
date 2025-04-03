@@ -2,27 +2,20 @@
 import React from 'react'
 import styles from './style.module.css'
 import cn from 'classnames'
-import { HotelDTO } from '@/shared/api/hotel/hotel'
 import { Card } from '@consta/uikit/Card'
 import { HotelImage } from '@/shared/ui/Hotel/HotelImage'
 import hotelImage from './room.svg'
-import { HotelRating } from '@/shared/ui/Hotel/HotelRating'
 import { HotelTitle } from '@/shared/ui/Hotel/HotelTitle'
 import { Flex, Button } from 'antd'
-import { HotelTelegram } from '@/shared/ui/Hotel/HotelTelegram'
-import { Button as ConstaButton } from '@consta/uikit/Button'
-import { IconForward } from '@consta/icons/IconForward'
-import { ConfirmButton } from '@/shared/ui/ConfirmButton/ConfirmButton'
 import { IconEdit } from '@consta/icons/IconEdit'
-import Link from 'next/link'
-import { RoomReserves } from '@/shared/api/room/room'
+import { RoomDTO, RoomReserves } from '@/shared/api/room/room'
 
 export interface HotelProps {
   children?: React.ReactNode
   className?: string
-  room: RoomReserves
+  room: RoomDTO
   onDelete: (id: string) => void
-  onEdit: (room: RoomReserves) => void
+  onEdit: (room: RoomDTO) => void
 }
 
 export const Room = ({ className, room, onDelete, onEdit }: HotelProps) => {
@@ -35,7 +28,7 @@ export const Room = ({ className, room, onDelete, onEdit }: HotelProps) => {
         <div className={styles.infoContainer}>
           <Flex
             vertical
-            justify="space-around"
+            justify="flex-start"
             className={styles.verticalContainer}
           >
             <div>
@@ -55,10 +48,6 @@ export const Room = ({ className, room, onDelete, onEdit }: HotelProps) => {
                 <div>Заметки: {comment}</div>
               </div>
             </div>
-
-            <Flex className={styles.actions} align={'center'} gap={'small'}>
-              <ConfirmButton onConfirm={() => onDelete(id)} />
-            </Flex>
           </Flex>
         </div>
       </Flex>

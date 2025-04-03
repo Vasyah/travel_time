@@ -18,6 +18,7 @@ import { Room } from '@/shared/api/room/room'
 export interface RoomInfoProps {
   onClose: () => void
   onAccept: (args?: any) => void
+  onDelete: (id: string) => void
   currentReserve?: Nullable<CurrentReserveType>
   isLoading?: boolean
 }
@@ -27,6 +28,7 @@ export const RoomInfo: FC<RoomInfoProps> = ({
   onClose,
   currentReserve,
   isLoading = false,
+  onDelete,
 }: RoomInfoProps) => {
   const { data: hotels, isLoading: isHotelsLoading } = useGetHotelsForRoom()
 
@@ -40,6 +42,7 @@ export const RoomInfo: FC<RoomInfoProps> = ({
   const {
     control,
     getValues,
+    watch,
     formState: { errors },
   } = useForm<RoomForm>({
     defaultValues: {
@@ -49,13 +52,18 @@ export const RoomInfo: FC<RoomInfoProps> = ({
             label: currentReserve?.hotel?.title,
           }
         : undefined,
-      quantity: 3,
-      price: 0,
+      title: currentReserve?.room?.title,
+      comment: currentReserve?.room?.comment,
+      quantity: currentReserve?.room?.quantity ?? 3,
+      price: currentReserve?.room?.price,
     },
   })
 
+  const formData = watch()
+
   const deserializeData = (data: RoomForm): Room => {
     return {
+      ...currentReserve?.room,
       ...data,
       hotel_id: data?.hotel_id.id,
       image_path: '',
@@ -64,8 +72,9 @@ export const RoomInfo: FC<RoomInfoProps> = ({
   }
 
   const onAcceptForm = useCallback(() => {
-    const serializedData = deserializeData(getValues())
+    const serializedData = deserializeData(formData)
 
+    console.log({ serializedData, formData })
     onAccept(serializedData)
   }, [])
 
@@ -86,7 +95,7 @@ export const RoomInfo: FC<RoomInfoProps> = ({
             size={FORM_SIZE}
             dropdownClassName={cx.dropdown}
             className={cx.fields}
-            disabled={loading}
+            disabled={loading || !!currentReserve?.hotel?.id}
           />
         )}
       />
@@ -187,6 +196,7 @@ export const RoomInfo: FC<RoomInfoProps> = ({
         isLoading={loading}
         onAccept={onAcceptForm}
         onClose={onClose}
+        onDelete={() => currentReserve?.hotel && currentReserve?.hotel?.id}
       />
     </>
   )
