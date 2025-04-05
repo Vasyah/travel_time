@@ -291,12 +291,13 @@ export const Calendar = ({ hotel }: CalendarProps) => {
             src={hotelImage.src}
             width={157}
             height={164}
+            onClick={onHotelClick}
           />
           <div className={cx.stars}>
             <HotelRating rating={rating} />
           </div>
           <div className={cx.hotelDescription}>
-            <HotelTitle>{hotel?.title}</HotelTitle>
+            <HotelTitle onClick={onHotelClick}>{hotel?.title}</HotelTitle>
             <div>
               {hotel?.telegram_url && (
                 <HotelTelegram url={hotel?.telegram_url} />

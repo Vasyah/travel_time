@@ -14,8 +14,10 @@ import {
   getHotelsWithFreeRoomsFx,
 } from '@/features/Reservation/model/reservationStore'
 import { PageTitle } from '@/shared/ui/PageTitle/PageTitle'
+import { useParams } from 'next/navigation'
 
-export default function Home() {
+export default function HotelCalendar() {
+  const params = useParams()
   const filter = useUnit($hotelsFilter)
   const isFreeHotelsLoading = useUnit($isHotelsWithFreeRoomsLoading)
   const {
@@ -54,13 +56,10 @@ export default function Home() {
     )
   }
 
-  const onHotelClick = () => {}
   return (
     <div>
       <PageTitle title={'Все отели'} hotels={36} rooms={154} />
-      {hotels?.map(hotel => (
-        <Calendar hotel={hotel} key={hotel.id} onHotelClick={onHotelClick} />
-      ))}
+      {hotels?.map(hotel => <Calendar hotel={hotel} key={hotel.id} />)}
     </div>
   )
 }

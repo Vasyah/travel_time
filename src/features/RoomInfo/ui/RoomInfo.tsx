@@ -21,6 +21,7 @@ export interface RoomInfoProps {
   onDelete: (id: string) => void
   currentReserve?: Nullable<CurrentReserveType>
   isLoading?: boolean
+  isEdit?: boolean
 }
 
 export const RoomInfo: FC<RoomInfoProps> = ({
@@ -28,6 +29,7 @@ export const RoomInfo: FC<RoomInfoProps> = ({
   onClose,
   currentReserve,
   isLoading = false,
+  isEdit = false,
   onDelete,
 }: RoomInfoProps) => {
   const { data: hotels, isLoading: isHotelsLoading } = useGetHotelsForRoom()
@@ -39,18 +41,13 @@ export const RoomInfo: FC<RoomInfoProps> = ({
     return hotelsTmp ?? []
   }, [hotels])
 
-  const {
-    control,
-    getValues,
-    watch,
-    formState: { errors },
-  } = useForm<RoomForm>({
+  const { control, watch } = useForm<RoomForm>({
     defaultValues: {
       hotel_id: currentReserve?.hotel
-        ? {
+        ? adaptToOption({
             id: currentReserve?.hotel?.id,
-            label: currentReserve?.hotel?.title,
-          }
+            title: currentReserve?.hotel?.id,
+          })
         : undefined,
       title: currentReserve?.room?.title,
       comment: currentReserve?.room?.comment,
@@ -65,18 +62,26 @@ export const RoomInfo: FC<RoomInfoProps> = ({
     return {
       ...currentReserve?.room,
       ...data,
-      hotel_id: data?.hotel_id.id,
+      hotel_id: data?.hotel_id?.id,
       image_path: '',
       image_title: '',
     }
   }
-
-  const onAcceptForm = useCallback(() => {
+  const onAcceptForm = () => {
     const serializedData = deserializeData(formData)
 
-    console.log({ serializedData, formData })
     onAccept(serializedData)
-  }, [])
+  }
+
+  const onDeleteCb = () => {
+    if (isEdit) {
+      return () => {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
+        onDelete(currentReserve?.room?.id)
+      }
+    }
+  }
 
   return (
     <>
@@ -126,7 +131,7 @@ export const RoomInfo: FC<RoomInfoProps> = ({
             render={({ field }) => (
               <TextField
                 {...field}
-                value={String(field?.value)}
+                value={field?.value}
                 placeholder="Введите стоимость"
                 label="Стоимость номера"
                 required
@@ -196,7 +201,8 @@ export const RoomInfo: FC<RoomInfoProps> = ({
         isLoading={loading}
         onAccept={onAcceptForm}
         onClose={onClose}
-        onDelete={() => currentReserve?.hotel && currentReserve?.hotel?.id}
+        onDelete={onDeleteCb()}
+        deleteText={'Удалить номер'}
       />
     </>
   )

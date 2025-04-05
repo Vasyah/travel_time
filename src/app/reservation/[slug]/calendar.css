@@ -1,0 +1,46 @@
+/*.react-calendar-timeline {*/
+/*    max-height: 300px;*/
+/*}*/
+
+.rct-header-row {
+    background-color: #f9f9f9;
+    font-size: 14px;
+}
+
+.rct-item {
+    background-color: var(--color-bg-success) !important;
+    color: white;
+    border-radius: 5px;
+}
+
+.rct-sidebar {
+    background-color: var(--color-bg-default);
+    color: var(--color-typo-primary);
+}
+
+.react-calendar-timeline .rct-dateHeader-primary {
+    background-color: var(--color-bg-success) !important;
+}
+
+/*[data-testid=sidebarHeader] {*/
+/*    background-color: var(--color-bg-default);*/
+/*    color: var(--color-typo-primary);*/
+/*}*/
+
+.travel-timeline {
+
+
+    .rct-outer {
+        /*max-height: 280px;*/
+        overflow-y: auto;
+    }
+}
+
+.rct-header-root > div {
+    background-color: var(--color-bg-default);
+    /*color: var(--color-typo-primary) !important;*/
+}
+
+.react-calendar-timeline .rct-vertical-lines .rct-vl {
+    z-index: 5 !important;
+}

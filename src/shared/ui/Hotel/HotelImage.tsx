@@ -12,6 +12,7 @@ export interface HotelImageProps {
   width: number
   height: number
   type?: string
+  onClick?: () => void
 }
 
 export const HotelImage = ({
@@ -20,9 +21,10 @@ export const HotelImage = ({
   src,
   height = 157,
   width = 164,
+  onClick,
 }: HotelImageProps) => {
   return (
-    <div className={cn(styles.container, className)}>
+    <div className={cn(styles.container, className)} onClick={onClick}>
       {type && (
         <Tag className={styles.tag} label={type} size={'s'} mode={'info'} />
       )}

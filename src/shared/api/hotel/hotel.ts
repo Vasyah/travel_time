@@ -118,6 +118,8 @@ export const getHotelById = async (id: string) => {
 
     return response?.data
   } catch (e) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
     throw new Error(e)
   }
 }

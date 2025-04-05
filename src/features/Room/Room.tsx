@@ -14,7 +14,6 @@ export interface HotelProps {
   children?: React.ReactNode
   className?: string
   room: RoomDTO
-  onDelete: (id: string) => void
   onEdit: (room: RoomDTO) => void
 }
 

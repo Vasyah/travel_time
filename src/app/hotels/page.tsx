@@ -42,7 +42,6 @@ export default function Hotels({ className }: PageProps) {
     })
   const isLoading = isHotelDeleting || isFetching || isHotelUpdating
 
-  console.log(hotels)
   if (isFetching) {
     return <FullWidthLoader />
   }
@@ -67,7 +66,7 @@ export default function Hotels({ className }: PageProps) {
             setIsCurrentHotel(null)
             setIsHotelOpen(false)
           }}
-          currentReserve={{ hotel: currentHotel }}
+          currentReserve={null}
         />
       </div>
     )

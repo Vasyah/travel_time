@@ -38,7 +38,7 @@ export type ReserveForm = Omit<
 export type Nullable<Type> = Type | null
 
 export type CurrentReserveType = {
-  room?: RoomDTO
+  room?: Nullable<RoomDTO>
   hotel?: Nullable<HotelDTO>
   reserve?: ReserveDTO
 }

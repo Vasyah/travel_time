@@ -7,7 +7,7 @@ import { QuestionCircleOutlined } from '@ant-design/icons'
 
 export interface FormButtonsProps {
   onClose: () => void
-  onAccept: (args?: any) => void
+  onAccept: () => void
   isLoading?: boolean
   isEdit?: boolean
   deleteText?: string
@@ -24,7 +24,7 @@ export const FormButtons: FC<FormButtonsProps> = ({
 }: FormButtonsProps) => {
   return (
     <>
-      {isEdit && (
+      {onDelete && (
         <Grid cols={2}>
           <GridItem colStart={2}>
             <Popconfirm

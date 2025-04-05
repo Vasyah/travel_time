@@ -35,6 +35,8 @@ export const RoomModal: FC<RoomModalProps> = ({
     () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.hotels })
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.roomsByHotel })
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.hotelById })
+
       onClose()
       showToast('Номер успешно добавлен')
     },
@@ -56,7 +58,7 @@ export const RoomModal: FC<RoomModalProps> = ({
   const { isPending: isRoomDeleting, mutateAsync: deleteRoom } = useDeleteRoom(
     () => {
       queryClient.invalidateQueries({
-        queryKey: [...QUERY_KEYS.hotels],
+        queryKey: QUERY_KEYS.hotelById,
       })
       onClose()
       showToast('Отель удалён')
@@ -70,23 +72,19 @@ export const RoomModal: FC<RoomModalProps> = ({
   const onDelete = async (id: string) => await deleteRoom(id)
 
   const loading =
-    isLoading || isRoomCreating || isRoomCreating || isRoomDeleting
-  const isEdit = !!currentReserve?.hotel?.id
+    isLoading || isRoomCreating || isRoomUpdating || isRoomDeleting
 
+  const isEdit = !!currentReserve?.room?.id
+  console.log({ isEdit, currentReserve })
   return (
-    <Modal
-      hasOverlay
-      isOpen={isOpen}
-      onClickOutside={onClose}
-      onEsc={onClose}
-      loading={loading}
-    >
+    <Modal hasOverlay isOpen={isOpen} onEsc={onClose} loading={loading}>
       <RoomInfo
         onClose={onClose}
         currentReserve={currentReserve}
         onAccept={isEdit ? onEdit : onCreate}
         onDelete={onDelete}
         isLoading={loading}
+        isEdit={isEdit}
       />
     </Modal>
   )
