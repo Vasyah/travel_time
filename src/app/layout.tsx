@@ -17,6 +17,7 @@ import { Col, ConfigProvider, Flex, Layout, Row } from 'antd'
 import { SafeHydrate } from '@/components/SafeHydrate/SafeHydrate'
 import { Today } from '@/features/Today/Today'
 import styles from './layout.module.css'
+import 'moment/locale/ru'
 
 moment.locale('ru') // Для локализации дат
 
