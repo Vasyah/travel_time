@@ -97,7 +97,11 @@ export default function Hotels() {
             key={hotel.id}
             onDelete={deleteHotel}
             onEdit={(hotel: HotelDTO) => {
-              setIsCurrentHotel(hotel)
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-expect-error
+              const { rooms, ...rest } = hotel
+
+              setIsCurrentHotel(rest)
               setIsHotelOpen(true)
             }}
           />
