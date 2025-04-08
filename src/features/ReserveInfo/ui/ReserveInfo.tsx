@@ -65,7 +65,7 @@ export const ReserveInfo: FC<ReserveInfoProps> = ({
       phone,
       comment,
       quantity,
-    }: ReserveDTO) => {
+    }: Partial<ReserveDTO>) => {
       const currentDate: [Date, Date] =
         start && end
           ? [new Date(start), new Date(end)]
@@ -98,6 +98,7 @@ export const ReserveInfo: FC<ReserveInfoProps> = ({
             title: room?.title,
           })
         : undefined,
+      price: room?.price,
     }
 
     if (!!reserve) {

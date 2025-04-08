@@ -22,7 +22,6 @@ export interface RoomModalProps {
 
 export const RoomModal: FC<RoomModalProps> = ({
   isOpen = false,
-  onAccept,
   onClose,
   currentReserve,
   isLoading = false,
@@ -36,7 +35,9 @@ export const RoomModal: FC<RoomModalProps> = ({
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.hotels })
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.roomsByHotel })
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.hotelById })
-
+      queryClient.invalidateQueries({
+        queryKey: [...QUERY_KEYS.roomsWithReservesByHotel],
+      })
       onClose()
       showToast('Номер успешно добавлен')
     },
@@ -75,7 +76,7 @@ export const RoomModal: FC<RoomModalProps> = ({
     isLoading || isRoomCreating || isRoomUpdating || isRoomDeleting
 
   const isEdit = !!currentReserve?.room?.id
-  console.log({ isEdit, currentReserve })
+
   return (
     <Modal hasOverlay isOpen={isOpen} onEsc={onClose} loading={loading}>
       <RoomInfo

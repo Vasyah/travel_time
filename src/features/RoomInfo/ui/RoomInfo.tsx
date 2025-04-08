@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useMemo } from 'react'
+import React, { FC, useMemo } from 'react'
 import cx from './style.module.css'
 import { TextField } from '@consta/uikit/TextField'
 import { Select } from '@consta/uikit/Select'
@@ -36,32 +36,31 @@ export const RoomInfo: FC<RoomInfoProps> = ({
 
   const loading = isLoading || isHotelsLoading
 
-  const hotelOptions = useMemo(() => {
-    const hotelsTmp = hotels?.map(adaptToOption)
-    return hotelsTmp ?? []
-  }, [hotels])
-
   const { control, watch } = useForm<RoomForm>({
     defaultValues: {
       hotel_id: currentReserve?.hotel
         ? adaptToOption({
             id: currentReserve?.hotel?.id,
-            title: currentReserve?.hotel?.id,
+            title: currentReserve?.hotel?.title,
           })
         : undefined,
       title: currentReserve?.room?.title,
       comment: currentReserve?.room?.comment,
       quantity: currentReserve?.room?.quantity ?? 3,
-      price: currentReserve?.room?.price,
+      price: String(currentReserve?.room?.price ?? ''),
     },
   })
 
+  const hotelOptions = useMemo(() => {
+    const hotelsTmp = hotels?.map(adaptToOption)
+    return hotelsTmp ?? []
+  }, [hotels])
   const formData = watch()
 
   const deserializeData = (data: RoomForm): Room => {
     return {
-      ...currentReserve?.room,
       ...data,
+      price: Number(data?.price ? data?.price : '0'),
       hotel_id: data?.hotel_id?.id,
       image_path: '',
       image_title: '',

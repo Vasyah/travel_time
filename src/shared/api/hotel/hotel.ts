@@ -6,7 +6,6 @@ import { ReserveDTO, TravelOption } from '@/shared/api/reserve/reserve'
 import { TABLE_NAMES } from '@/shared/api/const'
 import { TravelFilterType } from '@/shared/models/hotels'
 import { showToast } from '@/shared/ui/Toast/Toast'
-import boolean from '@rc-component/async-validator/es/validator/boolean'
 
 // Тип Room
 export type HotelDTO = {
@@ -25,8 +24,9 @@ export type HotelRoomsDTO = HotelDTO & { rooms: RoomDTO }
 //для создания отеля
 export type Hotel = Omit<HotelDTO, 'id'>
 //для формы
-export type RoomForm = Omit<Room, 'hotel_id'> & {
+export type RoomForm = Omit<Room, 'hotel_id' | 'price'> & {
   hotel_id: TravelOption
+  price: string
 }
 
 export interface FreeHotelsDTO {
@@ -44,7 +44,7 @@ export interface FreeHotelsDTO {
 //для формы Room и Reserve
 export type HotelForRoom = Pick<HotelDTO, 'id' | 'title'>
 
-type HotelWithRoomsCount = HotelDTO & { rooms: { count: number }[] }
+export type HotelWithRoomsCount = HotelDTO & { rooms: { count: number }[] }
 
 export async function getAllHotels(
   filter?: TravelFilterType

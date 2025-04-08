@@ -14,8 +14,11 @@ import {
   getHotelsWithFreeRoomsFx,
 } from '@/features/Reservation/model/reservationStore'
 import { PageTitle } from '@/shared/ui/PageTitle/PageTitle'
+import { useRouter } from 'next/navigation'
 
 export default function Home() {
+  const router = useRouter()
+
   const filter = useUnit($hotelsFilter)
   const isFreeHotelsLoading = useUnit($isHotelsWithFreeRoomsLoading)
   const {
@@ -54,7 +57,10 @@ export default function Home() {
     )
   }
 
-  const onHotelClick = () => {}
+  const onHotelClick = (hotel_id: string) => {
+    router.push(`/reservation/${hotel_id}`)
+  }
+
   return (
     <div>
       <PageTitle title={'Все отели'} hotels={36} rooms={154} />

@@ -2,7 +2,7 @@
 import React from 'react'
 import styles from './style.module.css'
 import cn from 'classnames'
-import { HotelDTO } from '@/shared/api/hotel/hotel'
+import { HotelDTO, HotelWithRoomsCount } from '@/shared/api/hotel/hotel'
 import { Card } from '@consta/uikit/Card'
 import { HotelImage } from '@/shared/ui/Hotel/HotelImage'
 import hotelImage from './hotel.svg'
@@ -12,7 +12,6 @@ import { Flex, Button } from 'antd'
 import { HotelTelegram } from '@/shared/ui/Hotel/HotelTelegram'
 import { Button as ConstaButton } from '@consta/uikit/Button'
 import { IconForward } from '@consta/icons/IconForward'
-import { ConfirmButton } from '@/shared/ui/ConfirmButton/ConfirmButton'
 import { IconEdit } from '@consta/icons/IconEdit'
 import Link from 'next/link'
 import { Text } from '@consta/uikit/Text'
@@ -20,7 +19,7 @@ import { Text } from '@consta/uikit/Text'
 export interface HotelProps {
   children?: React.ReactNode
   className?: string
-  hotel: HotelDTO
+  hotel: HotelWithRoomsCount
   onDelete: (id: string) => void
   onEdit: (hotel: HotelDTO) => void
 }

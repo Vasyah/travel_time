@@ -1,31 +1,26 @@
 'use client'
 import React, { useEffect } from 'react'
-import { useGetAllHotels } from '@/shared/api/hotel/hotel'
-import { Calendar } from '@/features/Calendar/ui/Calendar'
+import { useHotelById } from '@/shared/api/hotel/hotel'
 import { Loader } from '@/shared/ui/Loader/Loader'
 import cx from './page.module.css'
 import { useUnit } from 'effector-react/compat'
 import { $hotelsFilter } from '@/shared/models/hotels'
 import 'react-calendar-timeline/style.css'
 import './calendar.css'
-import { QUERY_KEYS, queryClient } from '@/shared/config/reactQuery'
 import {
   $isHotelsWithFreeRoomsLoading,
   getHotelsWithFreeRoomsFx,
 } from '@/features/Reservation/model/reservationStore'
 import { PageTitle } from '@/shared/ui/PageTitle/PageTitle'
 import { useParams } from 'next/navigation'
+import { HotelCalendar } from '@/features/Hotel/ui/HotelCalendar/HotelCalendar'
 
-export default function HotelCalendar() {
+export default function HotelCalendarPage() {
   const params = useParams()
+
+  const { data: hotel, isFetching } = useHotelById(params?.slug as string)
   const filter = useUnit($hotelsFilter)
   const isFreeHotelsLoading = useUnit($isHotelsWithFreeRoomsLoading)
-  const {
-    isPending,
-    error,
-    data: hotels,
-    refetch,
-  } = useGetAllHotels(!filter, filter)
   // если добавили фильтр, то загрузить только отели в которых есть свободные места
 
   useEffect(() => {
@@ -34,21 +29,21 @@ export default function HotelCalendar() {
     }
   }, [filter?.start, filter?.end])
 
-  useEffect(() => {
-    if (
-      !!filter?.hotels_id ||
-      !!filter?.rooms_id ||
-      filter?.type ||
-      filter?.quantity
-    ) {
-      refetch()
-      queryClient.invalidateQueries({
-        queryKey: [...QUERY_KEYS.roomsWithReservesByHotel],
-      })
-    }
-  }, [filter?.hotels_id, filter?.rooms_id, filter?.type, filter?.quantity])
+  // useEffect(() => {
+  //   if (
+  //     !!filter?.hotels_id ||
+  //     !!filter?.rooms_id ||
+  //     filter?.type ||
+  //     filter?.quantity
+  //   ) {
+  //     refetch()
+  //     queryClient.invalidateQueries({
+  //       queryKey: [...QUERY_KEYS.roomsWithReservesByHotel],
+  //     })
+  //   }
+  // }, [filter?.hotels_id, filter?.rooms_id, filter?.type, filter?.quantity])
 
-  if (isPending || isFreeHotelsLoading) {
+  if (isFetching || isFreeHotelsLoading) {
     return (
       <div className={cx.loaderContainer}>
         <Loader />
@@ -58,8 +53,8 @@ export default function HotelCalendar() {
 
   return (
     <div>
-      <PageTitle title={'Все отели'} hotels={36} rooms={154} />
-      {hotels?.map(hotel => <Calendar hotel={hotel} key={hotel.id} />)}
+      <PageTitle title={hotel?.title} rooms={hotel?.rooms?.length ?? 0} />
+      {hotel && <HotelCalendar hotel={hotel} key={hotel.id} />}
     </div>
   )
 }

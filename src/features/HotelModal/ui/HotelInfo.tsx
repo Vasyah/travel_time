@@ -8,12 +8,15 @@ import { Grid, GridItem } from '@consta/uikit/Grid'
 import { FORM_SIZE } from '@/shared/lib/const'
 import { HOTEL_TYPES } from '@/features/HotelModal/lib/const'
 import { FormTitle } from '@/shared/ui/FormTitle/FormTitle'
-import { CurrentReserveType, Nullable } from '@/shared/api/reserve/reserve'
+import {
+  CurrentReserveType,
+  Nullable,
+  TravelOption,
+} from '@/shared/api/reserve/reserve'
 import { LinkIcon } from '@/shared/ui/LinkIcon/LinkIcon'
 import { FaTelegram } from 'react-icons/fa'
 import { FormButtons } from '@/shared/ui/FormButtons/FormButtons'
 import { adaptToOption } from '@/shared/lib/adaptHotel'
-import { FullWidthLoader } from '@/shared/ui/Loader/Loader'
 import { DragNDropField } from '@consta/uikit/DragNDropField'
 import { Button } from '@consta/uikit/Button'
 import { Text } from '@consta/uikit/Text'
@@ -27,14 +30,19 @@ export interface HotelInfoProps {
   isEdit: boolean
 }
 
-export type HotelForm = Hotel & { type: { label: string; id: string } }
+export type HotelForm = Omit<Hotel, 'type' | 'rating'> & {
+  rating: string
+  type?: TravelOption
+}
 
-const DEFAULT_VALUE = { rating: 5, telegram_url: 'https://t.me/' }
+const DEFAULT_VALUE = { rating: '5', telegram_url: 'https://t.me/' }
 
-const getInitialValue = (hotel?: Nullable<HotelDTO>): HotelForm => {
+const getInitialValue = (hotel?: Nullable<HotelDTO>): Partial<HotelForm> => {
+  const rating = String(hotel?.rating) ?? DEFAULT_VALUE.rating
   return {
     ...DEFAULT_VALUE,
     ...hotel,
+    rating,
     type: hotel?.type
       ? adaptToOption({ title: hotel?.type, id: hotel?.type })
       : undefined,
@@ -61,11 +69,21 @@ export const HotelInfo: FC<HotelInfoProps> = ({
 
   const formData = watch()
 
-  const deserializeData = (data: HotelForm): Hotel => {
-    return { ...data, type: data.type.label }
+  const deserializeData = (data: HotelForm): Hotel | undefined => {
+    if (!data?.type) {
+      console.error('Не выбран отель')
+      return
+    }
+
+    return { ...data, type: data?.type?.label, rating: +data?.rating }
   }
   const onAcceptForm = useCallback(async () => {
     const serializedData = deserializeData(formData)
+
+    if (!serializedData) {
+      console.error('Не выбран отель')
+      return
+    }
 
     console.log(serializedData)
     await onAccept(serializedData)

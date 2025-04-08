@@ -40,7 +40,7 @@ export type Nullable<Type> = Type | null
 export type CurrentReserveType = {
   room?: Nullable<RoomDTO>
   hotel?: Nullable<HotelDTO>
-  reserve?: ReserveDTO
+  reserve?: Partial<ReserveDTO>
 }
 
 export const createReserveApi = async (reserve: Reserve) => {
@@ -75,6 +75,8 @@ export const updateReserveApi = async ({ id, ...reserve }: ReserveDTO) => {
   } catch (error) {
     console.error(error)
     showToast('Ошибка при обновлении брони', 'error')
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
     throw new Error(error?.message) // Передаем ошибку дальше для обработки в React Query
   }
 }

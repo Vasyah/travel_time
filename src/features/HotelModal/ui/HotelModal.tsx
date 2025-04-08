@@ -80,6 +80,8 @@ export const HotelModal: FC<ReserveModalProps> = ({
         onClose={onClose}
         currentReserve={currentReserve}
         isEdit={isEdit}
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
         onAccept={isEdit ? onEdit : onCreate}
         onDelete={onDelete}
         isLoading={

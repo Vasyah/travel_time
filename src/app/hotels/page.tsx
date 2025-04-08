@@ -2,6 +2,7 @@
 import React, { useState } from 'react'
 import {
   HotelDTO,
+  HotelWithRoomsCount,
   useDeleteHotel,
   useGetAllHotels,
   useUpdateHotel,
@@ -17,12 +18,7 @@ import { QUERY_KEYS, queryClient } from '@/shared/config/reactQuery'
 import { ResponsesNothingFound } from '@consta/uikit/ResponsesNothingFound'
 import { TravelButton } from '@/shared/ui/Button/Button'
 
-export interface PageProps {
-  children?: React.ReactNode
-  className?: string
-}
-
-export default function Hotels({ className }: PageProps) {
+export default function Hotels() {
   const { isFetching, error, data: hotels, refetch } = useGetAllHotels()
   const [isHotelOpen, setIsHotelOpen] = useState(false)
   const [currentHotel, setIsCurrentHotel] = useState<Nullable<HotelDTO>>(null)
@@ -75,6 +71,8 @@ export default function Hotels({ className }: PageProps) {
   const totalCount = {
     hotels: hotels?.length,
     rooms: hotels?.reduce((prev, curr) => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
       return (prev += curr?.rooms?.[0].count ?? 0)
     }, 0),
   }
@@ -95,7 +93,7 @@ export default function Hotels({ className }: PageProps) {
       <Flex wrap gap={'small'}>
         {hotels?.map(hotel => (
           <Hotel
-            hotel={hotel}
+            hotel={hotel as HotelWithRoomsCount}
             key={hotel.id}
             onDelete={deleteHotel}
             onEdit={(hotel: HotelDTO) => {

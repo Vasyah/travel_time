@@ -1,6 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react'
-import '../../../app/reservation/calendar.css'
-import hotelImage from '../hotel.svg'
+import '../../../../app/reservation/calendar.css'
 import cx from './style.module.css'
 import { HotelDTO } from '@/shared/api/hotel/hotel'
 import {
@@ -40,10 +39,6 @@ import 'moment/locale/ru'
 import { Interval } from '@/features/Calendar/ui/Intervals'
 import { $hotelsFilter } from '@/shared/models/hotels'
 import { useUnit } from 'effector-react/compat'
-import { HotelImage } from '@/shared/ui/Hotel/HotelImage'
-import { HotelRating } from '@/shared/ui/Hotel/HotelRating'
-import { HotelTitle } from '@/shared/ui/Hotel/HotelTitle'
-import { HotelTelegram } from '@/shared/ui/Hotel/HotelTelegram' // Подключаем русскую локализацию
 
 const keys = {
   groupIdKey: 'id',
@@ -60,7 +55,6 @@ const keys = {
 
 export interface CalendarProps {
   hotel: HotelDTO
-  onHotelClick?: (hotel_id: string) => void
 }
 
 const DAY = 24 * 60 * 60 * 1000
@@ -68,7 +62,7 @@ const WEEK = DAY * 7
 const THREE_MONTHS = DAY * 30 * 24
 // const THREE_MONTHS = 5 * 365.24 * 86400 * 1000;
 
-export const Calendar = ({ hotel, onHotelClick }: CalendarProps) => {
+export const HotelCalendar = ({ hotel }: CalendarProps) => {
   const { rating } = hotel
   const filter = useUnit($hotelsFilter)
   const queryClient = useQueryClient()
@@ -169,8 +163,8 @@ export const Calendar = ({ hotel, onHotelClick }: CalendarProps) => {
   }
 
   const onClose = () => {
-    queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.hotelsForRoom] })
-    queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.roomsByHotel] })
+    // queryClient.invalidateQueries({queryKey: [QUERY_KEYS.hotelsForRoom]})
+    // queryClient.invalidateQueries({queryKey: [QUERY_KEYS.roomsByHotel]})
     setIsReserveOpen(false)
     setCurrentReserve(null)
   }
@@ -283,38 +277,11 @@ export const Calendar = ({ hotel, onHotelClick }: CalendarProps) => {
     <>
       <Flex gap={'middle'} className={cx.container}>
         {isLoading && <FullWidthLoader />}
-        <div className={cx.hotelInfo}>
-          <HotelImage
-            type={hotel?.type}
-            className={cx.hotelIcon}
-            src={hotelImage.src}
-            width={157}
-            height={164}
-            onClick={() => (onHotelClick ? onHotelClick(hotel?.id) : undefined)}
-          />
-          <div className={cx.stars}>
-            <HotelRating rating={rating} />
-          </div>
-          <div className={cx.hotelDescription}>
-            <HotelTitle
-              className={cx.hotelTitle}
-              onClick={() =>
-                onHotelClick ? onHotelClick(hotel?.id) : undefined
-              }
-            >
-              {hotel?.title}
-            </HotelTitle>
-            <div>
-              {hotel?.telegram_url && (
-                <HotelTelegram url={hotel?.telegram_url} />
-              )}
-            </div>
-          </div>
-        </div>
-        <div style={{ overflow: 'auto' }}>
+        <div className={cx.hotelInfo}></div>
+        <div className={cx.calendar}>
           <Timeline
             onZoom={(context, unit) => setCurrentUnit(unit)}
-            className={'travel-timeline'}
+            // className={'travel-timeline'}
             groups={hotelRooms}
             items={hotelReserves}
             keys={keys}
@@ -461,14 +428,14 @@ export const Calendar = ({ hotel, onHotelClick }: CalendarProps) => {
             </TimelineHeaders>
           </Timeline>
         </div>
+        <RoomModal
+          isOpen={isRoomOpen}
+          onClose={() => setIsRoomOpen(false)}
+          onAccept={onRoomCreate}
+          isLoading={isRoomCreating}
+          currentReserve={currentReserve}
+        />
       </Flex>
-      <RoomModal
-        isOpen={isRoomOpen}
-        onClose={() => setIsRoomOpen(false)}
-        onAccept={onRoomCreate}
-        isLoading={isRoomCreating}
-        currentReserve={currentReserve}
-      />
       <ReserveModal
         isOpen={isReserveOpen}
         onClose={onClose}

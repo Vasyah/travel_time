@@ -8,7 +8,7 @@ import hotelImage from './room.svg'
 import { HotelTitle } from '@/shared/ui/Hotel/HotelTitle'
 import { Flex, Button } from 'antd'
 import { IconEdit } from '@consta/icons/IconEdit'
-import { RoomDTO, RoomReserves } from '@/shared/api/room/room'
+import { RoomDTO } from '@/shared/api/room/room'
 
 export interface HotelProps {
   children?: React.ReactNode
@@ -17,7 +17,7 @@ export interface HotelProps {
   onEdit: (room: RoomDTO) => void
 }
 
-export const Room = ({ className, room, onDelete, onEdit }: HotelProps) => {
+export const Room = ({ className, room, onEdit }: HotelProps) => {
   const { id, title, quantity, price, comment } = room
 
   return (
