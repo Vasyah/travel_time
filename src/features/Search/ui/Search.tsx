@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react'
+import React, { FC, useEffect, useState } from 'react'
 import { Button } from '@consta/uikit/Button'
 import { Select } from '@consta/uikit/Select'
 import { DatePicker } from '@consta/uikit/DatePicker'
@@ -35,14 +35,22 @@ export const SearchFeature: FC<SearchFeatureProps> = (
       router.push('/reservation')
     }
 
-    if (filter || category || quantity) {
+    useEffect(() => {
       changeTravelFilter({
-        type: category?.label,
-        start: filter?.start_time,
-        end: filter?.end_time,
-        quantity: quantity,
+        type: category?.label ?? undefined,
+        start: filter?.start_time ?? undefined,
+        end: filter?.end_time ?? undefined,
+        quantity: quantity ?? undefined,
       })
-    }
+    , [filter, category, quantity]})
+    // if (filter || category || quantity) {
+    //   changeTravelFilter({
+    //     type: category?.label,
+    //     start: filter?.start_time,
+    //     end: filter?.end_time,
+    //     quantity: quantity,
+    //   })
+    // }
   }
 
   return (

@@ -225,8 +225,8 @@ export const HotelInfo: FC<HotelInfoProps> = ({
         className={cx.fields}
       />
       <FormButtons
-        onDelete={() =>
-          currentReserve?.hotel && onDelete(currentReserve?.hotel.id)
+        onDelete={isEdit ?() =>
+          currentReserve?.hotel && onDelete(currentReserve?.hotel.id) : undefined
         }
         deleteText={'Удалить отель'}
         isEdit={isEdit}

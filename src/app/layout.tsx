@@ -59,7 +59,7 @@ export default function RootLayout({
   const [isCalendarOpen, setIsCalendarOpen] = useState(false)
   const [collapsed, setCollapsed] = useState(false)
 
-  const currentDate = moment().locale('ru').format('ddd, MMMM D YYYY')
+  const currentDate = moment().locale('ru').format('ddd, d MMMM  YYYY')
 
   return (
     <html lang="en">

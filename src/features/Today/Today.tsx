@@ -26,9 +26,9 @@ export const Today = ({
       <Text size="xl" view={'success'}>
         Сегодня
       </Text>
-      <div className={cx.dateContainer}>
-        <Text size="2xl" view={'success'} cursor={'pointer'} onClick={onToggle}>
-          {currentDate}
+      <div className={styles.dateContainer}>
+        <Text size="2xl" view={'success'} cursor={'pointer'} onClick={onToggle} className={styles.currentDate}>
+          <span>{currentDate}</span>
           <FaCaretDown size={14} />
         </Text>
         <DateTime type="date" className={cn(cx.date, { [cx.open]: open })} />

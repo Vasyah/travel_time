@@ -17,3 +17,7 @@
     opacity: 1;
     visibility: visible;
 }
+
+.currentDate {
+    text-transform: capitalize;
+}
