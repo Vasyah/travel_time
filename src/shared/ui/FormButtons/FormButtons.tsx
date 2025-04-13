@@ -65,7 +65,7 @@ export const FormButtons: FC<FormButtonsProps> = ({
         <GridItem style={{ alignSelf: "end" }}>
           <TravelButton
             size="m"
-            label="Добавить"
+            label={isEdit ? "Сохранить" : "Добавить"}
             onClick={onAccept}
             loading={isLoading}
           />

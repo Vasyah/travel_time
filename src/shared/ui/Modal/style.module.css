@@ -35,3 +35,10 @@
 .loader {
     min-height: 92vh;
 }
+
+.close {
+    position: absolute !important;
+    right: 40px;
+    top: 34px;
+    cursor: pointer;
+}

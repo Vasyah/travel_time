@@ -72,15 +72,11 @@ export const RoomInfo: FC<RoomInfoProps> = ({
     onAccept(serializedData);
   };
 
-  const onDeleteCb = () => {
-    if (isEdit) {
-      return;
-    }
-  };
-
   return (
     <>
-      <FormTitle>Добавление номера</FormTitle>
+      <FormTitle>
+        {isEdit ? "Добавление номера" : "Редактирование номера"}
+      </FormTitle>
       <Controller
         name="hotel_id"
         control={control}

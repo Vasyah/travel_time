@@ -94,7 +94,9 @@ export const HotelInfo: FC<HotelInfoProps> = ({
   return (
     <>
       {/*{isLoading && <FullWidthLoader />}*/}
-      <FormTitle>Добавление отеля</FormTitle>
+      <FormTitle>
+        {isEdit ? "Редактирование отеля" : "Добавление отеля"}
+      </FormTitle>
       <Controller
         name="title"
         control={control}
