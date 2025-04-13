@@ -1,15 +1,15 @@
-import React, { FC } from 'react'
-import { Modal } from '@/shared/ui/Modal/Modal'
-import { CurrentReserveType, Nullable } from '@/shared/api/reserve/reserve'
-import { ReserveInfo } from '@/features/ReserveInfo/ui/ReserveInfo'
+import React, { FC } from "react";
+import { Modal } from "@/shared/ui/Modal/Modal";
+import { CurrentReserveType, Nullable } from "@/shared/api/reserve/reserve";
+import { ReserveInfo } from "@/features/ReserveInfo/ui/ReserveInfo";
 
 export interface ReserveModalProps {
-  isOpen: boolean
-  onClose: () => void
-  onAccept: (args?: any) => void
-  onDelete?: (id: string) => void
-  currentReserve?: Nullable<CurrentReserveType>
-  isLoading?: boolean
+  isOpen: boolean;
+  onClose: () => void;
+  onAccept: (args?: any) => void;
+  onDelete?: (id: string) => void;
+  currentReserve?: Nullable<CurrentReserveType>;
+  isLoading?: boolean;
 }
 
 export const ReserveModal: FC<ReserveModalProps> = ({
@@ -27,6 +27,7 @@ export const ReserveModal: FC<ReserveModalProps> = ({
       // onClickOutside={onClose}
       onEsc={onClose}
       loading={isLoading}
+      onClose={onClose}
     >
       <ReserveInfo
         isEdit={!!currentReserve?.reserve?.id}
@@ -37,5 +38,5 @@ export const ReserveModal: FC<ReserveModalProps> = ({
         isLoading={isLoading}
       />
     </Modal>
-  )
-}
+  );
+};
