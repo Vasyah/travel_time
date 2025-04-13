@@ -1,35 +1,35 @@
-'use client'
+"use client";
 
-import { Geist, Geist_Mono } from 'next/font/google'
-import { Theme, ThemePreset } from '@consta/uikit/Theme'
-import { LayoutExampleBig } from '@/ui/Header/Header'
-import React, { useState } from 'react'
-import { TravelMenu } from '@/shared/ui/Menu/Menu'
-import '@consta/themes/Theme_color_highlightsGreenDefault'
-import '../shared/ui/globals.css'
-import '@/features/lib/zIndexes.css'
-import { SearchFeature } from '@/features/Search/ui/Search'
-import { QueryClientProvider } from '@tanstack/react-query'
-import { queryClient } from '@/shared/config/reactQuery'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import moment from 'moment'
-import { Col, ConfigProvider, Flex, Layout, Row } from 'antd'
-import { SafeHydrate } from '@/components/SafeHydrate/SafeHydrate'
-import { Today } from '@/features/Today/Today'
-import styles from './layout.module.css'
-import 'moment/locale/ru'
+import { Geist, Geist_Mono } from "next/font/google";
+import { Theme, ThemePreset } from "@consta/uikit/Theme";
+import { LayoutExampleBig } from "@/ui/Header/Header";
+import React, { useState } from "react";
+import { TravelMenu } from "@/shared/ui/Menu/Menu";
+import "@consta/themes/Theme_color_highlightsGreenDefault";
+import "../shared/ui/globals.css";
+import "@/features/lib/zIndexes.css";
+import { SearchFeature } from "@/features/Search/ui/Search";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "@/shared/config/reactQuery";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import moment from "moment";
+import { Col, ConfigProvider, Flex, Layout, Row } from "antd";
+import { SafeHydrate } from "@/components/SafeHydrate/SafeHydrate";
+import { Today } from "@/features/Today/Today";
+import styles from "./layout.module.css";
+import "moment/locale/ru";
 
-moment.locale('ru') // Для локализации дат
+moment.locale("ru"); // Для локализации дат
 
 const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-})
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
 
 const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
-})
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
 //
 // export const metadata: Metadata = {
 //     title: "Create Next App",
@@ -38,28 +38,28 @@ const geistMono = Geist_Mono({
 
 const preset: ThemePreset = {
   color: {
-    primary: 'highlightsGreenDefault', //основная цветовая схема, указано значение модификатора _color
-    accent: 'highlightsGreenDefault', //акцентная цветовая схема, указано значение модификатора _color
-    invert: 'highlightsGreenDefault', //инвертная цветовая схема, указывается значение модификатора _color
+    primary: "highlightsGreenDefault", //основная цветовая схема, указано значение модификатора _color
+    accent: "highlightsGreenDefault", //акцентная цветовая схема, указано значение модификатора _color
+    invert: "highlightsGreenDefault", //инвертная цветовая схема, указывается значение модификатора _color
   },
-  control: 'gpnDefault', // указывается значение модификатора _control
-  font: 'gpnDefault', // указывается значение модификатора _font
-  size: 'gpnDefault', // указывается значение модификатора _size
-  space: 'gpnDefault', // указывается значение модификатора _space
-  shadow: 'gpnDefault', // указывается значение модификатора _shadow
-}
+  control: "gpnDefault", // указывается значение модификатора _control
+  font: "gpnDefault", // указывается значение модификатора _font
+  size: "gpnDefault", // указывается значение модификатора _size
+  space: "gpnDefault", // указывается значение модификатора _space
+  shadow: "gpnDefault", // указывается значение модификатора _shadow
+};
 
-moment.locale('ru')
+moment.locale("ru");
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
-  const [isCalendarOpen, setIsCalendarOpen] = useState(false)
-  const [collapsed, setCollapsed] = useState(false)
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
 
-  const currentDate = moment().locale('ru').format('ddd, d MMMM  YYYY')
+  const currentDate = moment().locale("ru").format("dddd, D MMMM YYYY");
 
   return (
     <html lang="en">
@@ -71,12 +71,12 @@ export default function RootLayout({
           theme={{
             token: {
               // Seed Token
-              colorLink: '#00b96b',
-              colorPrimary: '#00b96b',
+              colorLink: "#00b96b",
+              colorPrimary: "#00b96b",
               borderRadius: 2,
 
               // Alias Token
-              colorBgContainer: '#f6ffed',
+              colorBgContainer: "#f6ffed",
             },
           }}
         >
@@ -86,41 +86,43 @@ export default function RootLayout({
                 <Layout>
                   <LayoutExampleBig />
                   <Row
-                    style={{ paddingRight: '1rem', backgroundColor: '#fff' }}
+                    style={{ paddingRight: "1rem", backgroundColor: "#fff" }}
                     gutter={[16, 16]}
                     wrap={false}
                   >
                     <Col
-                      xs={{ flex: 'auto', order: 1 }}
-                      sm={{ flex: 'auto', order: 1 }}
-                      xl={{ flex: '80px', order: 0 }}
+                      xs={{ flex: "auto", order: 1 }}
+                      sm={{ flex: "auto", order: 1 }}
+                      xl={{ flex: "80px", order: 0 }}
                       // flex={156}
                       // order={1}
                       style={{
-                        backgroundColor: '#fff',
-                        borderRight: '1px solid var(--color-bg-border)',
+                        backgroundColor: "#fff",
+                        borderRight: "1px solid var(--color-bg-border)",
                       }}
                     >
                       <TravelMenu />
                     </Col>
-                    <Col flex="auto" style={{ padding: '0 1rem' }}>
+                    <Col flex="auto" style={{ padding: "0 1rem" }}>
                       <Layout
                         className={styles.content}
-                        style={{ backgroundColor: '#fff' }}
+                        style={{ backgroundColor: "#fff" }}
                       >
                         <Flex
-                          gap={'middle'}
+                          gap={"middle"}
                           wrap
                           className={styles.widgetContainer}
                         >
-                          <div style={{ paddingTop: '1rem' }}>
+                          <div style={{ paddingTop: "1rem" }}>
                             <SearchFeature />
                           </div>
                           <Flex vertical>
                             <Today
                               currentDate={currentDate}
                               open={isCalendarOpen}
-                              onToggle={() => setIsCalendarOpen(prev => !prev)}
+                              onToggle={() =>
+                                setIsCalendarOpen((prev) => !prev)
+                              }
                             />
                           </Flex>
                         </Flex>
@@ -136,5 +138,5 @@ export default function RootLayout({
         </ConfigProvider>
       </body>
     </html>
-  )
+  );
 }

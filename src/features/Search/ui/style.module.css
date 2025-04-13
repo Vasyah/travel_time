@@ -1,34 +1,16 @@
-.container {
-    box-shadow: var(--shadow-group);
-    border-radius: var(--control-radius);
-    margin-bottom: 0.75rem;
-    padding: 0 var(--space-l);
-}
-
-.hotelIcon {
-    /*padding-bottom: var(--space-l);*/
-}
-
-.hotelInfo {
-    display: flex;
-    align-items: end;
-    min-height: 100%;
-    gap: 1rem;
-    padding-bottom: var(--space-l);
-}
-
-.title {
-    transform-origin: bottom left;
+.type {
+    min-height: 40px;
     min-width: 200px;
-    transform: rotate(-90deg);
-    color: var(--color-typo-success);
-    padding-left: 0.5rem;
-    margin-top: 1rem;
+    max-width: 200px;
 }
 
-.stars {
-    margin-right: 1rem;
-    transform-origin: bottom left;
-    /*transform: rotate(45deg);*/
-    /*display: flex;*/
+.ant-select-selector {
+    background: var(--color-control-bg-default) !important;
+    border: var(--control-border-width) solid var(--container-border-color) !important;
+    font-size: 30px;
+    background-color: #000;
+}
+
+.dropdown {
+    font-size: 30px !important;
 }

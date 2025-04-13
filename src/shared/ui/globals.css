@@ -29,3 +29,18 @@ body {
 .react-calendar-timeline .rct-header-root {
     background-color: transparent !important;
 }
+
+
+.ant-select-selector {
+    background: var(--color-control-bg-default) !important;
+    border: var(--control-border-width) solid #A6B1B8 !important;
+    font-size: 18px !important;
+    border-radius: 0 !important;
+
+}
+
+/* Для элементов списка */
+.ant-select-dropdown .ant-select-item {
+    font-size: 16px !important;
+}
+

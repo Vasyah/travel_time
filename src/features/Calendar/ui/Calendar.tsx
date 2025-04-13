@@ -1,8 +1,8 @@
-import React, { useCallback, useMemo, useState } from 'react'
-import '../../../app/reservation/calendar.css'
-import hotelImage from '../hotel.svg'
-import cx from './style.module.css'
-import { HotelDTO } from '@/shared/api/hotel/hotel'
+import React, { useCallback, useMemo, useState } from "react";
+import "../../../app/reservation/calendar.css";
+import hotelImage from "../hotel.svg";
+import cx from "./style.module.css";
+import { HotelDTO } from "@/shared/api/hotel/hotel";
 import {
   CurrentReserveType,
   Nullable,
@@ -11,78 +11,80 @@ import {
   useCreateReserve,
   useDeleteReserve,
   useUpdateReserve,
-} from '@/shared/api/reserve/reserve'
+} from "@/shared/api/reserve/reserve";
 import {
   Room,
   useCreateRoom,
   useGetRoomsWithReservesByHotel,
-} from '@/shared/api/room/room'
+} from "@/shared/api/room/room";
 import {
   CustomHeader,
   SidebarHeader,
   Timeline,
   TimelineHeaders,
-} from 'react-calendar-timeline'
-import { useQueryClient } from '@tanstack/react-query'
-import { QUERY_KEYS } from '@/shared/config/reactQuery'
-import { Flex } from 'antd'
-import { getDateFromUnix } from '@/shared/lib/date'
-import { FullWidthLoader } from '@/shared/ui/Loader/Loader'
-import moment from 'moment'
-import { CiSquarePlus } from 'react-icons/ci'
-import { Button } from 'antd'
-import { BiSortDown, BiSortUp } from 'react-icons/bi'
-import { showToast } from '@/shared/ui/Toast/Toast'
-import { nanoid } from 'nanoid'
-import { RoomModal } from '@/features/RoomInfo/ui/RoomModal'
-import { ReserveModal } from '@/features/ReserveInfo/ui/ReserveModal'
-import 'moment/locale/ru'
-import { Interval } from '@/features/Calendar/ui/Intervals'
-import { $hotelsFilter } from '@/shared/models/hotels'
-import { useUnit } from 'effector-react/compat'
-import { HotelImage } from '@/shared/ui/Hotel/HotelImage'
-import { HotelRating } from '@/shared/ui/Hotel/HotelRating'
-import { HotelTitle } from '@/shared/ui/Hotel/HotelTitle'
-import { HotelTelegram } from '@/shared/ui/Hotel/HotelTelegram' // Подключаем русскую локализацию
+} from "react-calendar-timeline";
+import { useQueryClient } from "@tanstack/react-query";
+import { QUERY_KEYS } from "@/shared/config/reactQuery";
+import { Flex } from "antd";
+import { getDateFromUnix } from "@/shared/lib/date";
+import { FullWidthLoader } from "@/shared/ui/Loader/Loader";
+import moment from "moment";
+import { CiSquarePlus } from "react-icons/ci";
+import { Button } from "antd";
+import { BiSortDown, BiSortUp } from "react-icons/bi";
+import { showToast } from "@/shared/ui/Toast/Toast";
+import { nanoid } from "nanoid";
+import { RoomModal } from "@/features/RoomInfo/ui/RoomModal";
+import { ReserveModal } from "@/features/ReserveInfo/ui/ReserveModal";
+import "moment/locale/ru";
+import { Interval } from "@/features/Calendar/ui/Intervals";
+import { $hotelsFilter } from "@/shared/models/hotels";
+import { useUnit } from "effector-react/compat";
+import { HotelImage } from "@/shared/ui/Hotel/HotelImage";
+import { HotelRating } from "@/shared/ui/Hotel/HotelRating";
+import { HotelTitle } from "@/shared/ui/Hotel/HotelTitle";
+import { HotelTelegram } from "@/shared/ui/Hotel/HotelTelegram";
+import { ResponsesNothingFound } from "@consta/uikit/ResponsesNothingFound"; // Подключаем русскую локализацию
+import { Button as ConstaButton } from "@consta/uikit/Button"; // Подключаем русскую локализацию
 
 const keys = {
-  groupIdKey: 'id',
-  groupTitleKey: 'title',
-  groupRightTitleKey: 'rightTitle',
-  itemIdKey: 'id',
-  itemTitleKey: 'title',
-  itemDivTitleKey: 'title',
-  itemGroupKey: 'group',
-  itemTimeStartKey: 'start',
-  itemTimeEndKey: 'end',
-  groupLabelKey: 'title',
-}
+  groupIdKey: "id",
+  groupTitleKey: "title",
+  groupRightTitleKey: "rightTitle",
+  itemIdKey: "id",
+  itemTitleKey: "title",
+  itemDivTitleKey: "title",
+  itemGroupKey: "group",
+  itemTimeStartKey: "start",
+  itemTimeEndKey: "end",
+  groupLabelKey: "title",
+};
 
 export interface CalendarProps {
-  hotel: HotelDTO
-  onHotelClick?: (hotel_id: string) => void
+  hotel: HotelDTO;
+  onHotelClick?: (hotel_id: string) => void;
 }
 
-const DAY = 24 * 60 * 60 * 1000
-const WEEK = DAY * 7
-const THREE_MONTHS = DAY * 30 * 24
+const DAY = 24 * 60 * 60 * 1000;
+const WEEK = DAY * 7;
+const THREE_MONTHS = DAY * 30 * 24;
 // const THREE_MONTHS = 5 * 365.24 * 86400 * 1000;
 
 export const Calendar = ({ hotel, onHotelClick }: CalendarProps) => {
-  const { rating } = hotel
-  const filter = useUnit($hotelsFilter)
-  const queryClient = useQueryClient()
+  const { rating } = hotel;
+  const filter = useUnit($hotelsFilter);
+  const queryClient = useQueryClient();
   const { data, isFetching: isRoomLoading } = useGetRoomsWithReservesByHotel(
     hotel.id,
     filter,
-    true
-  )
+    true,
+  );
 
   const [currentReserve, setCurrentReserve] =
-    useState<Nullable<CurrentReserveType>>(null)
-  const [isRoomOpen, setIsRoomOpen] = useState<boolean>(false)
-  const [isReserveOpen, setIsReserveOpen] = useState<boolean>(false)
-  const [sort, setSort] = useState<'asc' | 'desc'>('asc')
+    useState<Nullable<CurrentReserveType>>(null);
+  const [isRoomOpen, setIsRoomOpen] = useState<boolean>(false);
+  const [isReserveOpen, setIsReserveOpen] = useState<boolean>(false);
+  const [sort, setSort] = useState<"asc" | "desc">("asc");
 
   const {
     isPending: isReserveCreating,
@@ -92,37 +94,37 @@ export const Calendar = ({ hotel, onHotelClick }: CalendarProps) => {
     () => {
       queryClient.invalidateQueries({
         queryKey: [...QUERY_KEYS.roomsWithReservesByHotel, hotel.id],
-      })
-      setCurrentReserve(null)
-      setIsReserveOpen(false)
+      });
+      setCurrentReserve(null);
+      setIsReserveOpen(false);
     },
-    e => {
-      showToast(`Ошибка при обновлении брони ${e}`, 'error')
-    }
-  )
+    (e) => {
+      showToast(`Ошибка при обновлении брони ${e}`, "error");
+    },
+  );
 
   const { isPending: isReserveUpdating, mutate: updateReserve } =
     useUpdateReserve(
       () => {
         queryClient.invalidateQueries({
           queryKey: [...QUERY_KEYS.roomsWithReservesByHotel, hotel.id],
-        })
-        setCurrentReserve(null)
-        setIsReserveOpen(false)
+        });
+        setCurrentReserve(null);
+        setIsReserveOpen(false);
       },
-      e => {
-        showToast('Ошибка при обновлении брони', 'error')
-      }
-    )
+      (e) => {
+        showToast("Ошибка при обновлении брони", "error");
+      },
+    );
 
   const { isPending: isReserveDeleting, mutateAsync: deleteReserve } =
     useDeleteReserve(() => {
       queryClient.invalidateQueries({
         queryKey: [...QUERY_KEYS.roomsWithReservesByHotel, hotel.id],
-      })
-      setCurrentReserve(null)
-      setIsReserveOpen(false)
-    })
+      });
+      setCurrentReserve(null);
+      setIsReserveOpen(false);
+    });
 
   const {
     isPending: isRoomCreating,
@@ -132,48 +134,48 @@ export const Calendar = ({ hotel, onHotelClick }: CalendarProps) => {
     () => {
       queryClient.invalidateQueries({
         queryKey: [...QUERY_KEYS.roomsWithReservesByHotel, hotel.id],
-      })
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.roomsByHotel })
-      setCurrentReserve(null)
-      setIsRoomOpen(false)
-      showToast('Номер успешно добавлен')
+      });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.roomsByHotel });
+      setCurrentReserve(null);
+      setIsRoomOpen(false);
+      showToast("Номер успешно добавлен");
     },
-    e => {
-      showToast(`Ошибка при добавлении номера ${e}`, 'error')
-    }
-  )
+    (e) => {
+      showToast(`Ошибка при добавлении номера ${e}`, "error");
+    },
+  );
 
   const onRoomCreate = useCallback((room: Room) => {
-    createRoom(room)
-    console.log('Создаю ROOM', room)
-  }, [])
+    createRoom(room);
+    console.log("Создаю ROOM", room);
+  }, []);
 
   const onReserveAccept = async (reserve: Reserve) => {
-    const isEdit = currentReserve?.reserve?.id
+    const isEdit = currentReserve?.reserve?.id;
 
     if (isEdit) {
-      console.log('Пытаюсь обновить запись')
-      await updateReserve(reserve as ReserveDTO)
+      console.log("Пытаюсь обновить запись");
+      await updateReserve(reserve as ReserveDTO);
 
-      return
+      return;
     }
 
-    await createReserve(reserve)
-  }
+    await createReserve(reserve);
+  };
 
   const onReserveDelete = async (id: string) => {
-    console.log('Пытаюсь удалить запись')
-    await deleteReserve(id)
+    console.log("Пытаюсь удалить запись");
+    await deleteReserve(id);
 
-    return
-  }
+    return;
+  };
 
   const onClose = () => {
-    queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.hotelsForRoom] })
-    queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.roomsByHotel] })
-    setIsReserveOpen(false)
-    setCurrentReserve(null)
-  }
+    queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.hotelsForRoom] });
+    queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.roomsByHotel] });
+    setIsReserveOpen(false);
+    setCurrentReserve(null);
+  };
 
   const hotelRooms = useMemo(() => {
     let rooms =
@@ -181,23 +183,31 @@ export const Calendar = ({ hotel, onHotelClick }: CalendarProps) => {
         id,
         title: `${title}`,
         ...room,
-      })) ?? []
+      })) ?? [];
+
+    if (filter?.quantity) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      rooms = data?.filter((room) => room?.quantity >= filter?.quantity) ?? [];
+    }
 
     rooms = rooms.sort((a, b) => {
-      if (sort === 'asc') {
-        return a.title.localeCompare(b.title, undefined, { caseFirst: 'upper' })
+      if (sort === "asc") {
+        return a.title.localeCompare(b.title, undefined, {
+          caseFirst: "upper",
+        });
       } else {
         return b.title.localeCompare(b.title, undefined, {
-          caseFirst: 'upper',
-          sensitivity: 'case',
-        })
+          caseFirst: "upper",
+          sensitivity: "case",
+        });
       }
-    })
+    });
 
-    return rooms
-  }, [data, sort])
+    return rooms;
+  }, [data, sort]);
   //
-  let hotelReserves: Array<ReserveDTO & { group: string }> = []
+  let hotelReserves: Array<ReserveDTO & { group: string }> = [];
 
   data?.forEach(({ id: room_id, reserves }) => {
     const reservesTmp = reserves.map(({ end, start, ...reserve }) => ({
@@ -208,12 +218,12 @@ export const Calendar = ({ hotel, onHotelClick }: CalendarProps) => {
       end: getDateFromUnix(end),
       // start: start,
       start: getDateFromUnix(start),
-    }))
+    }));
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-expect-error
-    hotelReserves = hotelReserves.concat(reservesTmp)
-  })
+    hotelReserves = hotelReserves.concat(reservesTmp);
+  });
 
   // @ts-nocheck
   const itemRenderer = ({
@@ -222,33 +232,33 @@ export const Calendar = ({ hotel, onHotelClick }: CalendarProps) => {
     getItemProps,
     getResizeProps,
   }: {
-    item: any
-    itemContext: any
-    getItemProps: (item: any) => any
-    getResizeProps: (item: any) => any
+    item: any;
+    itemContext: any;
+    getItemProps: (item: any) => any;
+    getResizeProps: (item: any) => any;
   }) => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-expect-error
-    const { left: leftResizeProps, right: rightResizeProps } = getResizeProps()
+    const { left: leftResizeProps, right: rightResizeProps } = getResizeProps();
 
     const onItemClick = (reserve: ReserveDTO, hotel: HotelDTO) => {
-      const room = hotelRooms.find(room => room.id === reserve?.room_id)
+      const room = hotelRooms.find((room) => room.id === reserve?.room_id);
 
       if (room) {
-        setCurrentReserve({ room, reserve, hotel })
-        setIsReserveOpen(true)
+        setCurrentReserve({ room, reserve, hotel });
+        setIsReserveOpen(true);
       }
-    }
+    };
 
     return (
       <div
         {...getItemProps(item.itemProps)}
         key={nanoid()}
         onDoubleClick={() => {
-          onItemClick(item, hotel)
+          onItemClick(item, hotel);
         }}
       >
-        {itemContext.useResizeHandle ? <div {...leftResizeProps} /> : ''}
+        {itemContext.useResizeHandle ? <div {...leftResizeProps} /> : ""}
         {/*<Tooltip*/}
         {/*  title={*/}
         {/*    <Grid>*/}
@@ -267,21 +277,31 @@ export const Calendar = ({ hotel, onHotelClick }: CalendarProps) => {
         </div>
         {/*</Tooltip>*/}
 
-        {itemContext.useResizeHandle ? <div {...rightResizeProps} /> : ''}
+        {itemContext.useResizeHandle ? <div {...rightResizeProps} /> : ""}
       </div>
-    )
-  }
+    );
+  };
 
-  const isLoading = isRoomLoading || isRoomCreating
-  const reserveLoading = isReserveCreating || isReserveUpdating
+  const isLoading = isRoomLoading || isRoomCreating;
+  const reserveLoading = isReserveCreating || isReserveUpdating;
 
-  const defaultTimeStart = moment().add(-15, 'day')
-  const defaultTimeEnd = moment().add(15, 'day')
+  const defaultTimeStart = filter?.start
+    ? getDateFromUnix(filter?.start).add(-2, "day")
+    : moment().add(-15, "day");
 
-  const [currentUnit, setCurrentUnit] = useState('day')
+  const defaultTimeEnd = filter?.start
+    ? getDateFromUnix(filter?.start).add(15, "day")
+    : moment().add(15, "day");
+
+  const [currentUnit, setCurrentUnit] = useState("day");
+
+  const onCreate = () => {
+    setCurrentReserve({ hotel: hotel });
+    setIsRoomOpen(true);
+  };
   return (
     <>
-      <Flex gap={'middle'} className={cx.container}>
+      <Flex gap={"middle"} className={cx.container}>
         {isLoading && <FullWidthLoader />}
         <div className={cx.hotelInfo}>
           <HotelImage
@@ -311,156 +331,165 @@ export const Calendar = ({ hotel, onHotelClick }: CalendarProps) => {
             </div>
           </div>
         </div>
-        <div style={{ overflow: 'auto' }}>
-          <Timeline
-            onZoom={(context, unit) => setCurrentUnit(unit)}
-            className={'travel-timeline'}
-            groups={hotelRooms}
-            items={hotelReserves}
-            keys={keys}
-            sidebarWidth={230}
-            canMove
-            canResize="both"
-            canSelect
-            itemTouchSendsClick={true}
-            stackItems={false}
-            itemHeightRatio={0.75}
-            defaultTimeStart={defaultTimeStart as unknown as number}
-            defaultTimeEnd={defaultTimeEnd as unknown as number}
-            minZoom={WEEK}
-            maxZoom={THREE_MONTHS}
-            onCanvasDoubleClick={(groupId, time, e) => {
-              const room = hotelRooms?.find(group => group.id === groupId)
-              // setIsHotelReserve(true)
-              console.log(
-                room,
-                groupId,
-                time,
-                e,
-                getDateFromUnix(time).unix(),
-                getDateFromUnix(time).add(2, 'day').unix()
-              )
-              if (room) {
-                setCurrentReserve({
+        {!hotelRooms.length && !isLoading && (
+          <ResponsesNothingFound
+            actions={<></>}
+            title={"Нет ни одного номера"}
+            description={
+              <ConstaButton label={"Добавить номер"} onClick={onCreate} />
+            }
+            size={"m"}
+          />
+        )}
+        {!!hotelRooms?.length && (
+          <div style={{ overflow: "auto" }}>
+            <Timeline
+              onZoom={(context, unit) => setCurrentUnit(unit)}
+              className={"travel-timeline"}
+              groups={hotelRooms}
+              items={hotelReserves}
+              keys={keys}
+              sidebarWidth={230}
+              canMove
+              canResize="both"
+              canSelect
+              itemTouchSendsClick={true}
+              stackItems={false}
+              itemHeightRatio={0.75}
+              defaultTimeStart={defaultTimeStart as unknown as number}
+              defaultTimeEnd={defaultTimeEnd as unknown as number}
+              minZoom={WEEK}
+              maxZoom={THREE_MONTHS}
+              onCanvasDoubleClick={(groupId, time, e) => {
+                const room = hotelRooms?.find((group) => group.id === groupId);
+                // setIsHotelReserve(true)
+                console.log(
                   room,
-                  hotel,
-                  reserve: {
-                    start: time,
-                    end: getDateFromUnix(time).add(2, 'year').unix(),
-                  },
-                })
-                setIsReserveOpen(true)
-              }
-            }}
-            itemRenderer={itemRenderer}
-          >
-            <TimelineHeaders>
-              <SidebarHeader>
-                {({ getRootProps }) => {
-                  return (
-                    <div {...getRootProps()} className={cx.calendarHeader}>
-                      <Button
-                        icon={<CiSquarePlus size={24} />}
-                        type={'link'}
-                        onClick={() => {
-                          setCurrentReserve({ hotel: hotel })
-                          setIsRoomOpen(true)
-                        }}
-                      />
-                      {sort === 'asc' ? (
+                  groupId,
+                  time,
+                  e,
+                  getDateFromUnix(time).unix(),
+                  getDateFromUnix(time).add(2, "day").unix(),
+                );
+                if (room) {
+                  setCurrentReserve({
+                    room,
+                    hotel,
+                    reserve: {
+                      start: time,
+                      end: getDateFromUnix(time).add(2, "year").unix(),
+                    },
+                  });
+                  setIsReserveOpen(true);
+                }
+              }}
+              itemRenderer={itemRenderer}
+            >
+              <TimelineHeaders>
+                <SidebarHeader>
+                  {({ getRootProps }) => {
+                    return (
+                      <div {...getRootProps()} className={cx.calendarHeader}>
                         <Button
-                          icon={<BiSortDown size={24} />}
-                          type={'link'}
-                          title={'В алфавитном порядке А-Я'}
-                          onClick={() => {
-                            setSort('desc')
-                          }}
+                          icon={<CiSquarePlus size={24} />}
+                          type={"link"}
+                          onClick={onCreate}
                         />
-                      ) : (
-                        <Button
-                          icon={<BiSortUp size={24} />}
-                          type={'link'}
-                          title={'В алфавитном порядке А-Я'}
-                          onClick={() => {
-                            setSort('asc')
-                          }}
-                        />
-                      )}
-                    </div>
-                  )
-                }}
-              </SidebarHeader>
-              <CustomHeader unit={currentUnit === 'day' ? 'month' : 'year'}>
-                {({
-                  headerContext: { intervals, unit },
-
-                  getRootProps,
-                  getIntervalProps,
-                  showPeriod,
-                }) => {
-                  const isYear = unit === 'year'
-                  return (
-                    <div {...getRootProps()}>
-                      {intervals.map(interval => {
-                        const dateText = isYear
-                          ? moment(interval.startTime.toDate()).format('YYYY')
-                          : moment(interval.startTime.toDate()).format('MMM')
-
-                        return (
-                          <Interval
-                            interval={interval}
-                            unit={unit}
-                            getIntervalProps={getIntervalProps}
-                            getRootProps={getRootProps}
-                            dateText={dateText}
-                            showPeriod={showPeriod}
-                            intervalStyles={{
-                              backgroundColor: 'var(--color-bg-success)',
-                              color: 'var(--color-control-typo-primary)',
+                        {sort === "asc" ? (
+                          <Button
+                            icon={<BiSortDown size={24} />}
+                            type={"link"}
+                            title={"В алфавитном порядке А-Я"}
+                            onClick={() => {
+                              setSort("desc");
                             }}
-                            key={nanoid()}
                           />
-                        )
-                      })}
-                    </div>
-                  )
-                }}
-              </CustomHeader>
-              <CustomHeader headerData={{ someData: 'data' }}>
-                {({
-                  headerContext: { intervals, unit },
-                  getRootProps,
-                  getIntervalProps,
-                  showPeriod,
-                }) => {
-                  return (
-                    <div {...getRootProps()}>
-                      {intervals.map(interval => {
-                        const isMonth = unit === 'month'
-
-                        const dateText = isMonth
-                          ? moment(interval.startTime.toDate()).format('MMM')
-                          : interval.startTime.format('DD')
-
-                        return (
-                          <Interval
-                            interval={interval}
-                            unit={unit}
-                            getIntervalProps={getIntervalProps}
-                            getRootProps={getRootProps}
-                            dateText={dateText}
-                            showPeriod={showPeriod}
-                            key={nanoid()}
+                        ) : (
+                          <Button
+                            icon={<BiSortUp size={24} />}
+                            type={"link"}
+                            title={"В алфавитном порядке А-Я"}
+                            onClick={() => {
+                              setSort("asc");
+                            }}
                           />
-                        )
-                      })}
-                    </div>
-                  )
-                }}
-              </CustomHeader>
-            </TimelineHeaders>
-          </Timeline>
-        </div>
+                        )}
+                      </div>
+                    );
+                  }}
+                </SidebarHeader>
+                <CustomHeader unit={currentUnit === "day" ? "month" : "year"}>
+                  {({
+                    headerContext: { intervals, unit },
+
+                    getRootProps,
+                    getIntervalProps,
+                    showPeriod,
+                  }) => {
+                    const isYear = unit === "year";
+                    return (
+                      <div {...getRootProps()}>
+                        {intervals.map((interval) => {
+                          const dateText = isYear
+                            ? moment(interval.startTime.toDate()).format("YYYY")
+                            : moment(interval.startTime.toDate()).format("MMM");
+
+                          return (
+                            <Interval
+                              interval={interval}
+                              unit={unit}
+                              getIntervalProps={getIntervalProps}
+                              getRootProps={getRootProps}
+                              dateText={dateText}
+                              showPeriod={showPeriod}
+                              intervalStyles={{
+                                backgroundColor: "var(--color-bg-success)",
+                                color: "var(--color-control-typo-primary)",
+                              }}
+                              key={nanoid()}
+                            />
+                          );
+                        })}
+                      </div>
+                    );
+                  }}
+                </CustomHeader>
+                <CustomHeader headerData={{ someData: "data" }}>
+                  {({
+                    headerContext: { intervals, unit },
+                    getRootProps,
+                    getIntervalProps,
+                    showPeriod,
+                  }) => {
+                    return (
+                      <div {...getRootProps()}>
+                        {intervals.map((interval) => {
+                          const isMonth = unit === "month";
+
+                          const dateText = isMonth
+                            ? moment(interval.startTime.toDate()).format("MMM")
+                            : interval.startTime.format("DD");
+
+                          return (
+                            <Interval
+                              interval={interval}
+                              unit={unit}
+                              getIntervalProps={getIntervalProps}
+                              getRootProps={getRootProps}
+                              dateText={dateText}
+                              showPeriod={showPeriod}
+                              key={nanoid()}
+                            />
+                          );
+                        })}
+                      </div>
+                    );
+                  }}
+                </CustomHeader>
+              </TimelineHeaders>
+            </Timeline>
+          </div>
+        )}
       </Flex>
       <RoomModal
         isOpen={isRoomOpen}
@@ -478,5 +507,5 @@ export const Calendar = ({ hotel, onHotelClick }: CalendarProps) => {
         isLoading={reserveLoading}
       />
     </>
-  )
-}
+  );
+};

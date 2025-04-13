@@ -1,22 +1,22 @@
-export const HOTEL_TYPES: { id: number; label: string }[] = [
+export const HOTEL_TYPES: { value: string; label: string }[] = [
   {
-    label: 'Отели',
-    id: 1,
+    label: "Отели",
+    value: "Отели",
   },
   {
-    label: 'Гостевые дома',
-    id: 2,
+    label: "Гостевые дома",
+    value: "Гостевые дома",
   },
   {
-    label: 'Домики',
-    id: 3,
+    label: "Домики",
+    value: "Домики",
   },
   {
-    label: 'Квартиры',
-    id: 4,
+    label: "Квартиры",
+    value: "Квартиры",
   },
   {
-    label: 'Дом под ключ',
-    id: 5,
+    label: "Дом под ключ",
+    value: "Дом под ключ",
   },
-]
+];

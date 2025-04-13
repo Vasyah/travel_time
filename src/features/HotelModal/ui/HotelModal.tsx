@@ -6,6 +6,7 @@ import {
   Hotel,
   HotelDTO,
   useCreateHotel,
+  useCreateImage,
   useDeleteHotel,
   useUpdateHotel,
 } from '@/shared/api/hotel/hotel'
@@ -43,6 +44,18 @@ export const HotelModal: FC<ReserveModalProps> = ({
       showToast(`Ошибка при добавлении номера ${e}`, 'error')
     }
   )
+  const {
+    isError: isHotelImageError,
+    isPending: isHotelImageCreating,
+    mutateAsync: createImage,
+  } = useCreateImage(
+    () => {
+      showToast('Отель добавлен')
+    },
+    e => {
+      showToast(`Ошибка при добавлении номера ${e}`, 'error')
+    }
+  )
   const { isPending: isHotelUpdating, mutateAsync: updateHotel } =
     useUpdateHotel(() => {
       queryClient.invalidateQueries({
@@ -61,8 +74,32 @@ export const HotelModal: FC<ReserveModalProps> = ({
       showToast('Отель удалён')
     })
 
-  const onCreate = async (hotel: Hotel) => await createHotel(hotel)
-  const onEdit = async (hotel: HotelDTO) => await updateHotel(hotel)
+  const onCreate = async (hotel: Hotel) => {
+    if (hotel?.image_id) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      const { id, file } = hotel?.image_id
+      await createImage(id, file)
+    }
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    const hotelTmp = { ...hotel, image_id: hotel?.image_id?.id }
+    await createHotel(hotelTmp)
+  }
+  const onEdit = async (hotel: HotelDTO) => {
+    if (hotel?.image_id) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      const { id, file } = hotel?.image_id
+      await createImage(id, file)
+    }
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    const hotelTmp = { ...hotel, image_id: hotel?.image_id?.id }
+    await updateHotel(hotel)
+  }
   const onDelete = async (id: string) => await deleteHotel(id)
 
   const isEdit = !!currentReserve?.hotel?.id
