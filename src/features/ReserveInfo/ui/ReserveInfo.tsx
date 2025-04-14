@@ -321,6 +321,7 @@ export const ReserveInfo: FC<ReserveInfoProps> = ({
           placeholder="Введите число"
           label="Количество человек"
           incrementButtons={false}
+          className={cx.fields}
           required
           type={"number"}
         />
@@ -334,6 +335,7 @@ export const ReserveInfo: FC<ReserveInfoProps> = ({
             {...field}
             placeholder="Введите ФИО"
             label="ФИО гостя"
+            className={cx.fields}
             required
             size={FORM_SIZE}
           />
@@ -351,6 +353,7 @@ export const ReserveInfo: FC<ReserveInfoProps> = ({
             label="Номер гостя"
             type={"phone"}
             size={FORM_SIZE}
+            className={cx.fields}
             rightSide={() =>
               formData?.phone ? (
                 <LinkIcon

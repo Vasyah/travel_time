@@ -213,6 +213,7 @@ export const HotelInfo: FC<HotelInfoProps> = ({
           setValue("image_id", { id: nanoid(), file: files[0] });
         }}
         multiple={false}
+        className={cx.fields}
       >
         {({ openFileDialog }) => (
           <>

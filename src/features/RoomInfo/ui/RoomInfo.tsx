@@ -75,7 +75,7 @@ export const RoomInfo: FC<RoomInfoProps> = ({
   return (
     <>
       <FormTitle>
-        {isEdit ? "Добавление номера" : "Редактирование номера"}
+        {isEdit ? "Редактирование номера" : "Добавление номера"}
       </FormTitle>
       <Controller
         name="hotel_id"
@@ -159,6 +159,7 @@ export const RoomInfo: FC<RoomInfoProps> = ({
       <DragNDropField
         onDropFiles={(files) => console.log(files)}
         disabled={loading}
+        className={cx.fields}
       >
         {({ openFileDialog }) => (
           <>
