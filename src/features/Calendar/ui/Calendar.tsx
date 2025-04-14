@@ -185,12 +185,6 @@ export const Calendar = ({ hotel, onHotelClick }: CalendarProps) => {
         ...room,
       })) ?? [];
 
-    if (filter?.quantity) {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
-      rooms = data?.filter((room) => room?.quantity >= filter?.quantity) ?? [];
-    }
-
     rooms = rooms.sort((a, b) => {
       if (sort === "asc") {
         return a.title.localeCompare(b.title, undefined, {
