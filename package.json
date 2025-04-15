@@ -14,6 +14,7 @@
     "@consta/themes": "^1.0.1",
     "@consta/uikit": "^5.17.0",
     "@effector/swc-plugin": "0.6.1-swc1.8.0",
+    "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.48.1",
     "@tanstack/react-query": "^5.66.7",
     "antd": "^5.24.2",

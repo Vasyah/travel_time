@@ -1,0 +1,12 @@
+.title {
+    color: var(--color-typo-brand);
+    margin-bottom: 1rem;
+}
+
+.dropdown {
+    z-index: var(--zIndex-select);
+}
+
+.fields {
+    margin-bottom: .75rem;
+}

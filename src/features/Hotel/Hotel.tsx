@@ -8,13 +8,14 @@ import { HotelImage } from "@/shared/ui/Hotel/HotelImage";
 import hotelImage from "./hotel.svg";
 import { HotelRating } from "@/shared/ui/Hotel/HotelRating";
 import { HotelTitle } from "@/shared/ui/Hotel/HotelTitle";
-import { Flex, Button } from "antd";
+import { Button, Flex } from "antd";
 import { HotelTelegram } from "@/shared/ui/Hotel/HotelTelegram";
 import { Button as ConstaButton } from "@consta/uikit/Button";
 import { IconForward } from "@consta/icons/IconForward";
 import { IconEdit } from "@consta/icons/IconEdit";
 import Link from "next/link";
 import { Text } from "@consta/uikit/Text";
+import { PagesEnum, routes } from "@/shared/config/routes";
 
 export interface HotelProps {
   children?: React.ReactNode;
@@ -37,7 +38,7 @@ export const Hotel = ({ className, hotel, onDelete, onEdit }: HotelProps) => {
     image_id,
   } = hotel;
 
-  const redirectUrl = `/hotels/${hotel?.id}`;
+  const redirectUrl = `${routes[PagesEnum.HOTELS]}/${hotel?.id}`;
   return (
     <Card className={cn(styles.container, className)} shadow title={title}>
       <Flex gap={"large"}>

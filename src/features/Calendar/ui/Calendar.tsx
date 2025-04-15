@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from "react";
-import "../../../app/reservation/calendar.css";
+import "../../../app/main/reservation/calendar.css";
 import hotelImage from "../hotel.svg";
 import cx from "./style.module.css";
 import { HotelDTO } from "@/shared/api/hotel/hotel";

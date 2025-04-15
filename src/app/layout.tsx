@@ -16,8 +16,9 @@ import moment from "moment";
 import { Col, ConfigProvider, Flex, Layout, Row } from "antd";
 import { SafeHydrate } from "@/components/SafeHydrate/SafeHydrate";
 import { Today } from "@/features/Today/Today";
-import styles from "./layout.module.css";
+import styles from "./main/layout.module.css";
 import "moment/locale/ru";
+import { useAuth } from "@/shared/lib/useAuth";
 
 moment.locale("ru"); // Для локализации дат
 
@@ -56,9 +57,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
-  const [collapsed, setCollapsed] = useState(false);
-
   const currentDate = moment().locale("ru").format("dddd, D MMMM YYYY");
 
   return (
@@ -82,56 +80,7 @@ export default function RootLayout({
         >
           <QueryClientProvider client={queryClient}>
             <Theme preset={preset}>
-              <SafeHydrate>
-                <Layout>
-                  <LayoutExampleBig />
-                  <Row
-                    style={{ paddingRight: "1rem", backgroundColor: "#fff" }}
-                    gutter={[16, 16]}
-                    wrap={false}
-                  >
-                    <Col
-                      xs={{ flex: "auto", order: 1 }}
-                      sm={{ flex: "auto", order: 1 }}
-                      xl={{ flex: "80px", order: 0 }}
-                      // flex={156}
-                      // order={1}
-                      style={{
-                        backgroundColor: "#fff",
-                        borderRight: "1px solid var(--color-bg-border)",
-                      }}
-                    >
-                      <TravelMenu />
-                    </Col>
-                    <Col flex="auto" style={{ padding: "0 1rem" }}>
-                      <Layout
-                        className={styles.content}
-                        style={{ backgroundColor: "#fff" }}
-                      >
-                        <Flex
-                          gap={"middle"}
-                          wrap
-                          className={styles.widgetContainer}
-                        >
-                          <div style={{ paddingTop: "1rem" }}>
-                            <SearchFeature />
-                          </div>
-                          <Flex vertical>
-                            <Today
-                              currentDate={currentDate}
-                              open={isCalendarOpen}
-                              onToggle={() =>
-                                setIsCalendarOpen((prev) => !prev)
-                              }
-                            />
-                          </Flex>
-                        </Flex>
-                        {children}
-                      </Layout>
-                    </Col>
-                  </Row>
-                </Layout>
-              </SafeHydrate>
+              <SafeHydrate>{children}</SafeHydrate>
             </Theme>
             <ReactQueryDevtools />
           </QueryClientProvider>

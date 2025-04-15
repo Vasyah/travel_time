@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import { getHotelsWithFreeRooms } from "@/shared/api/hotel/hotel";
 import { Select } from "antd";
 import styles from "./style.module.css";
+import { PagesEnum, routes } from "@/shared/config/routes";
 
 export interface SearchFeatureProps {}
 
@@ -62,7 +63,7 @@ export const SearchFeature: FC<SearchFeatureProps> = (
 
     changeTravelFilter(filter);
 
-    router.push("/reservation");
+    router.push(routes[PagesEnum.RESERVATION]);
   };
 
   return (

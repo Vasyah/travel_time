@@ -14,6 +14,7 @@ import { PageTitle } from "@/shared/ui/PageTitle/PageTitle";
 import { useRouter } from "next/navigation";
 import { ResponsesNothingFound } from "@consta/uikit/ResponsesNothingFound";
 import { Pagination } from "@consta/uikit/Pagination";
+import { routes } from "@/shared/config/routes";
 
 export default function Home() {
   const router = useRouter();
@@ -29,7 +30,7 @@ export default function Home() {
   } = useGetAllHotels(!filter, filter);
 
   const onHotelClick = (hotel_id: string) => {
-    router.push(`/reservation/${hotel_id}`);
+    router.push(`${routes.RESERVATION}/${hotel_id}`);
   };
 
   useEffect(() => {
