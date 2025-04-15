@@ -1,8 +1,6 @@
 import supabase from "@/shared/config/supabase";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { setUser } from "@/shared/models/auth";
 import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
 import { notifyError, notifySuccess, showToast } from "@/shared/ui/Toast/Toast";
 
 export interface AuthProps {
@@ -66,13 +64,13 @@ export const getUser = async () => {
     const {
       data: { user },
     } = await supabase.auth.getUser();
-    await setUser({
-      email: user?.email,
-      phone: user?.phone,
-      role: user?.user_metadata?.role,
-      surname: user?.user_metadata?.surname,
-      name: user?.user_metadata?.name,
-    });
+    // await setUser({
+    //   email: user?.email,
+    //   phone: user?.phone,
+    //   role: user?.user_metadata?.role,
+    //   surname: user?.user_metadata?.surname,
+    //   name: user?.user_metadata?.name,
+    // });
   } catch (e) {
     console.error(e);
   }

@@ -28,6 +28,8 @@ export const useAuth = () => {
 
     const user = data?.session?.user;
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
     setUser({
       email: user?.email,
       phone: user?.phone,

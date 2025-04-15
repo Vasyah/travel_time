@@ -4,7 +4,6 @@ import { Login } from "@/features/Auth/ui/Login";
 import { Register } from "@/features/Auth/ui/Register";
 import { Tabs, TabsProps } from "antd";
 import { Card } from "@consta/uikit/Card";
-import { FORM_SIZE } from "@/shared/lib/const";
 import { setUser } from "@/shared/models/auth";
 
 const items: TabsProps["items"] = [
@@ -26,8 +25,11 @@ export default function LoginPage() {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
     setUser(null);
   }, []);
+
   return (
     <Card
       style={{

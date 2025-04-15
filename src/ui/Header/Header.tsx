@@ -46,9 +46,6 @@ const RowCenterRight = () => {
       {/*<TileMenu items={tiles}/>*/}
       <Dropdown menu={{ items }} trigger={["click"]}>
         <User
-          onClick={() => {
-            console.log();
-          }}
           className={cnMixSpace({ mL: "xs" })}
           avatarUrl="https://avatars.githubusercontent.com/u/13190808?v=4"
           name={user?.name}
@@ -65,6 +62,8 @@ export const LayoutExampleBig = () => {
   return (
     <Layout
       className={cx.header}
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
       rowTop={{
         left: <Image src={logo.src} alt={"Лого"} width={130} height={65} />,
         right: <RowCenterRight />,

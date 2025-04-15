@@ -145,9 +145,11 @@ export const Register = ({ className }: LoginProps) => {
         <GridItem col={3}>
           <Button
             label={"Зарегистрироваться"}
-            onClick={async () =>
-              mutateAsync({ ...formData, role: formData?.role?.id })
-            }
+            onClick={async () => {
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-expect-error
+              mutateAsync({ ...formData, role: formData?.role?.id });
+            }}
           />
         </GridItem>
       </Grid>

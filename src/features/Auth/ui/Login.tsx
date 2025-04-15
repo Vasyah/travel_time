@@ -69,14 +69,10 @@ export const Login = ({ className }: LoginProps) => {
           <Button
             label={"Войти"}
             onClick={async () => {
-              const error = await mutateAsync({
+              await mutateAsync({
                 email: formData.email,
                 password: formData.password,
               });
-
-              // const notify = () => toast.error("asdasd");
-              //
-              // notify();
             }}
           />
         </GridItem>
