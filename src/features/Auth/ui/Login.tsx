@@ -1,30 +1,31 @@
-"use client";
-import React from "react";
-import styles from "./style.module.css";
-import { AuthProps, useLogin } from "@/shared/api/auth/auth";
-import { Controller, useForm } from "react-hook-form";
-import { Grid, GridItem } from "@consta/uikit/Grid";
-import { FORM_SIZE } from "@/shared/lib/const";
-import { TextField } from "@consta/uikit/TextField";
-import { Button } from "@consta/uikit/Button";
-import { showToast } from "@/shared/ui/Toast/Toast";
-import { toast, ToastContainer } from "react-toastify";
+'use client'
+import React from 'react'
+import styles from './style.module.css'
+import { AuthProps, useLogin } from '@/shared/api/auth/auth'
+import { Controller, useForm } from 'react-hook-form'
+import { Grid, GridItem } from '@consta/uikit/Grid'
+import { FORM_SIZE } from '@/shared/lib/const'
+import { TextField } from '@consta/uikit/TextField'
+import { Button } from '@consta/uikit/Button'
+import { showToast } from '@/shared/ui/Toast/Toast'
+import { toast, ToastContainer } from 'react-toastify'
+import { Input } from 'antd'
 
 export interface LoginProps {
-  children?: React.ReactNode;
-  className?: string;
+  children?: React.ReactNode
+  className?: string
 }
 
 export const Login = ({ className }: LoginProps) => {
-  const { mutateAsync } = useLogin();
+  const { mutateAsync } = useLogin()
 
   const {
     control,
     watch,
     formState: { errors },
-  } = useForm<AuthProps>();
+  } = useForm<AuthProps>()
 
-  const formData = watch();
+  const formData = watch()
 
   return (
     <div>
@@ -37,8 +38,9 @@ export const Login = ({ className }: LoginProps) => {
             render={({ field }) => (
               <TextField
                 {...field}
-                placeholder={"Введите почту"}
-                label={"Почта"}
+                autoComplete={'email'}
+                placeholder={'Введите почту'}
+                label={'Почта'}
                 required
                 size={FORM_SIZE}
                 className={styles.fields}
@@ -67,16 +69,16 @@ export const Login = ({ className }: LoginProps) => {
         </GridItem>
         <GridItem col={2}>
           <Button
-            label={"Войти"}
+            label={'Войти'}
             onClick={async () => {
               await mutateAsync({
                 email: formData.email,
                 password: formData.password,
-              });
+              })
             }}
           />
         </GridItem>
       </Grid>
     </div>
-  );
-};
+  )
+}
