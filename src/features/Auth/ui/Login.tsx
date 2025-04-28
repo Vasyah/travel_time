@@ -23,7 +23,9 @@ export const Login = ({ className }: LoginProps) => {
     control,
     watch,
     formState: { errors },
-  } = useForm<AuthProps>()
+  } = useForm<AuthProps>({
+    defaultValues: { email: undefined, password: undefined },
+  })
 
   const formData = watch()
 
@@ -38,7 +40,7 @@ export const Login = ({ className }: LoginProps) => {
             render={({ field }) => (
               <TextField
                 {...field}
-                autoComplete={'email'}
+                autoComplete={'off'}
                 placeholder={'Введите почту'}
                 label={'Почта'}
                 required
