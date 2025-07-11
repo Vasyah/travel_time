@@ -47,17 +47,17 @@
   visibility: visible;
 }
 
-.content {
-  min-height: calc(100vh - var(--header-size));
-  background-color: var(--color-bg-default);
+// .content {
+//   min-height: calc(100vh - var(--header-size));
+//   background-color: var(--color-bg-default);
 
-  @media (max-width: 1365px) {
-    overflow: hidden;
-    // overflow-y: auto;
-    min-height: calc(100vh - var(--header-size) - var(--menu-height));
-    max-height: calc(100vh - var(--header-size) - var(--menu-height));
-  }
-}
+//   @media (max-width: 1365px) {
+//     overflow: hidden;
+//     // overflow-y: auto;
+//     min-height: calc(100vh - var(--header-size) - var(--menu-height));
+//     max-height: calc(100vh - var(--header-size) - var(--menu-height));
+//   }
+// }
 
 .menuContainer {
   background-color: transparent;
@@ -82,4 +82,39 @@
   @media (max-width: 1365px) {
     padding: 0 0.5rem;
   }
+}
+
+.container {
+  display: grid;
+  grid-template-areas:
+    'header header'
+    'sidebar content';
+  grid-template-columns: 200px 1fr;
+  grid-template-rows: auto 1fr;
+  min-height: 100vh;
+
+  @media (max-width: 1365px) {
+    grid-template-areas:
+      'header header'
+      'content content'
+      'sidebar sidebar';
+  }
+}
+
+.header {
+  grid-area: header;
+}
+
+.sidebar {
+  z-index: 100;
+  grid-area: sidebar;
+  overflow: hidden; /* Для корректной работы внутреннего скролла */
+}
+
+.content {
+  grid-area: content;
+  background: #ecf0f1;
+  color: #2c3e50;
+  padding: 20px;
+  overflow: auto; /* Скролл только для контента */
 }

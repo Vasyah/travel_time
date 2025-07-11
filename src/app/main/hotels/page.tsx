@@ -1,5 +1,4 @@
 'use client'
-import { Hotel } from '@/features/Hotel/Hotel'
 import { HotelModal } from '@/features/HotelModal/ui/HotelModal'
 import {
   HotelDTO,
@@ -12,11 +11,17 @@ import { useScreenSize } from '@/shared/lib/useScreenSize'
 import { TravelButton } from '@/shared/ui/Button/Button'
 import { FullWidthLoader } from '@/shared/ui/Loader/Loader'
 import { PageTitle } from '@/shared/ui/PageTitle/PageTitle'
+import { getHotelUrl } from '@/utils/getHotelUrl'
+import { IconEdit } from '@consta/icons/IconEdit'
+import { IconTrash } from '@consta/icons/IconTrash'
 import { ResponsesNothingFound } from '@consta/uikit/ResponsesNothingFound'
-import { useVirtualizer } from '@tanstack/react-virtual'
-import { Flex } from 'antd'
-import { useEffect, useRef, useState } from 'react'
+import { Button, Space, Table, Tag, Typography } from 'antd'
+import { ColumnsType } from 'antd/es/table'
+import Link from 'next/link'
+import { useState } from 'react'
 import style from './page.module.css'
+
+const { Text } = Typography
 
 export default function Hotels() {
   const [isHotelOpen, setIsHotelOpen] = useState(false)
@@ -24,7 +29,7 @@ export default function Hotels() {
   const { isMobile } = useScreenSize()
 
   // Используем бесконечный запрос
-  const PAGE_SIZE = 6
+  const PAGE_SIZE = 20
   const {
     data,
     fetchNextPage,
@@ -46,66 +51,95 @@ export default function Hotels() {
 
   const loading = isLoading || isHotelDeleting
 
-  // --- Виртуализированная сетка ---
-  const parentRef = useRef<HTMLDivElement>(null)
-  // Количество колонок адаптивно
-  let columnCount = 3
-  if (typeof window !== 'undefined') {
-    if (window.innerWidth <= 768) columnCount = 1
-    else if (window.innerWidth <= 1200) columnCount = 2
-  }
-  // SSR fallback
-  if (isMobile) columnCount = 1
-
-  const rowHeight = isMobile ? 174 : 256
-  const gap = isMobile ? 8 : 24
-  const rowCount = Math.ceil(hotels.length / columnCount)
-
-  const rowVirtualizer = useVirtualizer({
-    count: rowCount,
-    getScrollElement: () => parentRef.current,
-    estimateSize: () => rowHeight + gap,
-    overscan: 4,
-  })
-
-  // Получить элементы строки
-  const getRowItems = (rowIndex: number) => {
-    const startIndex = rowIndex * columnCount
-    const endIndex = Math.min(startIndex + columnCount, hotels.length)
-    return hotels.slice(startIndex, endIndex)
+  // Обработчик удаления отеля
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteHotel(id)
+    } catch (error) {
+      console.error('Ошибка при удалении отеля:', error)
+    }
   }
 
-  useEffect(() => {
-    const [lastItem] = [...rowVirtualizer.getVirtualItems()].reverse()
-    if (
-      lastItem &&
-      (lastItem.index + 1) * columnCount >= hotels.length &&
-      hasNextPage &&
-      !isFetchingNextPage &&
-      hotels.length > 0
-    ) {
+  // Обработчик редактирования отеля
+  const handleEdit = (hotel: HotelDTO) => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    const { rooms, ...rest } = hotel
+    setIsCurrentHotel(rest)
+    setIsHotelOpen(true)
+  }
+
+  // Колонки таблицы
+  const columns: ColumnsType<HotelDTO> = [
+    {
+      title: 'Название',
+      dataIndex: 'title',
+      key: 'title',
+      width: 200,
+      render: (title: string, record) => (
+        <Link href={getHotelUrl(record)}>
+          <Text strong>{title}</Text>
+        </Link>
+      ),
+    },
+    {
+      title: 'Тип',
+      dataIndex: 'type',
+      key: 'type',
+      width: 120,
+      render: (type: string) => <Tag color="blue">{type}</Tag>,
+    },
+    {
+      title: 'Адрес',
+      dataIndex: 'address',
+      key: 'address',
+      width: 250,
+      ellipsis: true,
+    },
+    {
+      title: 'Телефон',
+      dataIndex: 'phone',
+      key: 'phone',
+      width: 150,
+    },
+    {
+      title: 'Номеров',
+      key: 'roomsCount',
+      width: 100,
+      render: (_, record) => <Text>{record.rooms?.length ?? 0}</Text>,
+    },
+    {
+      title: 'Действия',
+      key: 'actions',
+      width: 120,
+      fixed: 'right',
+      render: (_, record) => (
+        <Space>
+          <Button
+            icon={<IconEdit />}
+            type="text"
+            size="small"
+            onClick={() => handleEdit(record)}
+          />
+          <Button
+            icon={<IconTrash />}
+            type="text"
+            size="small"
+            danger
+            onClick={() => handleDelete(record.id)}
+          />
+        </Space>
+      ),
+    },
+  ]
+
+  // Обработчик прокрутки для infinity scroll
+  const handleTableChange = (pagination: any, filters: any, sorter: any) => {
+    // Если достигли конца таблицы и есть следующая страница
+    if (hasNextPage && !isFetchingNextPage) {
       fetchNextPage()
     }
-  }, [
-    rowVirtualizer.getVirtualItems(),
-    hasNextPage,
-    isFetchingNextPage,
-    hotels.length,
-    fetchNextPage,
-    columnCount,
-  ])
-
-  // useEffect(() => {
-  //     refetch();
-  //     queryClient.invalidateQueries({
-  //         queryKey: [...QUERY_KEYS.hotels],
-  //     });
-  //     return () => {
-  //         queryClient.invalidateQueries({
-  //             queryKey: [...QUERY_KEYS.hotels],
-  //         });
-  //     };
-  // }, [hotels]);
+  }
 
   if (loading) {
     return <FullWidthLoader />
@@ -155,49 +189,20 @@ export default function Hotels() {
           onClick: () => setIsHotelOpen(true),
         }}
       />
-      <div ref={parentRef} className={style.scrollContainer}>
-        <div
-          style={{
-            width: '100%',
-            height: `${rowVirtualizer.getTotalSize()}px`,
-            position: 'relative',
-          }}
-        >
-          {rowVirtualizer.getVirtualItems().map(virtualRow => (
-            <Flex
-              key={virtualRow.key}
-              justify="start"
-              align="flex-start"
-              gap={gap}
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                height: `${rowHeight}px`,
-                transform: `translateY(${virtualRow.start}px)`,
-                width: '100%',
-              }}
-            >
-              {getRowItems(virtualRow.index).map(hotel => (
-                <div key={hotel.id} className={style.hotelContainer}>
-                  <Hotel
-                    hotel={hotel}
-                    onDelete={deleteHotel}
-                    onEdit={(hotel: HotelDTO) => {
-                      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                      // @ts-expect-error
-                      const { rooms, ...rest } = hotel
-                      setIsCurrentHotel(rest)
-                      setIsHotelOpen(true)
-                    }}
-                  />
-                </div>
-              ))}
-            </Flex>
-          ))}
-        </div>
-        {isFetchingNextPage && <FullWidthLoader />}
-      </div>
+
+      <Table
+        columns={columns}
+        dataSource={hotels}
+        rowKey="id"
+        pagination={false}
+        scroll={{ x: 800, y: 'calc(100vh - 300px)' }}
+        onChange={handleTableChange}
+        loading={isFetchingNextPage}
+        virtual
+        size={isMobile ? 'small' : 'middle'}
+        className={style.hotelsTable}
+      />
+
       <HotelModal
         isOpen={isHotelOpen}
         onClose={() => {

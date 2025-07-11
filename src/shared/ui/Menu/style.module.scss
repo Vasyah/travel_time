@@ -1,45 +1,45 @@
 .layout {
-    margin-top: 136px;
-    display: flex;
-    flex-direction: column;
+  margin-top: 136px;
+  display: flex;
+  flex-direction: column;
 
-    @media (max-width: 1365px) {
-        margin-left: 0;
-        margin-top: 0;
-        flex-direction: row;
-        justify-content: center;
-    }
+  @media (max-width: 1365px) {
+    margin-left: 0;
+    margin-top: 0;
+    flex-direction: row;
+    justify-content: center;
+  }
 }
 
 .link {
-    padding: var(--space-m);
-    text-decoration: none;
-    color: #7c918f;
-    min-height: 32px;
-    min-width: 120px;
+  padding: var(--space-m);
+  text-decoration: none;
+  color: #7c918f;
+  min-height: 32px;
+  min-width: 64px;
 
-    &:hover {
-        transition: all 0.25s ease-in-out;
-        background-color: var(--color-bg-success);
-        color: var(--color-bg-default) !important;
+  &:hover {
+    transition: all 0.25s ease-in-out;
+    background-color: var(--color-bg-success);
+    color: var(--color-bg-default) !important;
 
-        .container div svg {
-            fill: var(--color-bg-default);
-        }
+    .container div svg {
+      fill: var(--color-bg-default);
     }
+  }
 
-    @media (max-width: 1365px) {
-        padding: 0.5rem;
-        flex-basis: 33%;
-        // flex: 1;
-    }
+  @media (max-width: 1365px) {
+    padding: 0.5rem;
+    flex-basis: 33%;
+    // flex: 1;
+  }
 }
 
 .active {
-    color: var(--color-bg-success);
+  color: var(--color-bg-success);
 
-    .container svg {
-        fill: var(--color-bg-success);
-        color: var(--color-bg-success);
-    }
+  .container svg {
+    fill: var(--color-bg-success);
+    color: var(--color-bg-success);
+  }
 }
